@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="borderPane" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.root.controllers.CannonballController">
+   <bottom>
+      <Rectangle fx:id="floorRect" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="88.0" stroke="BLACK" strokeType="INSIDE" width="1000.0" BorderPane.alignment="CENTER" />
+   </bottom>
+   <center>
+      <Label alignment="CENTER" prefHeight="54.0" prefWidth="992.0" text="Модуль гравитация!" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="36.0" />
+         </font>
+      </Label>
+   </center>
+   <left>
+      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+         <image>
+            <Image url="@../img/cannon/wheel.png" />
+         </image>
+      </ImageView>
+   </left>
+</BorderPane>
