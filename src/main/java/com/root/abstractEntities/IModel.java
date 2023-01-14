@@ -11,7 +11,7 @@ abstract public class IModel {
     protected boolean mIsGridVisible;
     protected boolean mIsReplayNeeded;
 
-    public String getModuleFilePath() {
+    public String getModelFilePath() {
         return mModuleFilePath;
     }
 
@@ -23,5 +23,9 @@ abstract public class IModel {
     }
     public Parent getScene(){
         return mRoot;
+    }
+
+    public String getModelName() {
+        return mModelName;
     }
 }
