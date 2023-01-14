@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -7,53 +8,61 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ToolBar?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.root.MainController">
-   <children>
-      <MenuBar fx:id="menuBar" prefHeight="26.0">
-         <menus>
-            <Menu mnemonicParsing="false" text="Файл">
-               <items>
-                  <MenuItem mnemonicParsing="false" text="Close" />
-               </items>
-            </Menu>
-            <Menu mnemonicParsing="false" text="Правка">
-               <items>
-                  <MenuItem mnemonicParsing="false" text="Delete" />
-               </items>
-            </Menu>
-            <Menu mnemonicParsing="false" text="Вид" />
-            <Menu mnemonicParsing="false" text="Настройки">
-               <items>
-                  <MenuItem mnemonicParsing="false" text="Action 1" />
-               </items>
-            </Menu>
-            <Menu mnemonicParsing="false" text="Справка">
-               <items>
-                  <MenuItem mnemonicParsing="false" text="Action 1" />
-               </items>
-            </Menu>
-         </menus>
-      </MenuBar>
-      <ToolBar fx:id="toolBar" prefHeight="40.0">
-         <items>
-            <Button mnemonicParsing="false" text="Button" />
-         </items>
-      </ToolBar>
-      <AnchorPane>
+<BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.root.MainController">
+   <top>
+      <VBox BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="moduleLabel" alignment="CENTER" layoutY="100.0" text="Выберите модуль из списка модулей" wrapText="true">
+            <MenuBar fx:id="menuBar" prefHeight="26.0">
+               <menus>
+                  <Menu mnemonicParsing="false" text="Файл">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="Close" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Правка">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="Delete" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Вид" />
+                  <Menu mnemonicParsing="false" text="Настройки">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="Action 1" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Справка">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="Action 1" />
+                     </items>
+                  </Menu>
+               </menus>
+            </MenuBar>
+            <ToolBar fx:id="toolBar" prefHeight="40.0">
+               <items>
+                  <Button mnemonicParsing="false" text="Button" />
+                  <ComboBox fx:id="moduleTitlesComboBox" focusTraversable="false" prefHeight="40.0" prefWidth="170.0">
+                     <padding>
+                        <Insets left="15.0" />
+                     </padding>
+                  </ComboBox>
+               </items>
+            </ToolBar>
+         </children>
+      </VBox>
+   </top>
+   <center>
+      <BorderPane fx:id="borderPane" BorderPane.alignment="CENTER">
+         <center>
+            <Label fx:id="moduleLabel" alignment="CENTER" text="Выберите модуль из списка модулей" wrapText="true" BorderPane.alignment="CENTER">
                <font>
                   <Font size="18.0" />
                </font>
             </Label>
-            <BorderPane fx:id="borderPane" />
-            <ComboBox fx:id="moduleTitlesComboBox" focusTraversable="false" layoutX="2.0" layoutY="5.0" prefHeight="40.0" prefWidth="170.0" />
-         </children>
-      </AnchorPane>
-   </children>
-</VBox>
+         </center>
+      </BorderPane>
+   </center>
+</BorderPane>

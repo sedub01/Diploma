@@ -3,9 +3,9 @@ package com.root;
 import com.root.utils.Constants;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -13,9 +13,10 @@ import java.io.IOException;
 public class MainApplication extends Application {
     private final int WIDTH = Constants.MIN_WIDTH;
     private final int HEIGHT = Constants.MIN_HEIGHT;
+
     @Override
     public void start(Stage stage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("main-view.fxml"));
+        Pane root = FXMLLoader.load(getClass().getResource("main-view.fxml"));
         Scene scene = new Scene(root);
         stage.setTitle("PhysicalModelsEditor");
         stage.getIcons().add(new Image(getClass().getResourceAsStream("img/icon.png")));
@@ -46,7 +47,8 @@ public class MainApplication extends Application {
                 stage.setMaximized(false);
             }
         });
-        root.setStyle("-fx-background-color: rgb(213,235,255, 0.15);");
+        stage.setFullScreenExitHint("Нажмите Esc для выхода");
+        root.setStyle(String.format(Constants.BACKGROUND_COLOR, 15));
         stage.show();
     }
 

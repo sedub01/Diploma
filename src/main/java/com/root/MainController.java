@@ -10,9 +10,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,10 @@ public class MainController implements Initializable {
     private Label moduleLabel;
     @FXML
     private BorderPane borderPane;
+    @FXML
+    private ToolBar toolBar;
+    @FXML
+    private MenuBar menuBar;
 
     List<ModuleFactory> factories;
 
@@ -33,19 +38,18 @@ public class MainController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         moduleTitlesComboBox.setValue("<Не выбрано>");
         moduleLabel.setMinWidth(Constants.MIN_WIDTH);
-        moduleTitlesComboBox.setOnAction(actionEvent -> {
-            try {
-                getModule(actionEvent);
-            } catch (IOException e) {
-                System.out.println("Почему-то не загрузился модуль " + e.getClass());
-            }
-        });
+        moduleLabel.setMinHeight(Constants.MIN_HEIGHT/3);
+        borderPane.setStyle(String.format(Constants.BACKGROUND_COLOR, 25));
+        toolBar.setStyle(String.format(Constants.BACKGROUND_COLOR, 50));
+        menuBar.setStyle(String.format(Constants.BACKGROUND_COLOR, 80));
+        moduleTitlesComboBox.setStyle(String.format(Constants.BACKGROUND_COLOR, 99));
+        moduleTitlesComboBox.setOnAction(this::getModule);
 
         initFactories();
         factories.forEach(f -> moduleTitlesComboBox.getItems().add(f.getModuleName()));
     }
 
-    private void getModule(ActionEvent actionEvent) throws IOException {
+    private void getModule(ActionEvent actionEvent) {
         Parent root = null;
         for (ModuleFactory factory: factories){
             if (moduleTitlesComboBox.getValue().equals(factory.getModuleName())){
