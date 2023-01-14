@@ -1,28 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.shape.Rectangle?>
-<?import javafx.scene.text.Font?>
 
 <BorderPane fx:id="borderPane" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.root.controllers.CannonballController">
    <bottom>
-      <Rectangle fx:id="floorRect" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="88.0" stroke="BLACK" strokeType="INSIDE" width="1000.0" BorderPane.alignment="CENTER" />
+      <AnchorPane fx:id="anchorPane" prefHeight="350.0" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fitHeight="150.0" fitWidth="193.0" layoutY="113.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../img/cannon/wheel.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="floor" fitHeight="104.0" fitWidth="264.0" layoutY="263.0" pickOnBounds="true">
+               <image>
+                  <Image url="@../img/cannon/floor.jpg" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="barrel" fitHeight="88.0" fitWidth="200.0" layoutX="52.0" layoutY="144.0" pickOnBounds="true">
+               <image>
+                  <Image url="@../img/cannon/barrel.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="215.0" layoutY="167.0" pickOnBounds="true" preserveRatio="true" visible="false">
+               <image>
+                  <Image url="@../img/cannon/projectile.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
    </bottom>
-   <center>
-      <Label alignment="CENTER" prefHeight="54.0" prefWidth="992.0" text="Модуль гравитация!" BorderPane.alignment="CENTER">
-         <font>
-            <Font size="36.0" />
-         </font>
-      </Label>
-   </center>
-   <left>
-      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
-         <image>
-            <Image url="@../img/cannon/wheel.png" />
-         </image>
-      </ImageView>
-   </left>
 </BorderPane>
