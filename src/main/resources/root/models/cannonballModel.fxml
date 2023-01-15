@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane fx:id="borderPane" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.root.controllers.CannonballController">
+<BorderPane fx:id="borderPane" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="root.controllers.CannonballController">
    <bottom>
       <AnchorPane fx:id="anchorPane" prefHeight="350.0" BorderPane.alignment="CENTER">
          <children>

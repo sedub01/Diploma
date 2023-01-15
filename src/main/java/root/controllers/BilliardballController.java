@@ -1,6 +1,6 @@
-package com.root.controllers;
+package root.controllers;
 
-import com.root.utils.Logger;
+import root.utils.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TabPane;

@@ -1,8 +1,8 @@
-package com.root;
+package root;
 
-import com.root.models.ModuleFactory;
-import com.root.models.Types.AllFactories;
-import com.root.utils.Constants;
+import root.models.ModuleFactory;
+import root.models.Types.AllFactories;
+import root.utils.Constants;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

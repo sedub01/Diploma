@@ -1,4 +1,4 @@
-package com.root.utils;
+package root.utils;
 
 public class Logger {
     public static String formatStringWithLF(String str, int num){

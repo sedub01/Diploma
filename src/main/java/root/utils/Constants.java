@@ -1,4 +1,4 @@
-package com.root.utils;
+package root.utils;
 
 public class Constants {
     private static final int part = 65;

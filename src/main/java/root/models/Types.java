@@ -1,4 +1,4 @@
-package com.root.models;
+package root.models;
 
 public class Types {
     /*

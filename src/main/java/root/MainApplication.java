@@ -1,6 +1,6 @@
-package com.root;
+package root;
 
-import com.root.utils.Constants;
+import root.utils.Constants;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

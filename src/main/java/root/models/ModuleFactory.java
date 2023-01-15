@@ -1,8 +1,8 @@
-package com.root.models;
+package root.models;
 
-import com.root.models.Types.AllFactories;
-import com.root.models.Types.AllModels;
-import com.root.utils.Logger;
+import root.models.Types.AllFactories;
+import root.models.Types.AllModels;
+import root.utils.Logger;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.TabPane;

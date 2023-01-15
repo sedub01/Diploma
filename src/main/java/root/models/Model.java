@@ -1,7 +1,7 @@
-package com.root.models;
+package root.models;
 
-import com.root.models.Types.AllModels;
-import com.root.utils.Logger;
+import root.models.Types.AllModels;
+import root.utils.Logger;
 import javafx.scene.Parent;
 
 //Модели отличаются только параметрами характеристик,
