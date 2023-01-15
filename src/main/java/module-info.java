@@ -5,8 +5,8 @@ module java.diploma {
 
     opens com.root to javafx.fxml;
     exports com.root;
-    exports com.root.abstractEntities;
-    opens com.root.abstractEntities to javafx.fxml;
+    exports com.root.models;
+    opens com.root.models to javafx.fxml;
     exports com.root.controllers;
     opens com.root.controllers to javafx.fxml;
 }

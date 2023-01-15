@@ -19,7 +19,7 @@ public class MainApplication extends Application {
         Pane root = FXMLLoader.load(getClass().getResource("main-view.fxml"));
         Scene scene = new Scene(root);
         stage.setTitle("PhysicalModelsEditor");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("img/icon.png")));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("img/icons/icon.png")));
         stage.setScene(scene);
 
         //Установка неизменяемого (фиксированного) окна, а также

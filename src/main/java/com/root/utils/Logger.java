@@ -1,6 +1,6 @@
 package com.root.utils;
 
-public class GlobalFuncs {
+public class Logger {
     public static String formatStringWithLF(String str, int num){
         var array = str.split(" ");
         String result = "";
@@ -15,5 +15,10 @@ public class GlobalFuncs {
             }
         }
         return result;
+    }
+
+    public static void log(Object obj){
+        if (Constants.DEBUG)
+            System.out.println(obj);
     }
 }

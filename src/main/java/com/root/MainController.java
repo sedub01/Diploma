@@ -1,8 +1,7 @@
 package com.root;
 
-import com.root.abstractEntities.ModuleFactory;
-import com.root.gravityModels.GravityModuleFactory;
-import com.root.momentumModels.MomentumModuleFactory;
+import com.root.models.ModuleFactory;
+import com.root.models.Types.AllFactories;
 import com.root.utils.Constants;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -63,7 +62,7 @@ public class MainController implements Initializable {
 
     private void initFactories(){
         factories = new ArrayList();
-        factories.add(new GravityModuleFactory());
-        factories.add(new MomentumModuleFactory());
+        for (AllFactories f: AllFactories.values())
+            factories.add(new ModuleFactory(f));
     }
 }

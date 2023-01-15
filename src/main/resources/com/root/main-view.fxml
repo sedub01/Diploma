@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -8,6 +9,9 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -43,7 +47,24 @@
             </MenuBar>
             <ToolBar fx:id="toolBar" prefHeight="40.0">
                <items>
-                  <Button mnemonicParsing="false" text="Button" />
+                  <Button focusTraversable="false" graphicTextGap="0.0" mnemonicParsing="false">
+                     <graphic>
+                        <ImageView fitHeight="40.0" fitWidth="65.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@img/icons/gridIcon.png" />
+                           </image>
+                           <viewport>
+                              <Rectangle2D />
+                           </viewport>
+                        </ImageView>
+                     </graphic>
+                     <padding>
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                     </padding>
+                     <tooltip>
+                        <Tooltip text="Включить сетку" />
+                     </tooltip>
+                  </Button>
                   <ComboBox fx:id="moduleTitlesComboBox" focusTraversable="false" prefHeight="40.0" prefWidth="170.0">
                      <padding>
                         <Insets left="15.0" />
