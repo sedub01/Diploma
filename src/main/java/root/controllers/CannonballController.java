@@ -22,6 +22,11 @@ public class CannonballController implements Initializable {
     private double startY;
 
     private final Rotate rotate = new Rotate();
+    //В получасовом туториале должно быть так (а потом иниц. в initializable)
+    //private Model model;
+    //...
+    //tabPane.setData(model.method());
+    //Также пользуемый контроллер там создается явно (с конструктором, без привязки в .fxml)
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -39,21 +44,17 @@ public class CannonballController implements Initializable {
         //TODO посмотреть теорию про MVC (для TabPane)
     }
 
-    public double clockAngle(double x, double y, double px, double py) {
-        final double dx = x - px;
-        final double dy = y - py;
-        double angle = Math.abs(Math.toDegrees(Math.atan2(dy, dx)));
-
-        if (dy < 0) {
-            angle = 360 - angle;
-        }
-        return angle;
-    }
-
     private void barrelDragged(MouseEvent event){
         if (event.getX() >= barrel.getFitWidth() / 3){
-            // Используется для получения положения крайнего угла объекта на сцене
-            //https://docs.oracle.com/javase/8/javafx/api/javafx/scene/Node.html#localToSceneTransformProperty
+            /*
+             Используется для получения положения крайнего угла объекта на сцене
+             Афинное преобразование - это линейное, которое переводит объект из двумерного(трех-)
+             пространство в другое двумерное пространство, сохраняя неизменной прямолинейность
+             и параллельность линий.Одна точка А с координатой (x, y, z) в трехмерном пространстве
+             переместится в позицию A' с координатой (x', y', z') путем матричного умножения
+             https://docs.oracle.com/javase/8/javafx/api/javafx/scene/Node.html#localToSceneTransformProperty
+             https://o7planning.org/11157/javafx-transformation
+            */
             Transform localToScene = barrel.getLocalToSceneTransform();
 
             //конечное положение точки (на момент конца локального перемещения)
@@ -61,18 +62,21 @@ public class CannonballController implements Initializable {
             final double endX = event.getSceneX();
             final double endY = event.getSceneY();
             //Афинные преобразования
+            //Параметры tx, ty обозначают трансформированные точки для ствола
             final double px = rotate.getPivotX() + localToScene.getTx();
+            //Получает элемент преобразования координаты Y матрицы 3x4 + коорд. т. поворота (она постоянна)
             final double py = rotate.getPivotY() + localToScene.getTy();
 
             // Определение углов поворота
-            final double th1 = clockAngle(startX, startY, px, py);
-            final double th2 = clockAngle(endX, endY, px, py);
+            final double th1 = clockAngle(startX - px, startY - py);
+            final double th2 = clockAngle(endX - px, endY - py);
 
             final double angle = rotate.getAngle() + th2 - th1;
             //для изменения положения только в первой четверти
             if (angle <= 0 && angle >= -90){
                 rotate.setAngle(angle);
             }
+            //TODO рассчитать красную пунктирную линию для траектории ядра
             setMouse(event);
         }
     }
@@ -80,5 +84,14 @@ public class CannonballController implements Initializable {
     private void setMouse(MouseEvent e){
         startX = e.getSceneX();
         startY = e.getSceneY();
+    }
+
+    public double clockAngle(double dx, double dy) {
+        double angle = Math.abs(Math.toDegrees(Math.atan2(dy, dx)));
+
+        if (dy < 0) {
+            angle = 360 - angle;
+        }
+        return angle;
     }
 }

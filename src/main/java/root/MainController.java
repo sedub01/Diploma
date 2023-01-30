@@ -1,5 +1,7 @@
 package root;
 
+import javafx.scene.control.*;
+import javafx.scene.shape.Circle;
 import root.models.ModuleFactory;
 import root.models.Types.AllFactories;
 import root.utils.Constants;
@@ -7,10 +9,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 
 import java.net.URL;
@@ -30,6 +28,11 @@ public class MainController implements Initializable {
     private ToolBar toolBar;
     @FXML
     private MenuBar menuBar;
+    @FXML
+    private Button infoButton;
+    //TODO создать сворачиваемый виджет настроек модуля справа от сцены
+    //https://www.youtube.com/watch?v=Y2BQhfVVrkk - плохой туториал
+    //может это сойдет? https://www.youtube.com/watch?v=8FQ5jXuAhwE
 
     List<ModuleFactory> factories;
 
@@ -38,6 +41,7 @@ public class MainController implements Initializable {
         moduleTitlesComboBox.setValue("<Не выбрано>");
         moduleLabel.setMinWidth(Constants.MIN_WIDTH);
         moduleLabel.setMinHeight(Constants.MIN_HEIGHT/3);
+        infoButton.setShape(new Circle());
         borderPane.setStyle(String.format(Constants.BACKGROUND_COLOR, 25));
         toolBar.setStyle(String.format(Constants.BACKGROUND_COLOR, 50));
         menuBar.setStyle(String.format(Constants.BACKGROUND_COLOR, 80));
@@ -61,7 +65,7 @@ public class MainController implements Initializable {
     }
 
     private void initFactories(){
-        factories = new ArrayList();
+        factories = new ArrayList<>();
         for (AllFactories f: AllFactories.values())
             factories.add(new ModuleFactory(f));
     }
