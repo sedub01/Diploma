@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import root.utils.Logger;
 
 import java.io.IOException;
 
@@ -40,6 +41,12 @@ public class MainApplication extends Application {
                 stage.setFullScreen(true);
             }
         });
+        //После увеличения
+//        stage.fullScreenProperty()1040.0
+//        stage.maximizedProperty()1536.0
+        //После уменьшения
+//        stage.maximizedProperty()1040.0
+//        stage.fullScreenProperty()1040.0
         stage.fullScreenProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue){
                 stage.setMaxHeight(HEIGHT);
