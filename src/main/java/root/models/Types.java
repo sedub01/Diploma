@@ -10,13 +10,13 @@ public class Types {
         g - gravity
         m - momentum
      */
-    public enum AllFactories {
+    public enum AllFactoriesEnum {
         gGravityModuleFactory,
         mMomentumModuleFactory
     }
     //Перечисление моделей
     //Параметры модели задаются в конструкторе Model
-    public enum AllModels {
+    public enum AllModelsEnum {
         gCannonballModel,
         gSpaceManModel,
         mBilliardballModel

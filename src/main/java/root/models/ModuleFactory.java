@@ -1,14 +1,11 @@
 package root.models;
 
-import root.models.Types.AllFactories;
-import root.models.Types.AllModels;
+import javafx.scene.Node;
+import root.models.Types.AllFactoriesEnum;
+import root.models.Types.AllModelsEnum;
 import root.utils.Logger;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,14 +14,11 @@ public class ModuleFactory{
     private String mModuleDescription;
     private Image icon;
     /*Указатель на текущую модель*/
-    protected Model pCurrentModel;
+    protected int mCurrentModelIndex = 0;
     protected List<Model> models;
-    //TODO сделать tabList из моделей
-    protected TabPane modelsTabPane;
 
-    public ModuleFactory(AllFactories factory) {
+    public ModuleFactory(AllFactoriesEnum factory) {
         models = new ArrayList<>();
-        modelsTabPane = new TabPane();
         switch (factory){
             case gGravityModuleFactory -> {
                 mModuleName = "Гравитация";
@@ -37,58 +31,30 @@ public class ModuleFactory{
             default -> Logger.log("Нет такой фабрики");
         }
         addModelsByFactory(factory);
-        pCurrentModel = models.get(0);
         //Если в списке ничего не будет (т.е. пользователь налажал),
         //то высветится IndexOutOfBoundsException
-
-        //???
-//        Tab tab = new Tab(pCurrentModel.getModelName());
-//        tab.setContent(new Rectangle(200,200, Color.LIGHTSTEELBLUE));
-//        modelsTabPane.getTabs().add(tab);
-        //TODO вставить эту панель на сцену (с помощью MVC)
     }
 
-    private void addModelsByFactory(AllFactories factory){
-        String factoryName = factory.name();
-        String prefix = "";
-        for (char ch: factoryName.toCharArray())
-            if (Character.isUpperCase(ch)) {
-                prefix = factoryName.split(String.valueOf(ch))[0];
-                break;
-            }
-        for (AllModels m: AllModels.values())
+    //Добавление моделей в модуль (фабрику) по совпадающим приставкам
+    private void addModelsByFactory(AllFactoriesEnum factory){
+        //взятие приставки до первой заглавной буквы названия фабрики
+        final String prefix = factory.name().split("(?=\\p{Lu})")[0];
+        for (AllModelsEnum m: AllModelsEnum.values())
             if (m.name().startsWith(prefix)) {
                 models.add(new Model(m));
             }
-        //Какое уродство!
-//        Arrays.stre!am(AllModels.values()).filter(m->m.name().
-//                startsWith(prefix)).forEach(m->models.add(new Model(m)));
     }
 
     public String getCurrentModelFileName(){
-        return pCurrentModel.getModelFilePath();
+        return models.get(mCurrentModelIndex).getModelFilePath();
     }
 
-    public Parent getCurrentScene() {
-        //Для того чтобы URL != null, нужно в папке ресурсов иметь
-        //такую же папочную структуру, как и в папке проекта,
-        //иначе выдает исключение IllegalStateException
-        if (!pCurrentModel.hasScene()){
-            FXMLLoader loader = new FXMLLoader(getClass().
-                    getResource(getCurrentModelFileName()));
-            try {
-                pCurrentModel.setScene(loader.load());
-            } catch (IOException e) {
-                Logger.log("Не загрузилась модель " +
-                        getCurrentModelFileName() +
-                        "\nПричина: " + Logger.formatStringWithLF(e.getCause().toString(), 3) +
-                        "\nВместо сцены возвращается null");
-            } catch (IllegalStateException e){
-                Logger.log("Вероятнее всего, модуль не загрузился " +
-                        "из-за нарушения структуры директорий");
-            }
-        }
-        return pCurrentModel.getScene();
+    public Node getCurrentScene() {
+        return getSceneByIndex(mCurrentModelIndex);
+    }
+
+    public Node getSceneByIndex(int index){
+        return models.get(index).getScene();
     }
 
     public String getModuleName() {
@@ -113,5 +79,13 @@ public class ModuleFactory{
 
     public int size(){
         return models.size();
+    }
+
+    public int getCurrentModelIndex() {
+        return mCurrentModelIndex;
+    }
+
+    public void setCurrentModelIndex(int currentModelIndex) {
+        mCurrentModelIndex = currentModelIndex;
     }
 }

@@ -1,5 +1,6 @@
 package root;
 
+import javafx.stage.StageStyle;
 import root.utils.Constants;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -7,7 +8,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import root.utils.Logger;
 
 import java.io.IOException;
 
@@ -22,6 +22,7 @@ public class MainApplication extends Application {
         stage.setTitle("PhysicalModelsEditor");
         stage.getIcons().add(new Image(getClass().getResourceAsStream("img/icons/icon.png")));
         stage.setScene(scene);
+//        stage.initStyle(StageStyle.UNDECORATED); //TODO на потом
 
         //Установка неизменяемого (фиксированного) окна, а также
         //установка текущего размера (программно)

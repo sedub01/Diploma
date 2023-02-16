@@ -17,8 +17,10 @@ public class Logger {
         return result;
     }
 
-    public static void log(Object obj){
+    public static void log(Object... objects){
         if (Constants.DEBUG)
-            System.out.println(obj);
+            for (final var obj: objects)
+                System.out.print(obj + " ");
+        System.out.println();
     }
 }

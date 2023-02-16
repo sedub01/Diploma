@@ -8,12 +8,14 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -66,7 +68,7 @@
                         <Tooltip text="Включить сетку" />
                      </tooltip>
                   </Button>
-                  <ComboBox fx:id="moduleTitlesComboBox" focusTraversable="false" prefHeight="40.0" prefWidth="170.0">
+                  <ComboBox fx:id="moduleTitlesComboBox" focusTraversable="false" prefHeight="40.0" prefWidth="170.0" promptText="&lt;Не выбрано&gt;">
                      <padding>
                         <Insets left="15.0" />
                      </padding>
@@ -107,11 +109,16 @@
    <center>
       <BorderPane fx:id="borderPane" BorderPane.alignment="CENTER">
          <center>
-            <Label fx:id="moduleLabel" alignment="CENTER" text="Выберите модуль из списка модулей" wrapText="true" BorderPane.alignment="CENTER">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Label>
+            <StackPane fx:id="stackPane" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <children>
+                  <TabPane fx:id="modelsTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" />
+                  <Label fx:id="moduleLabel" text="Выберите модуль из списка модулей">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+               </children>
+            </StackPane>
          </center>
       </BorderPane>
    </center>
