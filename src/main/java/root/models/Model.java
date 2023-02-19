@@ -28,8 +28,9 @@ public class Model {
         String iconPath = null;
         switch (model) {
             case gCannonballModel -> {
+                mIsGridNeeded = true;
                 mModelName = "Пушечное ядро";
-                mModelDescription = "<p>Показывает гравитацию пушечного ядра</p>";
+                mModelDescription = "<font color = \"red\">Показывает гравитацию пушечного ядра</font>";
                 mModelFilePath = "cannonballModel.fxml";
                 iconPath = "/root/img/icons/cannonBallModel.png";
             }
@@ -108,5 +109,13 @@ public class Model {
 
     public ImageView getIcon() {
         return mIcon;
+    }
+
+    public String getModelDescription(){
+        return mModelDescription;
+    }
+
+    public boolean isGridNeeded(){
+        return mIsGridNeeded;
     }
 }

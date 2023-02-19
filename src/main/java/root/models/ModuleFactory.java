@@ -22,7 +22,15 @@ public class ModuleFactory{
         switch (factory){
             case gGravityModuleFactory -> {
                 mModuleName = "Гравитация";
-                mModuleDescription = "Показывает, на что способна гравитация!";
+                mModuleDescription = """
+                        <p>
+                            Данный модуль используется для демонстрации общих законов
+                            гравитации. Простыми словами, гравитация - это притяжение
+                            между двумя любыми объектами.  Гравитацию можно определить, 
+                            зная массу тел и расстояние от одного до другого. Чем сильнее 
+                            гравитационное поле, тем больше будет вес тела и выше его ускорение
+                        </p>
+                        """;
             }
             case mMomentumModuleFactory -> {
                 mModuleName = "Инерция";
@@ -87,5 +95,9 @@ public class ModuleFactory{
 
     public void setCurrentModelIndex(int currentModelIndex) {
         mCurrentModelIndex = currentModelIndex;
+    }
+
+    public Model getCurrentModel(){
+        return models.get(mCurrentModelIndex);
     }
 }

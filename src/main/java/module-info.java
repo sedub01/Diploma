@@ -1,7 +1,7 @@
 module java.diploma {
     requires javafx.controls;
     requires javafx.fxml;
-
+    requires javafx.web;
 
     opens root to javafx.fxml;
     exports root;

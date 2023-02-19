@@ -1,11 +1,9 @@
 package root;
 
-import javafx.stage.StageStyle;
 import root.utils.Constants;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -20,7 +18,8 @@ public class MainApplication extends Application {
         Pane root = FXMLLoader.load(getClass().getResource("main-view.fxml"));
         Scene scene = new Scene(root);
         stage.setTitle("PhysicalModelsEditor");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("img/icons/icon.png")));
+        if (Constants.mainIconImage != null)
+            stage.getIcons().add(Constants.mainIconImage);
         stage.setScene(scene);
 //        stage.initStyle(StageStyle.UNDECORATED); //TODO на потом
 

@@ -23,6 +23,7 @@ public class CannonballController implements Initializable {
     private double startY;
 
     private final Rotate rotate = new Rotate();
+    //TODO
     //В получасовом туториале должно быть так (а потом иниц. в initializable)
     //private Model model;
     //...
@@ -42,7 +43,6 @@ public class CannonballController implements Initializable {
         barrel.addEventHandler(MouseEvent.MOUSE_PRESSED, this::setMouse);
         // Когда край пушки перетаскивается, вращаем её
         barrel.addEventHandler(MouseEvent.MOUSE_DRAGGED, this::barrelDragged);
-        //TODO посмотреть теорию про MVC (для TabPane)
     }
 
     private void barrelDragged(MouseEvent event){

@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.Tooltip?>
@@ -35,7 +36,10 @@
                         <MenuItem mnemonicParsing="false" text="Delete" />
                      </items>
                   </Menu>
-                  <Menu mnemonicParsing="false" text="Вид" />
+                  <Menu mnemonicParsing="false" text="Вид">
+                     <items>
+                        <MenuItem fx:id="gridMenuItem" disable="true" mnemonicParsing="false" text="Включить сетку" />
+                     </items></Menu>
                   <Menu mnemonicParsing="false" text="Настройки">
                      <items>
                         <MenuItem mnemonicParsing="false" text="Action 1" />
@@ -43,14 +47,17 @@
                   </Menu>
                   <Menu mnemonicParsing="false" text="Справка">
                      <items>
-                        <MenuItem mnemonicParsing="false" text="Action 1" />
+                        <MenuItem fx:id="curModelInfoMenuItem" disable="true" mnemonicParsing="false" text="О текущей модели" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" text="О программе" />
+                        <MenuItem mnemonicParsing="false" text="О JavaFX" />
                      </items>
                   </Menu>
                </menus>
             </MenuBar>
             <ToolBar fx:id="toolBar" prefHeight="40.0">
                <items>
-                  <Button focusTraversable="false" graphicTextGap="0.0" mnemonicParsing="false">
+                  <Button fx:id="gridButton" disable="true" focusTraversable="false" graphicTextGap="0.0" mnemonicParsing="false">
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="65.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -68,6 +75,24 @@
                         <Tooltip text="Включить сетку" />
                      </tooltip>
                   </Button>
+                  <Button fx:id="executeButton" disable="true" focusTraversable="false" graphicTextGap="0.0" mnemonicParsing="false">
+                     <graphic>
+                        <ImageView fitHeight="40.0" fitWidth="65.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@img/icons/execute.png" />
+                           </image>
+                           <viewport>
+                              <Rectangle2D />
+                           </viewport>
+                        </ImageView>
+                     </graphic>
+                     <padding>
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                     </padding>
+                     <tooltip>
+                        <Tooltip text="Начать выполнение" />
+                     </tooltip>
+                  </Button>
                   <ComboBox fx:id="moduleTitlesComboBox" focusTraversable="false" prefHeight="40.0" prefWidth="170.0" promptText="&lt;Не выбрано&gt;">
                      <padding>
                         <Insets left="15.0" />
@@ -75,7 +100,7 @@
                   </ComboBox>
                   <HBox fx:id="hPane" alignment="CENTER_RIGHT" prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Button fx:id="infoButton" focusTraversable="false" graphicTextGap="0.0" mnemonicParsing="false">
+                        <Button fx:id="infoButton" disable="true" focusTraversable="false" graphicTextGap="0.0" mnemonicParsing="false">
                            <padding>
                               <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
                            </padding>
@@ -83,7 +108,7 @@
                               <Tooltip text="Информация о модуле" />
                            </tooltip>
                            <graphic>
-                              <ImageView disable="true" fitHeight="40.0" fitWidth="65.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fx:id="info" disable="true" fitHeight="40.0" fitWidth="65.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@img/icons/infoIcon.png" />
                                  </image>
