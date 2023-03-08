@@ -36,7 +36,7 @@ public class ModuleFactory{
                 mModuleName = "Инерция";
                 mModuleDescription = "Показывает, на что способна инерция!";
             }
-            default -> Logger.log("Нет такой фабрики");
+            default -> Logger.log("Необработанный модуль " + factory.name());
         }
         addModelsByFactory(factory);
         //Если в списке ничего не будет (т.е. пользователь налажал),

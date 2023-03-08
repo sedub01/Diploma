@@ -44,7 +44,7 @@ public class Model {
                 mModelDescription = "Показывает всякие штуки с шарами";
                 mModelFilePath = "billiardballModel.fxml";
             }
-            default -> Logger.log("Нет такого класса");
+            default -> Logger.log("Не обработана модель " + model.name());
         }
         initIcon(iconPath);
     }
@@ -91,8 +91,7 @@ public class Model {
                     Logger.formatStringWithLF(e.getCause().toString(), 3) +
                     "\nВместо сцены возвращается null");
         } catch (IllegalStateException e) {
-            Logger.log("Вероятнее всего, модель не загрузилась " +
-                    "из-за нарушения структуры директорий");
+            Logger.log("Программа не смогла найти путь до модели");
         } catch (NullPointerException e) {
             Logger.log("Выброшено исключение");
             Logger.log("Модель: " + mModelName);

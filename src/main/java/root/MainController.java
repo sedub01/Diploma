@@ -6,14 +6,15 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.util.StringConverter;
 import root.gui.InfoDialog;
+import root.models.Model;
 import root.models.ModuleFactory;
 import root.models.Types.AllFactoriesEnum;
 import root.utils.Constants;
+import root.gui.InfoDialog.DialogType;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
-import root.utils.Logger;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -42,6 +43,10 @@ public class MainController implements Initializable {
     private MenuItem curModelInfoMenuItem;
     @FXML
     private MenuItem gridMenuItem;
+    @FXML
+    private MenuItem programInfoMenuItem;
+    @FXML
+    private MenuItem javafxInfoMenuItem;
     //TODO создать сворачиваемый виджет настроек модуля справа от сцены
     //https://www.youtube.com/watch?v=Y2BQhfVVrkk - плохой туториал
     //может это сойдет? https://www.youtube.com/watch?v=8FQ5jXuAhwE
@@ -66,8 +71,11 @@ public class MainController implements Initializable {
         toolBar.setStyle(String.format(Constants.BACKGROUND_COLOR, 50));
         menuBar.setStyle(String.format(Constants.BACKGROUND_COLOR, 80));
         moduleTitlesComboBox.setStyle(String.format(Constants.BACKGROUND_COLOR, 99));
-        infoButton.setOnAction(this::onInfoButtonClicked);
-        curModelInfoMenuItem.setOnAction(this::onInfoButtonClicked);
+        infoButton.setOnAction(e->onInfoButtonClicked(DialogType.modelInfo));
+        curModelInfoMenuItem.setOnAction(e->onInfoButtonClicked(DialogType.modelInfo));
+        programInfoMenuItem.setOnAction(e->onInfoButtonClicked(DialogType.programInfo));
+        javafxInfoMenuItem.setOnAction(e->onInfoButtonClicked(DialogType.javafxInfo));
+
         gridButton.setOnAction(this::onGridButtonClicked);
         gridMenuItem.setOnAction(this::onGridButtonClicked);
         moduleTitlesComboBox.setOnAction(this::getModule);
@@ -136,18 +144,25 @@ public class MainController implements Initializable {
             factories.add(new ModuleFactory(f));
     }
 
-    private void onInfoButtonClicked(ActionEvent e){
+    private void onInfoButtonClicked(DialogType type){
         final var module = moduleTitlesComboBox.getValue();
-        final var model = module.getCurrentModel();
-
+        Model model = null;
+        if (type == DialogType.modelInfo){
+            model = module.getCurrentModel();
+        }
         //экономим ресурсы для снижения частоты запросов к движку html
-        if (infoDialog.hasChanged(model.hashCode())){
+        if (type == DialogType.modelInfo && infoDialog.hasChanged(model.hashCode(), type)){
             //Использование шаблона Builder
-            infoDialog.setModuleDescription(module.getModuleDescription()).
-                setModelDescription(model.getModelDescription()).
+            infoDialog.
+                setDescription(module.getModuleDescription()+"<hr>"+model.getModelDescription()).
                 setIcon(model.getIcon()).
                 updateContent();
         }
+        else if (type == DialogType.programInfo || type == DialogType.javafxInfo){
+            if (infoDialog.hasChanged(type))
+                infoDialog.setDescription(type).setIcon(null).updateContent();
+        }
+
         infoDialog.showAndWait();
     }
 }

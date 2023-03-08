@@ -49,8 +49,8 @@
                      <items>
                         <MenuItem fx:id="curModelInfoMenuItem" disable="true" mnemonicParsing="false" text="О текущей модели" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="О программе" />
-                        <MenuItem mnemonicParsing="false" text="О JavaFX" />
+                        <MenuItem fx:id="programInfoMenuItem" mnemonicParsing="false" text="О программе" />
+                        <MenuItem fx:id="javafxInfoMenuItem" mnemonicParsing="false" text="О JavaFX" />
                      </items>
                   </Menu>
                </menus>
