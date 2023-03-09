@@ -32,7 +32,7 @@ public class CannonballController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Logger.log("Загрузился модуль пушечного ядра");
+        Logger.log("Загрузилась модель пушечного ядра");
         floor.setFitWidth(Constants.MIN_WIDTH); //пока что обойдусь таким костылем
         barrel.getTransforms().add(rotate);
 

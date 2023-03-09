@@ -13,7 +13,7 @@ public class BilliardballController implements Initializable {
     private TabPane tabPane;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Logger.log("Загрузился модуль инерции");
+        Logger.log("Загрузилась модель инерции");
         tabPane.paddingProperty();
         if (tabPane.getTabs().size() == 1)
             tabPane.setVisible(false);

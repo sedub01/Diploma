@@ -145,6 +145,9 @@
                </children>
             </StackPane>
          </center>
+         <bottom>
+            <Label fx:id="statusBar" alignment="BOTTOM_LEFT" prefHeight="18.0" prefWidth="292.0" style="-fx-background-color: gray;" BorderPane.alignment="CENTER" />
+         </bottom>
       </BorderPane>
    </center>
 </BorderPane>

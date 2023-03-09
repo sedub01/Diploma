@@ -87,6 +87,7 @@ public class Model {
                     getResource(mModelFilePath));
             mScene = loader.load();
         } catch (IOException e) {
+            //emit signal("Сообщение с ошибкой"); //TODO Model<-->MainController
             Logger.log("Не загрузилась модель " + mModelName + "\nПричина: " +
                     Logger.formatStringWithLF(e.getCause().toString(), 3) +
                     "\nВместо сцены возвращается null");

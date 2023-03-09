@@ -4,6 +4,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.util.Duration;
 import javafx.util.StringConverter;
 import root.gui.InfoDialog;
 import root.models.Model;
@@ -22,7 +24,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
-
     @FXML
     private ComboBox<ModuleFactory> moduleTitlesComboBox;
     @FXML
@@ -54,6 +55,8 @@ public class MainController implements Initializable {
     private TabPane modelsTabPane;
     @FXML
     private StackPane stackPane;
+    @FXML
+    private Label statusBar;
 
     private List<ModuleFactory> factories;
     private InfoDialog infoDialog;
@@ -67,19 +70,26 @@ public class MainController implements Initializable {
 
     private void initGUI() {
         infoButton.setShape(new Circle());
-        borderPane.setStyle(String.format(Constants.BACKGROUND_COLOR, 25));
-        toolBar.setStyle(String.format(Constants.BACKGROUND_COLOR, 50));
-        menuBar.setStyle(String.format(Constants.BACKGROUND_COLOR, 80));
-        moduleTitlesComboBox.setStyle(String.format(Constants.BACKGROUND_COLOR, 99));
+        borderPane.setStyle(String.format(Constants.BACKGROUND_COLOR, 0.25));
+        toolBar.setStyle(String.format(Constants.BACKGROUND_COLOR, 0.50));
+        menuBar.setStyle(String.format(Constants.BACKGROUND_COLOR, 0.80));
+        statusBar.setStyle(String.format(Constants.BACKGROUND_COLOR, 0.80)+
+                "-fx-border-color:black;-fx-border-width:1;");
+        moduleTitlesComboBox.setStyle(String.format(Constants.BACKGROUND_COLOR, 1));
+
         infoButton.setOnAction(e->onInfoButtonClicked(DialogType.modelInfo));
         curModelInfoMenuItem.setOnAction(e->onInfoButtonClicked(DialogType.modelInfo));
         programInfoMenuItem.setOnAction(e->onInfoButtonClicked(DialogType.programInfo));
         javafxInfoMenuItem.setOnAction(e->onInfoButtonClicked(DialogType.javafxInfo));
-
         gridButton.setOnAction(this::onGridButtonClicked);
         gridMenuItem.setOnAction(this::onGridButtonClicked);
-        moduleTitlesComboBox.setOnAction(this::getModule);
+        statusBar.setPrefWidth(Constants.MIN_WIDTH);
 
+        connectToStatusBar(infoButton);
+        connectToStatusBar(gridButton);
+        connectToStatusBar(executeButton);
+
+        moduleTitlesComboBox.setOnAction(this::getModule);
         moduleTitlesComboBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(ModuleFactory factory) {
@@ -93,6 +103,30 @@ public class MainController implements Initializable {
         });
 
         infoDialog = new InfoDialog("Информация");
+    }
+
+    private void connectToStatusBar(Control control) {
+        final var tooltip = control.getTooltip();
+        if (tooltip != null){
+            tooltip.setFont(new Font( "Calibri", 14));
+            tooltip.setStyle("-fx-border-width: 1px; " +
+                    "-fx-border-color: white;" +
+                    "-fx-background-radius: 0px;" +
+                    "-fx-padding: 4 4 4 4;" +
+                    "-fx-text-fill: black;" +
+                    String.format(Constants.BACKGROUND_COLOR, 0.99)
+            );
+            tooltip.setShowDelay(new Duration(500));
+        }
+        control.setOnMouseEntered(e->changeStatusBar(tooltip));
+        control.setOnMouseExited(e->statusBar.setText(""));
+    }
+
+    private void changeStatusBar(Tooltip tooltip) {
+        final var toolTipText = (tooltip != null)?
+                tooltip.getText():
+                "Ошибка отображения подсказки";
+        statusBar.setText(toolTipText);
     }
 
     private void onGridButtonClicked(ActionEvent actionEvent) {

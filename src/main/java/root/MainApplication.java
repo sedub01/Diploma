@@ -55,7 +55,7 @@ public class MainApplication extends Application {
             }
         });
         stage.setFullScreenExitHint("Нажмите Esc для выхода");
-        root.setStyle(String.format(Constants.BACKGROUND_COLOR, 15));
+        root.setStyle(String.format(Constants.BACKGROUND_COLOR, 0.15));
         stage.show();
     }
 
