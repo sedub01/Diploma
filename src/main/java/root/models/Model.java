@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import root.MainController;
 import root.models.Types.AllModelsEnum;
 import root.utils.Logger;
 
@@ -87,19 +88,23 @@ public class Model {
                     getResource(mModelFilePath));
             mScene = loader.load();
         } catch (IOException e) {
-            //emit signal("Сообщение с ошибкой"); //TODO Model<-->MainController
+            MainController.displayOnStatusBar("Не загрузилась модель");
             Logger.log("Не загрузилась модель " + mModelName + "\nПричина: " +
                     Logger.formatStringWithLF(e.getCause().toString(), 3) +
                     "\nВместо сцены возвращается null");
         } catch (IllegalStateException e) {
             Logger.log("Программа не смогла найти путь до модели");
         } catch (NullPointerException e) {
+            MainController.displayOnStatusBar("Не найден путь до модели");
             Logger.log("Выброшено исключение");
             Logger.log("Модель: " + mModelName);
             Logger.log("Путь: " + mModelFilePath);
+        } catch (ClassCastException e) {
+            Logger.log("Ошибка кастинга в " + e.toString().split(":")[1].trim().split(" ")[1]);
         } catch (Exception e) {
+            MainController.displayOnStatusBar("Необработанное исключение :(");
             Logger.log("Необработанное исключение :(");
-            Logger.log(e.toString());
+            Logger.log(Logger.formatStringWithLF(e.toString(), 3));
         }
     }
 

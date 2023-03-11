@@ -17,6 +17,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
+import root.utils.StatusBarController;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -60,6 +61,7 @@ public class MainController implements Initializable {
 
     private List<ModuleFactory> factories;
     private InfoDialog infoDialog;
+    private static StatusBarController sbController;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -103,6 +105,7 @@ public class MainController implements Initializable {
         });
 
         infoDialog = new InfoDialog("Информация");
+        sbController = new StatusBarController(statusBar);
     }
 
     private void connectToStatusBar(Control control) {
@@ -198,5 +201,10 @@ public class MainController implements Initializable {
         }
 
         infoDialog.showAndWait();
+    }
+
+    public static void displayOnStatusBar(String text){
+        sbController.setText(text);
+        sbController.schedule();
     }
 }

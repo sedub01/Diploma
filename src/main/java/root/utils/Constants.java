@@ -18,4 +18,5 @@ public class Constants {
         catch (Exception e){Logger.log("Заглавная иконка не найдена");}
         mainIconImage = tempImage;
     }
+    public static final int HIDE_DELAY = 3000;
 }
