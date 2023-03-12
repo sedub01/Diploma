@@ -1,6 +1,5 @@
 package root.controllers;
 
-import root.utils.Constants;
 import root.utils.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -14,8 +13,6 @@ import java.util.ResourceBundle;
 
 public class CannonballController implements Initializable {
 
-    @FXML
-    private ImageView floor;
     @FXML
     private ImageView barrel;
 
@@ -33,7 +30,6 @@ public class CannonballController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Logger.log("Загрузилась модель пушечного ядра");
-        floor.setFitWidth(Constants.MIN_WIDTH); //пока что обойдусь таким костылем
         barrel.getTransforms().add(rotate);
 
         //Определяем точку опоры
