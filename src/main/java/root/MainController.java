@@ -2,6 +2,7 @@ package root;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
@@ -58,6 +59,8 @@ public class MainController implements Initializable {
     private StackPane stackPane;
     @FXML
     private Label statusBar;
+    @FXML
+    private HBox statusBarBox;
 
     private List<ModuleFactory> factories;
     private InfoDialog infoDialog;
@@ -75,7 +78,7 @@ public class MainController implements Initializable {
         borderPane.setStyle(String.format(Constants.BACKGROUND_COLOR, 0.25));
         toolBar.setStyle(String.format(Constants.BACKGROUND_COLOR, 0.50));
         menuBar.setStyle(String.format(Constants.BACKGROUND_COLOR, 0.80));
-        statusBar.setStyle(String.format(Constants.BACKGROUND_COLOR, 0.80)+
+        statusBarBox.setStyle(String.format(Constants.BACKGROUND_COLOR, 0.80)+
                 "-fx-border-color:black;-fx-border-width:1;");
         moduleTitlesComboBox.setStyle(String.format(Constants.BACKGROUND_COLOR, 1));
 
@@ -85,7 +88,6 @@ public class MainController implements Initializable {
         javafxInfoMenuItem.setOnAction(e->onInfoButtonClicked(DialogType.javafxInfo));
         gridButton.setOnAction(this::onGridButtonClicked);
         gridMenuItem.setOnAction(this::onGridButtonClicked);
-        statusBar.setPrefWidth(Constants.MIN_WIDTH);
 
         connectToStatusBar(infoButton);
         connectToStatusBar(gridButton);
@@ -204,7 +206,6 @@ public class MainController implements Initializable {
     }
 
     public static void displayOnStatusBar(String text){
-        sbController.setText(text);
-        sbController.schedule();
+        sbController.execute(text);
     }
 }

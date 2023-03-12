@@ -145,9 +145,13 @@
                </children>
             </StackPane>
          </center>
-         <bottom>
-            <Label fx:id="statusBar" alignment="BOTTOM_LEFT" prefHeight="18.0" prefWidth="292.0" style="-fx-background-color: gray;" BorderPane.alignment="CENTER" />
-         </bottom>
       </BorderPane>
    </center>
+   <bottom>
+      <HBox fx:id="statusBarBox" prefHeight="18.0" prefWidth="200.0" style="-fx-background-color: lightgray;" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="statusBar" alignment="BOTTOM_LEFT" prefHeight="18.0" prefWidth="292.0" />
+         </children>
+      </HBox>
+   </bottom>
 </BorderPane>

@@ -22,16 +22,7 @@ public class MainApplication extends Application {
             stage.getIcons().add(Constants.mainIconImage);
         stage.setScene(scene);
 //        stage.initStyle(StageStyle.UNDECORATED); //TODO на потом
-
-        //Установка неизменяемого (фиксированного) окна, а также
-        //установка текущего размера (программно)
-        //Если setResizable, тогда нельзя отобр. в полный экран
-        stage.setHeight(HEIGHT);
-        stage.setWidth(WIDTH);
-        stage.setMinHeight(HEIGHT);
-        stage.setMinWidth(WIDTH);
-        stage.setMaxHeight(HEIGHT);
-        stage.setMaxWidth(WIDTH);
+        setConstantSize(stage);
 
         stage.maximizedProperty().addListener((observable, oldValue, newValue) -> {
             //public void changed
@@ -57,6 +48,18 @@ public class MainApplication extends Application {
         stage.setFullScreenExitHint("Нажмите Esc для выхода");
         root.setStyle(String.format(Constants.BACKGROUND_COLOR, 0.15));
         stage.show();
+    }
+
+    private void setConstantSize(Stage stage) {
+        //Установка неизменяемого (фиксированного) окна, а также
+        //установка текущего размера (программно)
+        //Если setResizable, тогда нельзя отобр. в полный экран
+        stage.setHeight(HEIGHT);
+        stage.setWidth(WIDTH);
+        stage.setMinHeight(HEIGHT);
+        stage.setMinWidth(WIDTH);
+        stage.setMaxHeight(HEIGHT);
+        stage.setMaxWidth(WIDTH);
     }
 
     public static void main(String[] args) {

@@ -13,26 +13,21 @@ public class StatusBarController {
 
     public StatusBarController(Label statusBar){
         mStatusBar = statusBar;
-        mTimer = new Timer();
+        mTimer = new Timer(true);
         mTask = new TimerTask() {
             @Override
             public void run() {
                 Platform.runLater(()->{
                     if (mStatusBar.getText().equals(mLabelText))
                         mStatusBar.setText("");
-                    mTimer.cancel();
                 });
             }
         };
-        mTimer.cancel(); //т.к. это - статическая переменная
     }
 
-    public void setText(String text){
+    public void execute(String text){
         mLabelText = text;
         mStatusBar.setText(mLabelText);
-    }
-
-    public void schedule(){
         mTimer.schedule(mTask, Constants.HIDE_DELAY);
     }
 }
