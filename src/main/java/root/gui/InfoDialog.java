@@ -6,6 +6,10 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import root.utils.Constants;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 public class InfoDialog {
     private final Dialog<ButtonType> dialog;
     private String mDescription;
@@ -13,6 +17,7 @@ public class InfoDialog {
     private DialogType mDialogType;
     private final Stage stage;
     private final WebView webView;
+    private String javaInfoStr;
     public enum DialogType{
         modelInfo,
         programInfo,
@@ -31,14 +36,37 @@ public class InfoDialog {
         webView = new WebView();
         webView.setPrefSize(400, Constants.MIN_HEIGHT/2);
         dialog.getDialogPane().setContent(webView);
+
+        javaInfoStr = "  <style>\n" +
+                "   p {\n" +
+                "    font-family: Verdana, Arial, Helvetica, sans-serif; \n" +
+                "    font-size: 10pt; /* Размер шрифта в пунктах */ \n" +
+                "margin-top: 0.5em; \n"+
+                "margin-bottom: 0.5em; \n"+
+                "   }\n" +
+                "  </style>";
+        try {
+            javaInfoStr += generateJavaInfo();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String generateJavaInfo() throws IOException {
+        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "java", "--version");
+        builder.redirectErrorStream(true);
+        Process p = builder.start();
+        BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        return String.format("<p>%s</p>", r.readLine());
     }
 
     public InfoDialog setDescription(DialogType type){
         if (type == DialogType.programInfo){
-            mDescription = "Это супер программа";
+            mDescription = "Это супер программа" + javaInfoStr + "<p>@sedub01, 2023</p>";
         }
         else if (type == DialogType.javafxInfo){
-            mDescription = "Javafx 19.0.1";
+            mDescription = "Javafx 19.0.1"; //"Javafx 19.0.1"
+            //TODO скачать страницу html с сайта javafx
         }
         return this;
     }
