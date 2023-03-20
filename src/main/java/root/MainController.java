@@ -75,12 +75,12 @@ public class MainController implements Initializable {
 
     private void initGUI() {
         infoButton.setShape(new Circle());
-        borderPane.setStyle(String.format(Constants.BACKGROUND_COLOR, 0.25));
-        toolBar.setStyle(String.format(Constants.BACKGROUND_COLOR, 0.50));
-        menuBar.setStyle(String.format(Constants.BACKGROUND_COLOR, 0.80));
-        statusBarBox.setStyle(String.format(Constants.BACKGROUND_COLOR, 0.80)+
+        borderPane.setStyle(Global.getCSSThemeColor(0.75));
+        toolBar.setStyle(Global.getCSSThemeColor(0.4));
+        menuBar.setStyle(Global.getCSSThemeColor());
+        statusBarBox.setStyle(Global.getCSSThemeColor(0.2)+
                 "-fx-border-color:black;-fx-border-width:1;");
-        moduleTitlesComboBox.setStyle(String.format(Constants.BACKGROUND_COLOR, 1));
+        moduleTitlesComboBox.setStyle(Global.getCSSThemeColor());
 
         infoButton.setOnAction(e->onInfoButtonClicked(DialogType.modelInfo));
         curModelInfoMenuItem.setOnAction(e->onInfoButtonClicked(DialogType.modelInfo));
@@ -110,6 +110,19 @@ public class MainController implements Initializable {
         sbController = new StatusBarController(statusBar);
     }
 
+    private void onSettingsToolButtonClicked(ActionEvent actionEvent) {
+        //TODO Подумать над цветовой палитрой
+        setSettingsToolBarVisible(!settingsToolBar.isVisible());
+        settingsToolBar.requestFocus(); //Установка фокуса
+        //Скорее всего, придется делать отдельный виджет (класс)
+    }
+
+    private void setSettingsToolBarVisible(boolean b) {
+        settingsToolBar.setVisible(b);
+        arrowImage.setRotate(b? 180: 0);
+
+    }
+
     private void connectToStatusBar(Control control) {
         final var tooltip = control.getTooltip();
         if (tooltip != null){
@@ -119,7 +132,7 @@ public class MainController implements Initializable {
                     "-fx-background-radius: 0px;" +
                     "-fx-padding: 4 4 4 4;" +
                     "-fx-text-fill: black;" +
-                    String.format(Constants.BACKGROUND_COLOR, 0.99)
+                    Global.getCSSThemeColor()
             );
             tooltip.setShowDelay(new Duration(500));
         }
@@ -153,9 +166,7 @@ public class MainController implements Initializable {
             tab.setClosable(false);
             tab.setGraphic(model.getIcon());
             if (i == moduleFactory.getCurrentModelIndex()) {
-                tab.setContent(model.getScene());
-                gridButton.setDisable(!model.isGridNeeded());
-                gridMenuItem.setDisable(!model.isGridNeeded());
+                modelChanged(tab, model);
             }
             modelsTabPane.getTabs().add(tab);
 
@@ -164,9 +175,7 @@ public class MainController implements Initializable {
                 if (isSelected) { //если таб выбран, загрузить сцену (контент)
                     moduleFactory.setCurrentModelIndex(modelsTabPane.getTabs().indexOf(tab));
                     //общий шаблон
-                    tab.setContent(model.getScene());
-                    gridButton.setDisable(!model.isGridNeeded());
-                    gridMenuItem.setDisable(!model.isGridNeeded());
+                    modelChanged(tab, model);
                     //TODO РЕАЛИЗОВАТЬ ШАБЛОН Observer (или использовать системный класс)
                     // Я задолбался танцевать с бубном, ища текущую модель!
 
@@ -175,6 +184,14 @@ public class MainController implements Initializable {
             });
         }
         modelsTabPane.getSelectionModel().select(moduleFactory.getCurrentModelIndex());
+    }
+
+    //событие при смене отображения текущей модели
+    private void modelChanged(Tab tab, Model model) {
+        tab.setContent(model.getScene());
+        gridButton.setDisable(!model.isGridNeeded());
+        gridMenuItem.setDisable(!model.isGridNeeded());
+        setSettingsToolBarVisible(false);
     }
 
     private void initFactories(){

@@ -18,9 +18,10 @@ public class Logger {
     }
 
     public static void log(Object... objects){
-        if (Constants.DEBUG)
+        if (Constants.DEBUG){
             for (final var obj: objects)
                 System.out.print(obj + " ");
-        System.out.println();
+            System.out.println();
+        }
     }
 }

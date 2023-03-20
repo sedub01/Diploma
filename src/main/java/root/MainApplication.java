@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import root.utils.Global;
 
 import java.io.IOException;
 
@@ -46,7 +47,7 @@ public class MainApplication extends Application {
             }
         });
         stage.setFullScreenExitHint("Нажмите Esc для выхода");
-        root.setStyle(String.format(Constants.BACKGROUND_COLOR, 0.15));
+        root.setStyle(Global.getCSSThemeColor(0.9));
         stage.show();
     }
 
