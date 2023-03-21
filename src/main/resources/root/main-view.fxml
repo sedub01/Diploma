@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.ToolBar?>
@@ -20,7 +21,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/1" fx:controller="root.MainController">
+<BorderPane fx:id="rootPane" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/1" fx:controller="root.MainController">
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
@@ -136,12 +137,32 @@
          <center>
             <StackPane fx:id="stackPane" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
-                  <TabPane fx:id="modelsTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" />
+                  <TabPane fx:id="modelsTabPane" prefHeight="200.0" prefWidth="200.0" style="-fx-border-radius: 30;" tabClosingPolicy="UNAVAILABLE" />
                   <Label fx:id="moduleLabel" text="Выберите модуль из списка модулей">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Label>
+                  <ScrollPane fx:id="settingsToolBar" maxHeight="250.0" maxWidth="250.0" opacity="0.9" translateX="250.0" StackPane.alignment="BOTTOM_RIGHT">
+                     <StackPane.margin>
+                        <Insets bottom="30.0" />
+                     </StackPane.margin>
+                  </ScrollPane>
+                  <Button fx:id="settingsToolButton" alignment="CENTER" focusTraversable="false" maxHeight="250.0" maxWidth="25.0" mnemonicParsing="false" style="-fx-background-radius: 30px 10px 10px 30px;" visible="false" StackPane.alignment="BOTTOM_RIGHT">
+                     <StackPane.margin>
+                        <Insets bottom="30.0" />
+                     </StackPane.margin>
+                     <graphic>
+                        <ImageView fx:id="arrowImage" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@img/icons/settingsArrow.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <padding>
+                        <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+                     </padding>
+                  </Button>
                </children>
             </StackPane>
          </center>

@@ -9,15 +9,16 @@ import javafx.scene.text.Font;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import root.gui.InfoDialog;
+import root.gui.SettingsToolbar;
 import root.models.Model;
 import root.models.ModuleFactory;
 import root.models.Types.AllFactoriesEnum;
-import root.utils.Constants;
 import root.gui.InfoDialog.DialogType;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
+import root.utils.Global;
 import root.utils.StatusBarController;
 
 import java.net.URL;
@@ -50,9 +51,6 @@ public class MainController implements Initializable {
     private MenuItem programInfoMenuItem;
     @FXML
     private MenuItem javafxInfoMenuItem;
-    //TODO создать сворачиваемый виджет настроек модуля справа от сцены
-    //https://www.youtube.com/watch?v=Y2BQhfVVrkk - плохой туториал
-    //может это сойдет? https://www.youtube.com/watch?v=8FQ5jXuAhwE
     @FXML
     private TabPane modelsTabPane;
     @FXML
@@ -61,9 +59,14 @@ public class MainController implements Initializable {
     private Label statusBar;
     @FXML
     private HBox statusBarBox;
+    @FXML
+    private Button settingsToolButton;
+    @FXML
+    private ScrollPane settingsToolBar;
 
     private List<ModuleFactory> factories;
     private InfoDialog infoDialog;
+    private SettingsToolbar sToolbar;
     private static StatusBarController sbController;
 
     @Override
@@ -74,13 +77,20 @@ public class MainController implements Initializable {
     }
 
     private void initGUI() {
+        final var buttonStyle = Global.getCSSThemeColor()+
+                "-fx-border-radius: 5px;" +
+                "-fx-background-radius: 5px;" +
+                "-fx-border-color: black;";
         infoButton.setShape(new Circle());
+        gridButton.setStyle(buttonStyle);
+        executeButton.setStyle(buttonStyle);
         borderPane.setStyle(Global.getCSSThemeColor(0.75));
         toolBar.setStyle(Global.getCSSThemeColor(0.4));
         menuBar.setStyle(Global.getCSSThemeColor());
         statusBarBox.setStyle(Global.getCSSThemeColor(0.2)+
                 "-fx-border-color:black;-fx-border-width:1;");
         moduleTitlesComboBox.setStyle(Global.getCSSThemeColor());
+        modelsTabPane.setStyle(Global.getCSSThemeColor(0.1, "back"));
 
         infoButton.setOnAction(e->onInfoButtonClicked(DialogType.modelInfo));
         curModelInfoMenuItem.setOnAction(e->onInfoButtonClicked(DialogType.modelInfo));
@@ -108,25 +118,13 @@ public class MainController implements Initializable {
 
         infoDialog = new InfoDialog("Информация");
         sbController = new StatusBarController(statusBar);
-    }
-
-    private void onSettingsToolButtonClicked(ActionEvent actionEvent) {
-        //TODO Подумать над цветовой палитрой
-        setSettingsToolBarVisible(!settingsToolBar.isVisible());
-        settingsToolBar.requestFocus(); //Установка фокуса
-        //Скорее всего, придется делать отдельный виджет (класс)
-    }
-
-    private void setSettingsToolBarVisible(boolean b) {
-        settingsToolBar.setVisible(b);
-        arrowImage.setRotate(b? 180: 0);
-
+        sToolbar = new SettingsToolbar(settingsToolButton, settingsToolBar);
     }
 
     private void connectToStatusBar(Control control) {
         final var tooltip = control.getTooltip();
         if (tooltip != null){
-            tooltip.setFont(new Font( "Calibri", 14));
+            tooltip.setFont(new Font( "Calibre", 14));
             tooltip.setStyle("-fx-border-width: 1px; " +
                     "-fx-border-color: white;" +
                     "-fx-background-radius: 0px;" +
@@ -157,6 +155,7 @@ public class MainController implements Initializable {
         executeButton.setDisable(false);
         curModelInfoMenuItem.setDisable(false);
         stackPane.getChildren().remove(moduleLabel);
+        settingsToolButton.setVisible(true);
         modelsTabPane.getTabs().clear();
 
         final ModuleFactory moduleFactory = moduleTitlesComboBox.getValue();
@@ -165,6 +164,7 @@ public class MainController implements Initializable {
             Tab tab = new Tab(model.getModelName());
             tab.setClosable(false);
             tab.setGraphic(model.getIcon());
+            tab.setStyle(Global.getCSSThemeColor());
             if (i == moduleFactory.getCurrentModelIndex()) {
                 modelChanged(tab, model);
             }
@@ -191,7 +191,7 @@ public class MainController implements Initializable {
         tab.setContent(model.getScene());
         gridButton.setDisable(!model.isGridNeeded());
         gridMenuItem.setDisable(!model.isGridNeeded());
-        setSettingsToolBarVisible(false);
+        sToolbar.setVisible(false);
     }
 
     private void initFactories(){
