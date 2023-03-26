@@ -10,6 +10,7 @@ public class StatusBarController {
     private final TimerTask mTask;
     private String mLabelText;
     private final Label mStatusBar;
+    private boolean mIsStart = false;
 
     public StatusBarController(Label statusBar){
         mStatusBar = statusBar;
@@ -20,6 +21,7 @@ public class StatusBarController {
                 Platform.runLater(()->{
                     if (mStatusBar.getText().equals(mLabelText))
                         mStatusBar.setText("");
+                    mIsStart = false;
                 });
             }
         };
@@ -28,6 +30,9 @@ public class StatusBarController {
     public void execute(String text){
         mLabelText = text;
         mStatusBar.setText(mLabelText);
-        mTimer.schedule(mTask, Constants.HIDE_DELAY);
+        if (!mIsStart){
+            mTimer.schedule(mTask, Constants.HIDE_DELAY);
+            mIsStart = true;
+        }
     }
 }
