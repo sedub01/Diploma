@@ -69,7 +69,10 @@ public class ModuleFactory{
     }
 
     public Model modelAt(int index){
-        return models.get(index);
+        if (index >= 0 && index < models.size())
+            return models.get(index);
+        Logger.log("В модуле", mModuleName, "не существует модели с индексом", index);
+        return null;
     }
 
     public int size(){
@@ -85,6 +88,6 @@ public class ModuleFactory{
     }
 
     public Model getCurrentModel(){
-        return models.get(mCurrentModelIndex);
+        return modelAt(mCurrentModelIndex);
     }
 }

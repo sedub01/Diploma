@@ -51,7 +51,6 @@
                         <MenuItem fx:id="curModelInfoMenuItem" disable="true" mnemonicParsing="false" text="О текущей модели" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem fx:id="programInfoMenuItem" mnemonicParsing="false" text="О программе" />
-                        <MenuItem fx:id="javafxInfoMenuItem" mnemonicParsing="false" text="О JavaFX" />
                      </items>
                   </Menu>
                </menus>
@@ -106,7 +105,7 @@
                               <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
                            </padding>
                            <tooltip>
-                              <Tooltip text="Информация о модуле" />
+                              <Tooltip text="Информация о модели" />
                            </tooltip>
                            <graphic>
                               <ImageView fx:id="info" disable="true" fitHeight="40.0" fitWidth="65.0" pickOnBounds="true" preserveRatio="true">

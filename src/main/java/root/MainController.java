@@ -50,8 +50,6 @@ public class MainController implements Initializable {
     @FXML
     private MenuItem programInfoMenuItem;
     @FXML
-    private MenuItem javafxInfoMenuItem;
-    @FXML
     private TabPane modelsTabPane;
     @FXML
     private StackPane stackPane;
@@ -95,7 +93,6 @@ public class MainController implements Initializable {
         infoButton.setOnAction(e->onInfoButtonClicked(DialogType.modelInfo));
         curModelInfoMenuItem.setOnAction(e->onInfoButtonClicked(DialogType.modelInfo));
         programInfoMenuItem.setOnAction(e->onInfoButtonClicked(DialogType.programInfo));
-        javafxInfoMenuItem.setOnAction(e->onInfoButtonClicked(DialogType.javafxInfo));
         gridButton.setOnAction(this::onGridButtonClicked);
         gridMenuItem.setOnAction(this::onGridButtonClicked);
 
@@ -146,7 +143,7 @@ public class MainController implements Initializable {
     }
 
     private void onGridButtonClicked(ActionEvent actionEvent) {
-        //включить сетку и расположить ее по центру
+        //TODO включить сетку и расположить ее по центру
         //наверно, надо будет создать объект сетки
     }
 
@@ -178,8 +175,7 @@ public class MainController implements Initializable {
                     modelChanged(tab, model);
                     //TODO РЕАЛИЗОВАТЬ ШАБЛОН Observer (или использовать системный класс)
                     // Я задолбался танцевать с бубном, ища текущую модель!
-
-                    //TODO привязывать действия к "объектам действия (action)", а не к самим объектам
+                    // привязывать действия к "объектам действия (action)", а не к самим объектам
                 }
             });
         }
@@ -204,21 +200,17 @@ public class MainController implements Initializable {
 
     private void onInfoButtonClicked(DialogType type){
         final var module = moduleTitlesComboBox.getValue();
-        Model model = null;
-        if (type == DialogType.modelInfo){
-            model = module.getCurrentModel();
-        }
+        final var model = module != null? module.getCurrentModel(): null;
         //экономим ресурсы для снижения частоты запросов к движку html
-        if (type == DialogType.modelInfo && infoDialog.hasChanged(model.hashCode(), type)){
+        if (type == DialogType.modelInfo && model != null && infoDialog.hasChanged(model.hashCode())){
             //Использование шаблона Builder
             infoDialog.
                 setDescription(module.getModuleDescription()+"<hr>"+model.getModelDescription()).
                 setIcon(model.getIcon()).
                 updateContent();
         }
-        else if (type == DialogType.programInfo || type == DialogType.javafxInfo){
-            if (infoDialog.hasChanged(type))
-                infoDialog.setDescription(type).setIcon(null).updateContent();
+        else if (type == DialogType.programInfo){
+            infoDialog.setDescription(type).setIcon(null).updateContent();
         }
 
         infoDialog.showAndWait();

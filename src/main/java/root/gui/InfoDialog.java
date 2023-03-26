@@ -15,14 +15,12 @@ public class InfoDialog {
     private final Dialog<ButtonType> dialog;
     private String mDescription;
     private int mHash = -1; //нужен для идентификации модели
-    private DialogType mDialogType;
     private final Stage stage;
     private final WebView webView;
     private String javaInfoStr;
     public enum DialogType{
         modelInfo,
-        programInfo,
-        javafxInfo
+        programInfo
     }
 
     public InfoDialog(String title){
@@ -56,8 +54,8 @@ public class InfoDialog {
     private String generateJavaInfo() throws IOException {
         ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "java", "--version");
         builder.redirectErrorStream(true);
-        Process p = builder.start();
-        BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        final Process p = builder.start();
+        final var r = new BufferedReader(new InputStreamReader(p.getInputStream()));
         return String.format("<p>%s</p>", r.readLine());
     }
 
@@ -92,17 +90,9 @@ public class InfoDialog {
         dialog.showAndWait();
     }
 
-    public boolean hasChanged(int hashCode, DialogType type){
+    public boolean hasChanged(int hashCode){
         if (mHash != hashCode){
             mHash = hashCode;
-            return true;
-        }
-        return hasChanged(type);
-    }
-
-    public boolean hasChanged(DialogType type){
-        if (mDialogType != type){
-            mDialogType = type;
             return true;
         }
         return false;
