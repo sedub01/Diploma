@@ -1,12 +1,12 @@
 package root.models;
 
 import javafx.scene.Node;
-import root.models.Types.AllFactoriesEnum;
-import root.models.Types.AllModelsEnum;
+import root.utils.DescriptionFileParser;
 import root.utils.Logger;
 import javafx.scene.image.Image;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ModuleFactory{
@@ -15,42 +15,29 @@ public class ModuleFactory{
     private Image icon;
     /*Указатель на текущую модель*/
     protected int mCurrentModelIndex = 0;
-    protected List<Model> models;
+    protected List<Model> models = new ArrayList<>();
 
-    public ModuleFactory(AllFactoriesEnum factory) {
-        models = new ArrayList<>();
-        switch (factory){
-            case gGravityModuleFactory -> {
-                mModuleName = "Гравитация";
-                mModuleDescription = """
-                        <p>
-                            Данный модуль используется для демонстрации общих законов
-                            гравитации. Простыми словами, гравитация - это притяжение
-                            между двумя любыми объектами.  Гравитацию можно определить, 
-                            зная массу тел и расстояние от одного до другого. Чем сильнее 
-                            гравитационное поле, тем больше будет вес тела и выше его ускорение
-                        </p>
-                        """;
-            }
-            case mMomentumModuleFactory -> {
-                mModuleName = "Инерция";
-                mModuleDescription = "Показывает, на что способна инерция!";
-            }
-            default -> Logger.log("Необработанный модуль " + factory.name());
-        }
-        addModelsByFactory(factory);
-        //Если в списке ничего не будет (т.е. пользователь налажал),
-        //то высветится IndexOutOfBoundsException
+    public ModuleFactory(HashMap<String, String> factory) {
+        mModuleName = factory.get("moduleName");
+        mModuleDescription = factory.get("moduleDescription");
+        addModelsByFactory(factory.get("moduleNaming"));
     }
 
     //Добавление моделей в модуль (фабрику) по совпадающим приставкам
-    private void addModelsByFactory(AllFactoriesEnum factory){
+    private void addModelsByFactory(String factory){
+        if (mModuleName == null){
+            Logger.log("Необработанный модуль", factory);
+            return;
+        }
+        final var fileParser = DescriptionFileParser.getInstance();
         //взятие приставки до первой заглавной буквы названия фабрики
-        final String prefix = factory.name().split("(?=\\p{Lu})")[0];
-        for (AllModelsEnum m: AllModelsEnum.values())
-            if (m.name().startsWith(prefix)) {
-                models.add(new Model(m));
+        final String prefix = factory.split("(?=\\p{Lu})")[0];
+        for (var model: fileParser.getModelsMap()) {
+            final var modelName = model.get("modelNaming");
+            if (!prefix.isEmpty() && modelName.startsWith(prefix)){
+                models.add(new Model(model));
             }
+        }
     }
 
     public String getCurrentModelFileName(){

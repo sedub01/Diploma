@@ -5,10 +5,10 @@ import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import root.MainController;
-import root.models.Types.AllModelsEnum;
 import root.utils.Logger;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 //Модели отличаются только параметрами характеристик,
 //поэтому наследование избыточно
@@ -18,35 +18,18 @@ public class Model {
     protected String mModelFilePath;
     protected Node mScene;
     protected ImageView mIcon;
-    protected boolean mIsGridNeeded = false;
+    protected boolean mIsGridNeeded;
     protected boolean mIsGridVisible = false;
     protected boolean mIsReplayNeeded = true;
     //была ли совершена попытка загрузки модели
     protected boolean mTriedToLoad = false;
 
-    public Model(AllModelsEnum model){
-        //Если путь начинается с /, начало берется из корневой папки
-        String iconPath = null;
-        switch (model) {
-            case gCannonballModel -> {
-                mIsGridNeeded = true;
-                mModelName = "Пушечное ядро";
-                mModelDescription = "<font color = \"red\">Показывает гравитацию пушечного ядра</font>";
-                mModelFilePath = "cannonballModel.fxml";
-                iconPath = "/root/img/icons/cannonBallModel.png";
-            }
-            case gSpaceManModel -> {
-                mModelName = "Гравитация на планетах";
-                mModelDescription = "Показывает всё, на что способен космонавт!";
-            }
-            case mBilliardballModel -> {
-                mIsGridNeeded = true;
-                mModelName = "Бильярдный шар";
-                mModelDescription = "Показывает всякие штуки с шарами";
-                mModelFilePath = "billiardballModel.fxml";
-            }
-            default -> Logger.log("Не обработана модель " + model.name());
-        }
+    public Model(HashMap<String, String> model){
+        mModelName = model.get("modelName");
+        mModelDescription = model.get("modelDescription");
+        mModelFilePath = model.get("modelFilePath");
+        String iconPath = model.get("iconPath");
+        mIsGridNeeded = Boolean.parseBoolean(model.get("isGridNeeded"));
         initIcon(iconPath);
     }
 

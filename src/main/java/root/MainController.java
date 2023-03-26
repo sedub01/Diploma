@@ -12,12 +12,12 @@ import root.gui.InfoDialog;
 import root.gui.SettingsToolbar;
 import root.models.Model;
 import root.models.ModuleFactory;
-import root.models.Types.AllFactoriesEnum;
 import root.gui.InfoDialog.DialogType;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
+import root.utils.DescriptionFileParser;
 import root.utils.Global;
 import root.utils.StatusBarController;
 
@@ -195,9 +195,11 @@ public class MainController implements Initializable {
     }
 
     private void initFactories(){
+        //инициализация парсера
+        DescriptionFileParser fileParser = DescriptionFileParser.getInstance();
         factories = new ArrayList<>();
-        for (AllFactoriesEnum f: AllFactoriesEnum.values())
-            factories.add(new ModuleFactory(f));
+        for (var moduleHashMap: fileParser.getModulesMap())
+            factories.add(new ModuleFactory(moduleHashMap));
     }
 
     private void onInfoButtonClicked(DialogType type){

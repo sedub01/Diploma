@@ -5,6 +5,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import root.utils.Constants;
+import root.utils.DescriptionFileParser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -62,11 +63,8 @@ public class InfoDialog {
 
     public InfoDialog setDescription(DialogType type){
         if (type == DialogType.programInfo){
-            mDescription = "Это супер программа" + javaInfoStr + "<p>@sedub01, 2023</p>";
-        }
-        else if (type == DialogType.javafxInfo){
-            mDescription = "Javafx 19.0.1"; //"Javafx 19.0.1"
-            //TODO скачать страницу html с сайта javafx
+            final var fileParser = DescriptionFileParser.getInstance();
+            mDescription = String.format(fileParser.getProgramDescription(), javaInfoStr);
         }
         return this;
     }
