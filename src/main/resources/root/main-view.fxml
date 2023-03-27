@@ -142,7 +142,7 @@
                         <Font size="18.0" />
                      </font>
                   </Label>
-                  <ScrollPane fx:id="settingsToolBar" maxHeight="250.0" maxWidth="250.0" opacity="0.9" translateX="250.0" StackPane.alignment="BOTTOM_RIGHT">
+                  <ScrollPane fx:id="settingsToolBar" maxHeight="250.0" maxWidth="300.0" opacity="0.9" translateX="300.0" StackPane.alignment="BOTTOM_RIGHT">
                      <StackPane.margin>
                         <Insets bottom="30.0" />
                      </StackPane.margin>

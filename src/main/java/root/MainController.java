@@ -5,8 +5,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
-import javafx.util.Duration;
 import javafx.util.StringConverter;
 import root.gui.InfoDialog;
 import root.gui.SettingsToolbar;
@@ -96,10 +94,6 @@ public class MainController implements Initializable {
         gridButton.setOnAction(this::onGridButtonClicked);
         gridMenuItem.setOnAction(this::onGridButtonClicked);
 
-        connectToStatusBar(infoButton);
-        connectToStatusBar(gridButton);
-        connectToStatusBar(executeButton);
-
         moduleTitlesComboBox.setOnAction(this::getModule);
         moduleTitlesComboBox.setConverter(new StringConverter<>() {
             @Override
@@ -116,30 +110,10 @@ public class MainController implements Initializable {
         infoDialog = new InfoDialog("Информация");
         sbController = new StatusBarController(statusBar);
         sToolbar = new SettingsToolbar(settingsToolButton, settingsToolBar);
-    }
 
-    private void connectToStatusBar(Control control) {
-        final var tooltip = control.getTooltip();
-        if (tooltip != null){
-            tooltip.setFont(new Font( "Calibre", 14));
-            tooltip.setStyle("-fx-border-width: 1px; " +
-                    "-fx-border-color: white;" +
-                    "-fx-background-radius: 0px;" +
-                    "-fx-padding: 4 4 4 4;" +
-                    "-fx-text-fill: black;" +
-                    Global.getCSSThemeColor()
-            );
-            tooltip.setShowDelay(new Duration(500));
-        }
-        control.setOnMouseEntered(e->changeStatusBar(tooltip));
-        control.setOnMouseExited(e->statusBar.setText(""));
-    }
-
-    private void changeStatusBar(Tooltip tooltip) {
-        final var toolTipText = (tooltip != null)?
-                tooltip.getText():
-                "Ошибка отображения подсказки";
-        statusBar.setText(toolTipText);
+        StatusBarController.connectToStatusBar(infoButton);
+        StatusBarController.connectToStatusBar(gridButton);
+        StatusBarController.connectToStatusBar(executeButton);
     }
 
     private void onGridButtonClicked(ActionEvent actionEvent) {
@@ -188,6 +162,7 @@ public class MainController implements Initializable {
         gridButton.setDisable(!model.isGridNeeded());
         gridMenuItem.setDisable(!model.isGridNeeded());
         sToolbar.setVisible(false);
+        sToolbar.setSettings(model.getSettings());
     }
 
     private void initFactories(){

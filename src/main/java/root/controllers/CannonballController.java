@@ -1,34 +1,25 @@
 package root.controllers;
 
+import javafx.scene.control.*;
 import root.utils.Logger;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
+import root.utils.StatusBarController;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-public class CannonballController implements Initializable {
+public class CannonballController extends AbstactController {
 
     @FXML
     private ImageView barrel;
 
     private double startX;
     private double startY;
-
     private final Rotate rotate = new Rotate();
-    //TODO
-    //В получасовом туториале должно быть так (а потом иниц. в initializable)
-    //private Model model;
-    //...
-    //tabPane.setData(model.method());
-    //Также пользуемый контроллер там создается явно (с конструктором, без привязки в .fxml)
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    protected void construct() {
         Logger.log("Загрузилась модель пушечного ядра");
         barrel.getTransforms().add(rotate);
 
@@ -90,5 +81,28 @@ public class CannonballController implements Initializable {
             angle = 360 - angle;
         }
         return angle;
+    }
+
+    @Override
+    protected void createSettings() {
+        final var angleLabel = new Label("Угол наклона ствола");
+        final var speedLabel = new Label("Начальная скорость снаряда");
+        angleLabel.setTooltip(new Tooltip(angleLabel.getText()));
+        speedLabel.setTooltip(new Tooltip(speedLabel.getText()));
+        StatusBarController.connectToStatusBar(angleLabel);
+        StatusBarController.connectToStatusBar(speedLabel);
+        final var angleSpinner = new Spinner<Double>();
+        final var speedText = new TextField();
+
+        mModelSettings.put(angleLabel, angleSpinner);
+        mModelSettings.put(speedLabel, speedText);
+
+        SpinnerValueFactory<Double> valueFactory =
+                new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 90);
+        valueFactory.setValue(rotate.getAngle());
+        angleSpinner.setValueFactory(valueFactory);
+        rotate.setOnTransformChanged(e-> valueFactory.setValue(-rotate.getAngle()));
+        angleSpinner.valueProperty().addListener(e->
+                rotate.setAngle(-valueFactory.getValue()));
     }
 }

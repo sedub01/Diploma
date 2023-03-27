@@ -1,7 +1,12 @@
 package root.utils;
 
 import javafx.application.Platform;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
+import javafx.scene.text.Font;
+import javafx.util.Duration;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -9,7 +14,7 @@ public class StatusBarController {
     private final Timer mTimer;
     private final TimerTask mTask;
     private String mLabelText;
-    private final Label mStatusBar;
+    private static Label mStatusBar = null;
     private boolean mIsStart = false;
 
     public StatusBarController(Label statusBar){
@@ -34,5 +39,29 @@ public class StatusBarController {
             mTimer.schedule(mTask, Constants.HIDE_DELAY);
             mIsStart = true;
         }
+    }
+
+    public static void connectToStatusBar(Control control) {
+        final var tooltip = control.getTooltip();
+        if (tooltip != null){
+            tooltip.setFont(new Font( "Calibre", 14));
+            tooltip.setStyle("-fx-border-width: 1px; " +
+                    "-fx-border-color: white;" +
+                    "-fx-background-radius: 0px;" +
+                    "-fx-padding: 4 4 4 4;" +
+                    "-fx-text-fill: black;" +
+                    Global.getCSSThemeColor()
+            );
+            tooltip.setShowDelay(new Duration(500));
+        }
+        control.setOnMouseEntered(e->changeStatusBar(tooltip));
+        control.setOnMouseExited(e->mStatusBar.setText(""));
+    }
+
+    private static void changeStatusBar(Tooltip tooltip) {
+        final var toolTipText = (tooltip != null)?
+                tooltip.getText():
+                "Ошибка отображения подсказки";
+        mStatusBar.setText(toolTipText);
     }
 }

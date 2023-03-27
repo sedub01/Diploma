@@ -2,16 +2,20 @@ package root.gui;
 
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
 import root.utils.Global;
+
+import java.util.Map;
 
 public class SettingsToolbar {
     private final Button settingsToolButton;
     private final ScrollPane settingsToolBar;
     private final TranslateTransition translate;
     private boolean isVisible = false;
+    private final GridPane settingsLayout = new GridPane();
     public SettingsToolbar(Button button, ScrollPane toolbar){
         settingsToolButton = button;
         settingsToolBar = toolbar;
@@ -29,16 +33,16 @@ public class SettingsToolbar {
 
         settingsToolButton.setOnAction(this::onSettingsToolButtonClicked);
         translate.setOnFinished(e->settingsToolButton.setDisable(false));
-        settingsToolBar.focusedProperty().
-                addListener((obs, newVal, oldVal)-> setVisible(oldVal));
+        settingsToolBar.setContent(settingsLayout);
+        settingsLayout.setMaxWidth(settingsToolBar.getMaxWidth() - settingsToolButton.getMaxWidth());
+        settingsLayout.setVgap(5);
+        settingsLayout.setPadding(new Insets(5, 5, 5, 5));
     }
 
     private void onSettingsToolButtonClicked(ActionEvent actionEvent) {
         final double width = settingsToolBar.getMaxWidth();
         final boolean bf = Math.abs(settingsToolBar.getTranslateX() - width)<0.001;
         setVisible(bf);
-        if (bf)
-            settingsToolBar.requestFocus(); //Установка фокуса
     }
 
     public void setVisible(boolean b) {
@@ -49,6 +53,18 @@ public class SettingsToolbar {
 
             settingsToolButton.getGraphic().setRotate(b? 180: 0);
             settingsToolButton.setDisable(true);
+        }
+    }
+
+    public void setSettings(Map<Label, Control> settingsMap) {
+        settingsLayout.getChildren().clear();
+        int count = 0;
+        if (settingsMap != null){
+            for (final var setting: settingsMap.entrySet()){
+                settingsLayout.add(setting.getKey(), 0, count);
+                settingsLayout.add(setting.getValue(), 1, count);
+                count++;
+            }
         }
     }
 }

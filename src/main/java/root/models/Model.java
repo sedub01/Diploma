@@ -2,13 +2,17 @@ package root.models;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import root.MainController;
+import root.controllers.AbstactController;
 import root.utils.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 //Модели отличаются только параметрами характеристик,
 //поэтому наследование избыточно
@@ -23,6 +27,7 @@ public class Model {
     protected boolean mIsReplayNeeded = true;
     //была ли совершена попытка загрузки модели
     protected boolean mTriedToLoad = false;
+    private Map<Label, Control> mSettingsMap;
 
     public Model(HashMap<String, String> model){
         mModelName = model.get("modelName");
@@ -70,6 +75,8 @@ public class Model {
             FXMLLoader loader = new FXMLLoader(getClass().
                     getResource(mModelFilePath));
             mScene = loader.load();
+            AbstactController controller = loader.getController();
+            mSettingsMap = controller.getSettings();
         } catch (IOException e) {
             MainController.displayOnStatusBar("Не загрузилась модель");
             Logger.log("Не загрузилась модель " + mModelName + "\nПричина: " +
@@ -105,5 +112,9 @@ public class Model {
 
     public boolean isGridNeeded(){
         return mIsGridNeeded;
+    }
+
+    public Map<Label, Control> getSettings(){
+        return mSettingsMap;
     }
 }
