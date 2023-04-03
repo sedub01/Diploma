@@ -207,4 +207,8 @@ public class MainController implements Initializable {
     public static void displayOnStatusBar(String text){
         sbController.execute(text);
     }
+
+    public void setStage(Stage stage) {
+        appHeader.setStage(stage);
+    }
 }
