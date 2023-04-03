@@ -1,4 +1,4 @@
-package root.utils;
+package root.gui;
 
 import javafx.application.Platform;
 import javafx.scene.control.Control;
@@ -6,6 +6,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
+import root.utils.Constants;
+import root.utils.Global;
 
 import java.util.Timer;
 import java.util.TimerTask;

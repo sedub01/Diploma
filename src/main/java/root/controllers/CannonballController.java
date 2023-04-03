@@ -7,7 +7,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
-import root.utils.StatusBarController;
+import root.gui.StatusBarController;
 
 public class CannonballController extends AbstactController {
 

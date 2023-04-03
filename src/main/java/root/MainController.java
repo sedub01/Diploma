@@ -5,7 +5,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import root.gui.AppHeader;
 import root.gui.InfoDialog;
 import root.gui.SettingsToolbar;
 import root.models.Model;
@@ -17,7 +19,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
 import root.utils.DescriptionFileParser;
 import root.utils.Global;
-import root.utils.StatusBarController;
+import root.gui.StatusBarController;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -59,10 +61,19 @@ public class MainController implements Initializable {
     private Button settingsToolButton;
     @FXML
     private ScrollPane settingsToolBar;
+    @FXML
+    private HBox header;
+    @FXML
+    private Button collapseButton;
+    @FXML
+    private Button expandButton;
+    @FXML
+    private Button closeButton;
 
     private List<ModuleFactory> factories;
     private InfoDialog infoDialog;
     private SettingsToolbar sToolbar;
+    private AppHeader appHeader;
     private static StatusBarController sbController;
 
     @Override
@@ -77,6 +88,7 @@ public class MainController implements Initializable {
                 "-fx-border-radius: 5px;" +
                 "-fx-background-radius: 5px;" +
                 "-fx-border-color: black;";
+
         infoButton.setShape(new Circle());
         gridButton.setStyle(buttonStyle);
         executeButton.setStyle(buttonStyle);
@@ -110,6 +122,7 @@ public class MainController implements Initializable {
         infoDialog = new InfoDialog("Информация");
         sbController = new StatusBarController(statusBar);
         sToolbar = new SettingsToolbar(settingsToolButton, settingsToolBar);
+        appHeader = new AppHeader(header, collapseButton, expandButton, closeButton);
 
         StatusBarController.connectToStatusBar(infoButton);
         StatusBarController.connectToStatusBar(gridButton);
@@ -193,5 +206,9 @@ public class MainController implements Initializable {
 
     public static void displayOnStatusBar(String text){
         sbController.execute(text);
+    }
+
+    public void setStage(Stage stage) {
+        appHeader.setStage(stage);
     }
 }

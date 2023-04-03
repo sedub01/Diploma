@@ -25,6 +25,55 @@
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
+            <HBox fx:id="header" alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="200.0">
+               <children>
+                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@img/icons/icon.png" />
+                     </image>
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </ImageView>
+                  <Label prefHeight="25.0" text="PhysicalModelsEditor">
+                     <HBox.margin>
+                        <Insets left="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Button fx:id="collapseButton" focusTraversable="false" maxHeight="25.0" maxWidth="45.0" minHeight="25.0" minWidth="45.0" mnemonicParsing="false">
+
+                           <graphic>
+                              <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" rotate="180.0">
+                                 <image>
+                                    <Image url="@img/icons/collapse-arrow.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="expandButton" focusTraversable="false" maxHeight="25.0" maxWidth="45.0" minHeight="25.0" minWidth="45.0" mnemonicParsing="false">
+                           <graphic>
+                              <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" rotate="180.0">
+                                 <image>
+                                    <Image url="@img/icons/expand.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="closeButton" focusTraversable="false" maxHeight="25.0" maxWidth="45.0" minHeight="25.0" minWidth="45.0" mnemonicParsing="false">
+                           <graphic>
+                              <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" rotate="180.0">
+                                 <image>
+                                    <Image url="@img/icons/close-window.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                     </children>
+                  </HBox>
+               </children>
+            </HBox>
             <MenuBar fx:id="menuBar" prefHeight="26.0">
                <menus>
                   <Menu mnemonicParsing="false" text="Файл">
@@ -102,7 +151,7 @@
                      <children>
                         <Button fx:id="infoButton" disable="true" focusTraversable="false" graphicTextGap="0.0" mnemonicParsing="false">
                            <padding>
-                              <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+                              <Insets bottom="0.0" left="0.0" right="0.0" top="0.0" />
                            </padding>
                            <tooltip>
                               <Tooltip text="Информация о модели" />
