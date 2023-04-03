@@ -23,19 +23,10 @@ public class MainApplication extends Application {
             stage.getIcons().add(Constants.mainIconImage);
         stage.setScene(scene);
         stage.initStyle(StageStyle.UNDECORATED);
-        setConstantSize(stage);
-
-        MainController controller = loader.getController();
-        controller.setStage(stage);
-        root.setStyle(Global.getCSSThemeColor(0.9));
-        stage.show();
-    }
-
-    private void setConstantSize(Stage stage) {
-        //Установка неизменяемого (фиксированного) окна, а также
-        //установка текущего размера (программно)
         stage.setHeight(Constants.MIN_HEIGHT);
         stage.setWidth(Constants.MIN_WIDTH);
+        root.setStyle(Global.getCSSThemeColor(0.9));
+        stage.show();
     }
 
     public static void main(String[] args) {

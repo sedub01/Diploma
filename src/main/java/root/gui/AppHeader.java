@@ -14,12 +14,12 @@ public class AppHeader {
     private final Button mCollapseButton;
     private final Node mAppHeader;
 
-    public AppHeader(Node appHeader, Button collapseButton,
-                     Button expandButton, Button closeButton){
+    public AppHeader(final Node appHeader, final Button collapseButton,
+                     final Button expandButton, final Button closeButton){
         final var buttonStyle = getClass().getResource(
                 "/root/flatbutton.css").toExternalForm();
-        Image usualCloseImage = new Image(getClass().getResourceAsStream("/root/img/icons/close-window.png"));
-        Image enterCloseImage = new Image(getClass().getResourceAsStream("/root/img/icons/close-window-filled.png"));
+        final Image usualCloseImage = new Image(getClass().getResourceAsStream("/root/img/icons/close-window.png"));
+        final Image enterCloseImage = new Image(getClass().getResourceAsStream("/root/img/icons/close-window-filled.png"));
         mCloseButton = closeButton;
         mExpandButton = expandButton;
         mCollapseButton = collapseButton;
@@ -30,7 +30,7 @@ public class AppHeader {
         mExpandButton.getStylesheets().add(buttonStyle);
         mCloseButton.getStylesheets().add(buttonStyle);
 
-        var image = (ImageView)mCloseButton.getGraphic();
+        final var image = (ImageView)mCloseButton.getGraphic();
         if (image != null){
             mCloseButton.setOnMouseEntered(e->image.setImage(enterCloseImage));
             mCloseButton.setOnMouseExited(e->image.setImage(usualCloseImage));
@@ -44,20 +44,22 @@ public class AppHeader {
                 }
             });
         });
-    }
 
-    public void setStage(Stage stage){
-        mStage = stage;
-        setStageSettings();
-    }
-
-    private void setStageSettings() {
         mCloseButton.setOnAction(e->mStage.close());
         mCollapseButton.setOnAction(e->mStage.setIconified(true));
         mExpandButton.setOnAction(e->mStage.setMaximized(!mStage.isMaximized()));
 
-        mStage.maximizedProperty().addListener((observable, oldValue, newValue) -> {
-            mStage.setMaximized(newValue);
+        //Сцену приходится инициализировать в отдельном потоке с задержкой, т.к. по правилам JavaFX
+        //нельзя инициализировать сцену в конструкторе контроллера (нужно хотя бы сразу после него)
+        Thread t = new Thread(() -> {
+            try {
+//Думаю, за такое время пользователь точно не успеет ничего нажать, а сцена успеет прогрузиться
+                Thread.sleep(100);
+                mStage = (Stage) mAppHeader.getScene().getWindow();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         });
+        t.start();
     }
 }
