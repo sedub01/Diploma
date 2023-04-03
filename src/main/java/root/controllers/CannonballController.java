@@ -7,7 +7,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
-import root.gui.StatusBarController;
 
 public class CannonballController extends AbstactController {
 
@@ -87,10 +86,6 @@ public class CannonballController extends AbstactController {
     protected void createSettings() {
         final var angleLabel = new Label("Угол наклона ствола");
         final var speedLabel = new Label("Начальная скорость снаряда");
-        angleLabel.setTooltip(new Tooltip(angleLabel.getText()));
-        speedLabel.setTooltip(new Tooltip(speedLabel.getText()));
-        StatusBarController.connectToStatusBar(angleLabel);
-        StatusBarController.connectToStatusBar(speedLabel);
         final var angleSpinner = new Spinner<Double>();
         final var speedText = new TextField();
 

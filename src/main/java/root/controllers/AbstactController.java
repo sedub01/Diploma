@@ -3,6 +3,8 @@ package root.controllers;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
+import root.gui.StatusBarController;
 
 import java.net.URL;
 import java.util.LinkedHashMap;
@@ -20,7 +22,16 @@ abstract public class AbstactController implements Initializable {
     final public void initialize(URL url, ResourceBundle resourceBundle) {
         construct();
         createSettings();
+        __setToolTips__();
     }
+
+    private void __setToolTips__() {
+        for (final var labelSetting: mModelSettings.keySet()){
+            labelSetting.setTooltip(new Tooltip(labelSetting.getText()));
+            StatusBarController.connectToStatusBar(labelSetting);
+        }
+    }
+
     final public Map<Label, Control> getSettings(){
         return mModelSettings;
     }
