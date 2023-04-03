@@ -94,7 +94,7 @@ public class MainController implements Initializable {
         executeButton.setStyle(buttonStyle);
         borderPane.setStyle(Global.getCSSThemeColor(0.75));
         toolBar.setStyle(Global.getCSSThemeColor(0.4));
-        menuBar.setStyle(Global.getCSSThemeColor());
+        menuBar.setStyle(Global.getCSSThemeColor(-0.25));
         statusBarBox.setStyle(Global.getCSSThemeColor(0.2)+
                 "-fx-border-color:black;-fx-border-width:1;");
         moduleTitlesComboBox.setStyle(Global.getCSSThemeColor());

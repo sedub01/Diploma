@@ -35,10 +35,44 @@
                         <Insets left="10.0" />
                      </HBox.margin>
                   </ImageView>
-                  <Label prefHeight="25.0" text="PhysicalModelsEditor">
+                  <MenuBar fx:id="menuBar" prefHeight="26.0">
+                     <menus>
+                        <Menu mnemonicParsing="false" text="Файл">
+                           <items>
+                              <MenuItem mnemonicParsing="false" text="Close" />
+                           </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Правка">
+                           <items>
+                              <MenuItem mnemonicParsing="false" text="Delete" />
+                           </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Вид">
+                           <items>
+                              <MenuItem fx:id="gridMenuItem" disable="true" mnemonicParsing="false" text="Включить сетку" />
+                           </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Настройки">
+                           <items>
+                              <MenuItem mnemonicParsing="false" text="Action 1" />
+                           </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Справка">
+                           <items>
+                              <MenuItem fx:id="curModelInfoMenuItem" disable="true" mnemonicParsing="false" text="О текущей модели" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem fx:id="programInfoMenuItem" mnemonicParsing="false" text="О программе" />
+                           </items>
+                        </Menu>
+                     </menus>
+                  </MenuBar>
+                  <Label opacity="0.6" prefHeight="25.0" text="PhysicalModelsEditor">
                      <HBox.margin>
                         <Insets left="5.0" />
                      </HBox.margin>
+                     <padding>
+                        <Insets left="30.0" />
+                     </padding>
                   </Label>
                   <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                      <children>
@@ -74,36 +108,6 @@
                   </HBox>
                </children>
             </HBox>
-            <MenuBar fx:id="menuBar" prefHeight="26.0">
-               <menus>
-                  <Menu mnemonicParsing="false" text="Файл">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="Close" />
-                     </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="Правка">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="Delete" />
-                     </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="Вид">
-                     <items>
-                        <MenuItem fx:id="gridMenuItem" disable="true" mnemonicParsing="false" text="Включить сетку" />
-                     </items></Menu>
-                  <Menu mnemonicParsing="false" text="Настройки">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="Action 1" />
-                     </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="Справка">
-                     <items>
-                        <MenuItem fx:id="curModelInfoMenuItem" disable="true" mnemonicParsing="false" text="О текущей модели" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="programInfoMenuItem" mnemonicParsing="false" text="О программе" />
-                     </items>
-                  </Menu>
-               </menus>
-            </MenuBar>
             <ToolBar fx:id="toolBar" prefHeight="40.0">
                <items>
                   <Button fx:id="gridButton" disable="true" focusTraversable="false" graphicTextGap="0.0" mnemonicParsing="false">
