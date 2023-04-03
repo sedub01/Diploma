@@ -9,29 +9,28 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 
 public class CannonballController extends AbstactController {
-
     @FXML
     private ImageView barrel;
 
-    private double startX;
-    private double startY;
-    private final Rotate rotate = new Rotate();
+    private double mStartX;
+    private double mStartY;
+    private final Rotate mRotate = new Rotate();
 
     @Override
     protected void construct() {
         Logger.log("Загрузилась модель пушечного ядра");
-        barrel.getTransforms().add(rotate);
+        barrel.getTransforms().add(mRotate);
 
         //Определяем точку опоры
-        rotate.setPivotX(barrel.getFitWidth()/10);
-        rotate.setPivotY(barrel.getFitHeight()/2);
+        mRotate.setPivotX(barrel.getFitWidth()/10);
+        mRotate.setPivotY(barrel.getFitHeight()/2);
 
         barrel.addEventHandler(MouseEvent.MOUSE_PRESSED, this::setMouse);
         // Когда край пушки перетаскивается, вращаем её
         barrel.addEventHandler(MouseEvent.MOUSE_DRAGGED, this::barrelDragged);
     }
 
-    private void barrelDragged(MouseEvent event){
+    private void barrelDragged(final MouseEvent event){
         if (event.getX() >= barrel.getFitWidth() / 3){
             /*
              Используется для получения положения крайнего угла объекта на сцене
@@ -42,7 +41,7 @@ public class CannonballController extends AbstactController {
              https://docs.oracle.com/javase/8/javafx/api/javafx/scene/Node.html#localToSceneTransformProperty
              https://o7planning.org/11157/javafx-transformation
             */
-            Transform localToScene = barrel.getLocalToSceneTransform();
+            final Transform localToScene = barrel.getLocalToSceneTransform();
 
             //конечное положение точки (на момент конца локального перемещения)
             //координаты берутся относительно берущегося предмета
@@ -50,27 +49,27 @@ public class CannonballController extends AbstactController {
             final double endY = event.getSceneY();
             //Афинные преобразования
             //Параметры tx, ty обозначают трансформированные точки для ствола
-            final double px = rotate.getPivotX() + localToScene.getTx();
+            final double px = mRotate.getPivotX() + localToScene.getTx();
             //Получает элемент преобразования координаты Y матрицы 3x4 + коорд. т. поворота (она постоянна)
-            final double py = rotate.getPivotY() + localToScene.getTy();
+            final double py = mRotate.getPivotY() + localToScene.getTy();
 
             // Определение углов поворота
-            final double th1 = clockAngle(startX - px, startY - py);
+            final double th1 = clockAngle(mStartX - px, mStartY - py);
             final double th2 = clockAngle(endX - px, endY - py);
 
-            final double angle = rotate.getAngle() + th2 - th1;
+            final double angle = mRotate.getAngle() + th2 - th1;
             //для изменения положения только в первой четверти
             if (angle <= 0 && angle >= -90){
-                rotate.setAngle(angle);
+                mRotate.setAngle(angle);
             }
             //TODO рассчитать красную пунктирную линию для траектории ядра
             setMouse(event);
         }
     }
 
-    private void setMouse(MouseEvent e){
-        startX = e.getSceneX();
-        startY = e.getSceneY();
+    private void setMouse(final MouseEvent e){
+        mStartX = e.getSceneX();
+        mStartY = e.getSceneY();
     }
 
     public double clockAngle(double dx, double dy) {
@@ -94,10 +93,10 @@ public class CannonballController extends AbstactController {
 
         SpinnerValueFactory<Double> valueFactory =
                 new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 90);
-        valueFactory.setValue(rotate.getAngle());
+        valueFactory.setValue(mRotate.getAngle());
         angleSpinner.setValueFactory(valueFactory);
-        rotate.setOnTransformChanged(e-> valueFactory.setValue(-rotate.getAngle()));
+        mRotate.setOnTransformChanged(e-> valueFactory.setValue(-mRotate.getAngle()));
         angleSpinner.valueProperty().addListener(e->
-                rotate.setAngle(-valueFactory.getValue()));
+                mRotate.setAngle(-valueFactory.getValue()));
     }
 }

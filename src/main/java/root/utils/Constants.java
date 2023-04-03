@@ -4,7 +4,7 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import root.MainApplication;
 
-//Хранилище глобальных констант
+/**Хранилище глобальных констант*/
 public class Constants {
     private static final int part = 80;
     public static final int MIN_WIDTH = part*11; //11:9

@@ -19,7 +19,7 @@ public class StatusBarController {
     private static Label mStatusBar = null;
     private boolean mIsStart = false;
 
-    public StatusBarController(Label statusBar){
+    public StatusBarController(final Label statusBar){
         mStatusBar = statusBar;
         mTimer = new Timer(true);
         mTask = new TimerTask() {
@@ -34,7 +34,7 @@ public class StatusBarController {
         };
     }
 
-    public void execute(String text){
+    public void execute(final String text){
         mLabelText = text;
         mStatusBar.setText(mLabelText);
         if (!mIsStart){
@@ -43,7 +43,7 @@ public class StatusBarController {
         }
     }
 
-    public static void connectToStatusBar(Control control) {
+    public static void connectToStatusBar(final Control control) {
         final var tooltip = control.getTooltip();
         if (tooltip != null){
             tooltip.setFont(new Font( "Calibre", 14));
@@ -60,7 +60,7 @@ public class StatusBarController {
         control.setOnMouseExited(e->mStatusBar.setText(""));
     }
 
-    private static void changeStatusBar(Tooltip tooltip) {
+    private static void changeStatusBar(final Tooltip tooltip) {
         final var toolTipText = (tooltip != null)?
                 tooltip.getText():
                 "Ошибка отображения подсказки";

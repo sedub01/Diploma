@@ -12,31 +12,31 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class InfoDialog {
-    private final Dialog<ButtonType> dialog;
+    private final Dialog<ButtonType> mDialog;
     private String mDescription;
     private int mHash = -1; //нужен для идентификации модели
-    private final Stage stage;
-    private final WebView webView;
-    private String javaInfoStr;
+    private final Stage mStage;
+    private final WebView mWebView;
+    private String mJavaInfoStr;
     public enum DialogType{
         modelInfo,
         programInfo
     }
 
-    public InfoDialog(String title){
-        dialog = new Dialog<>();
-        dialog.setTitle(title);
-        ButtonType type = new ButtonType("Ок", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().add(type);
+    public InfoDialog(final String title){
+        mDialog = new Dialog<>();
+        mDialog.setTitle(title);
+        final var type = new ButtonType("Ок", ButtonBar.ButtonData.OK_DONE);
+        mDialog.getDialogPane().getButtonTypes().add(type);
 
-        dialog.getDialogPane().setStyle("-fx-background-color: white;");
-        stage = (Stage)dialog.getDialogPane().getScene().getWindow();
+        mDialog.getDialogPane().setStyle("-fx-background-color: white;");
+        mStage = (Stage) mDialog.getDialogPane().getScene().getWindow();
 
-        webView = new WebView();
-        webView.setPrefSize(400, Constants.MIN_HEIGHT/2);
-        dialog.getDialogPane().setContent(webView);
+        mWebView = new WebView();
+        mWebView.setPrefSize(400, Constants.MIN_HEIGHT/2);
+        mDialog.getDialogPane().setContent(mWebView);
 
-        javaInfoStr = "  <style>\n" +
+        mJavaInfoStr = "  <style>\n" +
                 "   p {\n" +
                 "    font-family: Verdana, Arial, Helvetica, sans-serif; \n" +
                 "    font-size: 10pt; /* Размер шрифта в пунктах */ \n" +
@@ -45,52 +45,52 @@ public class InfoDialog {
                 "   }\n" +
                 "  </style>";
         try {
-            javaInfoStr += generateJavaInfo();
+            mJavaInfoStr += generateJavaInfo();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private String generateJavaInfo() throws IOException {
-        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "java", "--version");
+        final var builder = new ProcessBuilder("cmd.exe", "/c", "java", "--version");
         builder.redirectErrorStream(true);
         final Process p = builder.start();
         final var r = new BufferedReader(new InputStreamReader(p.getInputStream()));
         return String.format("<p>%s</p>", r.readLine());
     }
 
-    public InfoDialog setDescription(DialogType type){
+    public InfoDialog setDescription(final DialogType type){
         if (type == DialogType.programInfo){
             final var fileParser = DescriptionFileParser.getInstance();
-            mDescription = String.format(fileParser.getProgramDescription(), javaInfoStr);
+            mDescription = String.format(fileParser.getProgramDescription(), mJavaInfoStr);
         }
         return this;
     }
 
-    public InfoDialog setDescription(String description){
+    public InfoDialog setDescription(final String description){
         mDescription = description;
         return this;
     }
 
-    public InfoDialog setIcon(ImageView icon){
-        stage.getIcons().clear();
+    public InfoDialog setIcon(final ImageView icon){
+        mStage.getIcons().clear();
         final var mainIcon = Constants.mainIconImage;
         if (icon != null)
-            stage.getIcons().add(icon.getImage());
+            mStage.getIcons().add(icon.getImage());
         else if (mainIcon != null)
-            stage.getIcons().add(mainIcon);
+            mStage.getIcons().add(mainIcon);
         return this;
     }
 
     public void updateContent(){
-        webView.getEngine().loadContent(mDescription);
+        mWebView.getEngine().loadContent(mDescription);
     }
 
     public void showAndWait(){
-        dialog.showAndWait();
+        mDialog.showAndWait();
     }
 
-    public boolean hasChanged(int hashCode){
+    public boolean hasChanged(final int hashCode){
         if (mHash != hashCode){
             mHash = hashCode;
             return true;

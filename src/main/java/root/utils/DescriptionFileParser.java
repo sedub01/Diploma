@@ -6,24 +6,24 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class DescriptionFileParser {
-    private static DescriptionFileParser instance;
-    private final String[] modelKeyWords = {"modelName",
+public final class DescriptionFileParser {
+    private static DescriptionFileParser mInstance;
+    private final String[] mModelKeyWords = {"modelName",
             "modelDescription",
             "modelFilePath",
             "iconPath",
             "isGridNeeded"};
-    private final String[] moduleKeyWords = {"moduleName",
+    private final String[] mModuleKeyWords = {"moduleName",
             "moduleDescription"};
-    private static List<HashMap<String, String>> modulesMapList;
-    private static List<HashMap<String, String>> modelsMapList;
-    private static String programDescription;
-    private final Properties properties = new Properties();
+    private static final List<HashMap<String, String>> mModulesMapList = new LinkedList<>();
+    private static final List<HashMap<String, String>> mModelsMapList = new LinkedList<>();
+    private static String mProgramDescription;
+    private final Properties mProperties = new Properties();
 
     private DescriptionFileParser(){
         try {
             final var fis = new FileInputStream("src/main/resources/root/mainschema.properties");
-            properties.load(new InputStreamReader(fis, StandardCharsets.UTF_8));
+            mProperties.load(new InputStreamReader(fis, StandardCharsets.UTF_8));
             initModules();
             initModels();
             initProgramDescription();
@@ -33,47 +33,45 @@ public class DescriptionFileParser {
     }
 
     public static DescriptionFileParser getInstance(){
-        if (instance == null){
-            instance = new DescriptionFileParser();
+        if (mInstance == null){
+            mInstance = new DescriptionFileParser();
         }
-        return instance;
+        return mInstance;
     }
 
     private void initModels() {
-        modelsMapList = new LinkedList<>();
-        final String models = properties.getProperty("models");
+        final String models = mProperties.getProperty("models");
         //обрезаю скобки и формирую список
         List<String> modelsList = Arrays.asList(models.substring(1, models.length() - 1).split(","));
         //Обрезаю пробелы
         modelsList.replaceAll(String::trim);
         for (final var modelStr: modelsList){
-            final var modelInfo = properties.getProperty("models."+modelStr);
+            final var modelInfo = mProperties.getProperty("models."+modelStr);
             Set<String> fileKeyWordsSet = new LinkedHashSet<>();
-            var modelsMap = createMapByType(fileKeyWordsSet, modelInfo, modelKeyWords);
+            var modelsMap = createMapByType(fileKeyWordsSet, modelInfo, mModelKeyWords);
             modelsMap.put("modelNaming", modelStr);
-            modelsMapList.add(modelsMap);
+            mModelsMapList.add(modelsMap);
             fileKeyWordsSet.forEach(f -> Logger.log("Неопознанный ключ", f, "в модели", modelStr));
         }
     }
 
     private void initModules() {
-        modulesMapList = new LinkedList<>();
-        final String modules = properties.getProperty("modules");
+        final String modules = mProperties.getProperty("modules");
         //список значений названий модулей
         List<String> modulesList = Arrays.asList(modules.substring(1, modules.length() - 1).split(","));
         modulesList.replaceAll(String::trim);
         for (var moduleStr: modulesList){
-            final var moduleInfo = properties.getProperty("modules."+moduleStr);
+            final var moduleInfo = mProperties.getProperty("modules."+moduleStr);
             Set<String> fileKeyWordsSet = new LinkedHashSet<>();
-            HashMap<String, String> modulesMap = createMapByType(fileKeyWordsSet, moduleInfo, moduleKeyWords);
+            HashMap<String, String> modulesMap = createMapByType(fileKeyWordsSet, moduleInfo, mModuleKeyWords);
             modulesMap.put("moduleNaming", moduleStr);
-            modulesMapList.add(modulesMap);
+            mModulesMapList.add(modulesMap);
             fileKeyWordsSet.forEach(f -> Logger.log("Неопознанный ключ", f, "в модуле", moduleStr));
         }
     }
 
     private void initProgramDescription() {
-        programDescription = properties.getProperty("programDescription");
+        mProgramDescription = mProperties.getProperty("programDescription");
     }
 
     private HashMap<String, String> createMapByType(Set<String> fileKeyWordsSet,
@@ -100,14 +98,14 @@ public class DescriptionFileParser {
     }
 
     public List<HashMap<String, String>> getModulesMap(){
-        return modulesMapList;
+        return mModulesMapList;
     }
 
     public List<HashMap<String, String>> getModelsMap(){
-        return modelsMapList;
+        return mModelsMapList;
     }
 
     public String getProgramDescription() {
-        return programDescription;
+        return mProgramDescription;
     }
 }

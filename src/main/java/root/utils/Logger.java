@@ -1,5 +1,6 @@
 package root.utils;
 
+/**Статический класс для вывода текста на консоль*/
 public class Logger {
     public static String formatStringWithLF(String str, int num){
         var array = str.split(" ");

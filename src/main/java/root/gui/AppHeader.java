@@ -9,31 +9,25 @@ import root.utils.Global;
 
 public class AppHeader {
     private Stage mStage;
-    private final Button mCloseButton;
-    private final Button mExpandButton;
-    private final Button mCollapseButton;
     private final Node mAppHeader;
 
-    public AppHeader(Node appHeader, Button collapseButton,
-                     Button expandButton, Button closeButton){
+    public AppHeader(final Node appHeader, final Button collapseButton,
+                     final Button expandButton, final Button closeButton){
         final var buttonStyle = getClass().getResource(
                 "/root/flatbutton.css").toExternalForm();
         Image usualCloseImage = new Image(getClass().getResourceAsStream("/root/img/icons/close-window.png"));
         Image enterCloseImage = new Image(getClass().getResourceAsStream("/root/img/icons/close-window-filled.png"));
-        mCloseButton = closeButton;
-        mExpandButton = expandButton;
-        mCollapseButton = collapseButton;
         mAppHeader = appHeader;
 
         mAppHeader.setStyle(Global.getCSSThemeColor(-0.25));
-        mCollapseButton.getStylesheets().add(buttonStyle);
-        mExpandButton.getStylesheets().add(buttonStyle);
-        mCloseButton.getStylesheets().add(buttonStyle);
+        collapseButton.getStylesheets().add(buttonStyle);
+        expandButton.getStylesheets().add(buttonStyle);
+        closeButton.getStylesheets().add(buttonStyle);
 
-        var image = (ImageView)mCloseButton.getGraphic();
+        final var image = (ImageView) closeButton.getGraphic();
         if (image != null){
-            mCloseButton.setOnMouseEntered(e->image.setImage(enterCloseImage));
-            mCloseButton.setOnMouseExited(e->image.setImage(usualCloseImage));
+            closeButton.setOnMouseEntered(e->image.setImage(enterCloseImage));
+            closeButton.setOnMouseExited(e->image.setImage(usualCloseImage));
         }
 
         mAppHeader.setOnMousePressed(pressEvent -> {
@@ -44,20 +38,13 @@ public class AppHeader {
                 }
             });
         });
+
+        closeButton.setOnAction(e->mStage.close());
+        collapseButton.setOnAction(e->mStage.setIconified(true));
+        expandButton.setOnAction(e->mStage.setMaximized(!mStage.isMaximized()));
     }
 
-    public void setStage(Stage stage){
+    public void setStage(final Stage stage){
         mStage = stage;
-        setStageSettings();
-    }
-
-    private void setStageSettings() {
-        mCloseButton.setOnAction(e->mStage.close());
-        mCollapseButton.setOnAction(e->mStage.setIconified(true));
-        mExpandButton.setOnAction(e->mStage.setMaximized(!mStage.isMaximized()));
-
-        mStage.maximizedProperty().addListener((observable, oldValue, newValue) -> {
-            mStage.setMaximized(newValue);
-        });
     }
 }

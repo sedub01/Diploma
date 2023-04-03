@@ -70,17 +70,17 @@ public class MainController implements Initializable {
     @FXML
     private Button closeButton;
 
-    private List<ModuleFactory> factories;
-    private InfoDialog infoDialog;
-    private SettingsToolbar sToolbar;
-    private AppHeader appHeader;
-    private static StatusBarController sbController;
+    private final List<ModuleFactory> mFactories = new ArrayList<>();
+    private InfoDialog mInfoDialog;
+    private SettingsToolbar mSToolbar;
+    private AppHeader mAppHeader;
+    private static StatusBarController mSBController;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initGUI();
         initFactories();
-        moduleTitlesComboBox.getItems().addAll(factories);
+        moduleTitlesComboBox.getItems().addAll(mFactories);
     }
 
     private void initGUI() {
@@ -119,10 +119,10 @@ public class MainController implements Initializable {
             }
         });
 
-        infoDialog = new InfoDialog("Информация");
-        sbController = new StatusBarController(statusBar);
-        sToolbar = new SettingsToolbar(settingsToolButton, settingsToolBar);
-        appHeader = new AppHeader(header, collapseButton, expandButton, closeButton);
+        mInfoDialog = new InfoDialog("Информация");
+        mSBController = new StatusBarController(statusBar);
+        mSToolbar = new SettingsToolbar(settingsToolButton, settingsToolBar);
+        mAppHeader = new AppHeader(header, collapseButton, expandButton, closeButton);
 
         StatusBarController.connectToStatusBar(infoButton);
         StatusBarController.connectToStatusBar(gridButton);
@@ -169,46 +169,46 @@ public class MainController implements Initializable {
         modelsTabPane.getSelectionModel().select(moduleFactory.getCurrentModelIndex());
     }
 
-    //событие при смене отображения текущей модели
+    /**событие при смене отображения текущей модели*/
     private void modelChanged(Tab tab, Model model) {
         tab.setContent(model.getScene());
         gridButton.setDisable(!model.isGridNeeded());
         gridMenuItem.setDisable(!model.isGridNeeded());
-        sToolbar.setVisible(false);
-        sToolbar.setSettings(model.getSettings());
+        mSToolbar.setVisible(false);
+        mSToolbar.setSettings(model.getSettings());
     }
 
     private void initFactories(){
         //инициализация парсера
         DescriptionFileParser fileParser = DescriptionFileParser.getInstance();
-        factories = new ArrayList<>();
-        for (var moduleHashMap: fileParser.getModulesMap())
-            factories.add(new ModuleFactory(moduleHashMap));
+
+        for (final var moduleHashMap: fileParser.getModulesMap())
+            mFactories.add(new ModuleFactory(moduleHashMap));
     }
 
-    private void onInfoButtonClicked(DialogType type){
+    private void onInfoButtonClicked(final DialogType type){
         final var module = moduleTitlesComboBox.getValue();
         final var model = module != null? module.getCurrentModel(): null;
         //экономим ресурсы для снижения частоты запросов к движку html
-        if (type == DialogType.modelInfo && model != null && infoDialog.hasChanged(model.hashCode())){
+        if (type == DialogType.modelInfo && model != null && mInfoDialog.hasChanged(model.hashCode())){
             //Использование шаблона Builder
-            infoDialog.
+            mInfoDialog.
                 setDescription(module.getModuleDescription()+"<hr>"+model.getModelDescription()).
                 setIcon(model.getIcon()).
                 updateContent();
         }
         else if (type == DialogType.programInfo){
-            infoDialog.setDescription(type).setIcon(null).updateContent();
+            mInfoDialog.setDescription(type).setIcon(null).updateContent();
         }
 
-        infoDialog.showAndWait();
+        mInfoDialog.showAndWait();
     }
 
-    public static void displayOnStatusBar(String text){
-        sbController.execute(text);
+    public static void displayOnStatusBar(final String text){
+        mSBController.execute(text);
     }
 
-    public void setStage(Stage stage) {
-        appHeader.setStage(stage);
+    public void setStage(final Stage stage) {
+        mAppHeader.setStage(stage);
     }
 }

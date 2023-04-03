@@ -17,16 +17,14 @@ import java.util.Map;
 //Модели отличаются только параметрами характеристик,
 //поэтому наследование избыточно
 public class Model {
-    protected String mModelName;
-    protected String mModelDescription;
-    protected String mModelFilePath;
-    protected Node mScene;
-    protected ImageView mIcon;
-    protected boolean mIsGridNeeded;
-    protected boolean mIsGridVisible = false;
-    protected boolean mIsReplayNeeded = true;
-    //была ли совершена попытка загрузки модели
-    protected boolean mTriedToLoad = false;
+    private final String mModelName;
+    private final String mModelDescription;
+    private final String mModelFilePath;
+    private Node mScene;
+    private ImageView mIcon;
+    private final boolean mIsGridNeeded;
+    /**Была ли совершена попытка загрузки модели*/
+    private boolean mTriedToLoad = false;
     private Map<Label, Control> mSettingsMap;
 
     public Model(HashMap<String, String> model){
@@ -52,9 +50,6 @@ public class Model {
         return mModelFilePath;
     }
 
-    public boolean hasScene(){
-        return mScene != null;
-    }
     public void setScene(Node root){
         mScene = root;
     }
