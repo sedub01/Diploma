@@ -1,11 +1,13 @@
 package root.models;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
 import root.MainController;
 import root.controllers.AbstactController;
 import root.utils.Logger;
@@ -70,8 +72,14 @@ public class Model {
             FXMLLoader loader = new FXMLLoader(getClass().
                     getResource(mModelFilePath));
             mScene = loader.load();
+
             AbstactController controller = loader.getController();
             mSettingsMap = controller.getSettings();
+            Platform.runLater(()->{ //TODO убрать костыль
+                Stage stage = (Stage) mScene.getScene().getWindow();
+                controller.setStage(stage);
+                controller.afterLoad();
+            });
         } catch (IOException e) {
             MainController.displayOnStatusBar("Не загрузилась модель");
             Logger.log("Не загрузилась модель " + mModelName + "\nПричина: " +
@@ -84,6 +92,7 @@ public class Model {
             Logger.log("Выброшено исключение");
             Logger.log("Модель: " + mModelName);
             Logger.log("Путь: " + mModelFilePath);
+            Logger.log(e);
         } catch (ClassCastException e) {
             Logger.log("Ошибка кастинга в " + e.toString().split(":")[1].trim().split(" ")[1]);
         } catch (Exception e) {

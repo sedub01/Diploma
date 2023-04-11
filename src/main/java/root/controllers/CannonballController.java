@@ -1,8 +1,10 @@
 package root.controllers;
 
+import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
@@ -33,6 +35,8 @@ public class CannonballController extends AbstactController {
     private AnchorPane barrelPane;
     @FXML
     private ImageView trackingPoint;
+    @FXML
+    private ImageView pivotPoint;
 
     /** Координата Х зажатой ЛКМ*/
     private double mStartX;
@@ -126,6 +130,18 @@ public class CannonballController extends AbstactController {
 
         mSpeedText.setText("1");
         trLine.setVelocity(mSpeedText.getText());
+        mSpeedText.focusedProperty().addListener((obs, oldV, newV)->{
+            if (oldV){ //если фокус убран, меняем значение
+                trLine.setVelocity(mSpeedText.getText());
+                trLine.calculateTrajectory();
+            }
+        });
+        mSpeedText.setOnKeyPressed(e->{
+            if (e.getCode().equals(KeyCode.ENTER)){
+                trLine.setVelocity(mSpeedText.getText());
+                trLine.calculateTrajectory();
+            }
+        });
 
         SpinnerValueFactory<Double> valueFactory =
                 new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 90);
@@ -139,20 +155,47 @@ public class CannonballController extends AbstactController {
                 mRotate.setAngle(-valueFactory.getValue()));
     }
 
+    @Override
+    public void afterLoad() {
+        trLine.afterLoad();
+    }
+
     private class TrajectoryLine{
         private final List<Point> mCurveData = new LinkedList<>();
         private final Path mPath = new Path();
         final int PIXELS_PER_METER = (int)wheel.getFitHeight();
         final double FREQUENCY = 0.05;
         //допустим, длина пушки == 1.5 м, тогда высота колеса == 1 м
-        final double HEIGHT = (double)1. / 2; //+dHeight;
+        final double HEIGHT = 0.5; //+dHeight;
         int mInitVelocity;
+        double mInitHeight;
 
         public TrajectoryLine(){
             mPath.setStroke(Color.RED);
             mPath.setStrokeWidth(3);
             borderPane.getChildren().add(mPath);
             mPath.getStrokeDashArray().addAll(10d, 10d);
+            Platform.runLater(()->{
+//                final Bounds bounds = trackingPoint.localToScene(trackingPoint.getBoundsInLocal());
+//                mInitHeight = bounds.getCenterY();
+//                final Bounds bounds2 = pivotPoint.localToScene(pivotPoint.getBoundsInLocal());
+                Logger.log("mRotate.getPivotY():", borderPane.getHeight() - wheel.getFitHeight()/2);
+                Logger.log(borderPane.getHeight());
+                Logger.log(floor.getFitHeight());
+                Logger.log(wheel.getFitHeight()/2);
+                Logger.log(trackingPoint.getFitHeight()/2);
+//                Logger.log("mInitHeight:", mInitHeight);
+            });
+
+        }
+
+        public void afterLoad() {
+//            mStage.maximizedProperty().addListener((obs, oldVal, newVal)->{
+//                Logger.log(newVal);
+//                final Bounds bounds2 = pivotPoint.localToScene(pivotPoint.getBoundsInLocal());
+//                Logger.log(bounds2.getCenterY());
+//                mInitHeight = bounds.getCenterY();
+//            });
         }
 
         //https://www.omnicalculator.com/physics/projectile-motion
@@ -174,48 +217,57 @@ public class CannonballController extends AbstactController {
 
             final double angle = -mRotate.getAngle();
             final Bounds bounds = trackingPoint.localToScene(trackingPoint.getBoundsInLocal());
+//            final Bounds bounds2 = trackingPoint.localToScreen(trackingPoint.getBoundsInParent());
+//            Logger.log(bounds, bounds.getCenterY());
+//            Logger.log(bounds2);
+//            final double dHeight = (mInitHeight - bounds.getCenterY()) / PIXELS_PER_METER;
+            final double dHeight = 0; //эту переменную надо обновлять каждый раз при изменении окна
 
             final double V_y = (double) mInitVelocity * Math.sin(Math.toRadians(angle));
             // 1 м = PIXELS_PER_METER пикселей
             final double V_x = (double) mInitVelocity * Math.cos(Math.toRadians(angle));
-            final double timeFlight = (V_y + Math.sqrt(Math.pow(V_y, 2) + 2*Constants.g*HEIGHT))/Constants.g;
+            final double timeFlight = (V_y + Math.sqrt(Math.pow(V_y, 2) + 2*Constants.g*(HEIGHT+dHeight)))/Constants.g;
             //px/s + sqrt( (px/s)^2 + px ) = px/s + px/s + px^0.5
 
             final double distance = V_x * timeFlight;
-            double h_max = HEIGHT + Math.pow(V_y, 2)/(2*Constants.g); //надо ли добавлять PIXELS_PER_METER?
-
-            Logger.log("timeFlight:", timeFlight);
+            double h_max = (HEIGHT+dHeight) + Math.pow(V_y, 2)/(2*Constants.g); //надо ли добавлять PIXELS_PER_METER?
 
             final double deltaX = bounds.getCenterX();
-            final double deltaY = bounds.getCenterY() - barrel.getFitHeight()/2;
-            final double neededHeight = borderPane.getHeight() - floor.getFitHeight();
+            final double deltaY = bounds.getCenterY() - barrel.getFitHeight()/2 + dHeight*PIXELS_PER_METER;
+            final double neededHeight = borderPane.getHeight() - floor.getFitHeight(); // == 488
+
+//            Logger.log("neededHeight:", neededHeight);
 
             double time = 0;
             double x;
             double y = 0;
-            double highestY = y;
+//            double highestY = y;
+            //цикл для нахождения highestY
+//            while (y < neededHeight){
+//                y = -((HEIGHT+dHeight) + V_y * time -
+//                        Constants.g*Math.pow(time, 2)/2) * PIXELS_PER_METER/* + deltaY*/;
+//                if (y > highestY) highestY = y;
+//                time += FREQUENCY;
+//            }
+//            time = y = 0;
+//            final double yCoeff = h_max / highestY;
             while (y < neededHeight){
-                time += FREQUENCY;
-                x = V_x * time * PIXELS_PER_METER + deltaX;
-                y = -(HEIGHT * PIXELS_PER_METER + V_y * time * PIXELS_PER_METER - Constants.g*Math.pow(time, 2)/2) + deltaY;
-//                mCurveData.put(x,y);
-                if (y > highestY) highestY = y;
+                x = V_x * time * PIXELS_PER_METER/* + deltaX*/;
+                y = -((HEIGHT+dHeight) + V_y * time -
+                        Constants.g*Math.pow(time, 2)/2) * PIXELS_PER_METER + deltaY;
+//                if (y > highestY) highestY = y;
                 mCurveData.add(new Point(x, y));
+                time += FREQUENCY;
             }
             //Нормализация: X_norm = (X - X_min)/(X_max - X_min)
             final double lastX = V_x * time * PIXELS_PER_METER;
             final double xCoeff = distance / lastX;
-            final double yCoeff = h_max / highestY;
-//            Logger.log(h_max, highestY, yCoeff);
-//            for (var point: mCurveData){
-//                point.x = point.x * xCoeff * PIXELS_PER_METER + deltaX; //[deltaX; lastX] --- [0; distance]
-//                point.x = (point.x - 0)/(distance - 0)*PIXELS_PER_METER + deltaX;
-//                point.y = point.y * yCoeff * PIXELS_PER_METER + deltaY;
-//            }
 
-            //Последний х == 784,9; distance == 0.32
-            //2387,25 = 17,6833 * PIXELS_PER_METER
-//        event.getScreenx -- нужен mouseEvent
+            for (var point: mCurveData){
+                point.x = point.x * xCoeff * PIXELS_PER_METER + deltaX; //[deltaX; lastX] --- [0; distance] + [deltaX]
+//                point.x = (point.x - 0)/(distance - 0)*PIXELS_PER_METER + deltaX;
+//                point.y = point.y * yCoeff * PIXELS_PER_METER + deltaY*(0.88); //deltaY изм. в пикселах
+            }
 
             int index = 0;
             for (final var point: mCurveData){
