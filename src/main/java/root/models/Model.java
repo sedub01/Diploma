@@ -72,14 +72,8 @@ public class Model {
             FXMLLoader loader = new FXMLLoader(getClass().
                     getResource(mModelFilePath));
             mScene = loader.load();
-
             AbstactController controller = loader.getController();
             mSettingsMap = controller.getSettings();
-            Platform.runLater(()->{ //TODO убрать костыль
-                Stage stage = (Stage) mScene.getScene().getWindow();
-                controller.setStage(stage);
-                controller.afterLoad();
-            });
         } catch (IOException e) {
             MainController.displayOnStatusBar("Не загрузилась модель");
             Logger.log("Не загрузилась модель " + mModelName + "\nПричина: " +

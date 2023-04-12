@@ -1,8 +1,8 @@
 package root.controllers;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
@@ -12,6 +12,7 @@ import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
+import javafx.stage.Stage;
 import root.utils.Constants;
 import root.utils.Logger;
 import javafx.fxml.FXML;
@@ -38,10 +39,8 @@ public class CannonballController extends AbstactController {
     @FXML
     private ImageView pivotPoint;
 
-    /** Координата Х зажатой ЛКМ*/
-    private double mStartX;
-    /** Координата Y зажатой ЛКМ*/
-    private double mStartY;
+    /** Координаты зажатой ЛКМ*/
+    private final Point mStartP = new Point();
     private final Rotate mRotate = new Rotate();
     private final TextField mSpeedText = new TextField();
     private TrajectoryLine trLine;
@@ -85,7 +84,7 @@ public class CannonballController extends AbstactController {
             final double py = mRotate.getPivotY() + localToScene.getTy();
 
             // Определение углов поворота
-            final double th1 = clockAngle(mStartX - px, mStartY - py);
+            final double th1 = clockAngle(mStartP.x - px, mStartP.y - py);
             final double th2 = clockAngle(endX - px, endY - py);
 
             final double angle = mRotate.getAngle() + th2 - th1;
@@ -97,17 +96,8 @@ public class CannonballController extends AbstactController {
         }
     }
 
-    private double trajectoryFormula(double x, double angle, double v){
-        double a = -Constants.g/(2*v*v*Math.pow(Math.cos(Math.toRadians(angle)), 2));
-        double b = Math.tan(Math.toRadians(angle));
-        return -b/a;
-//        return x*Math.tan(Math.toRadians(angle)) - Constants.g*x*x /
-//                (2*v*v*Math.pow(Math.cos(Math.toRadians(angle)), 2));
-    }
-
     private void setMouse(final MouseEvent e){
-        mStartX = e.getSceneX();
-        mStartY = e.getSceneY();
+        mStartP.setCoord(e);
     }
 
     public double clockAngle(double dx, double dy) {
@@ -155,49 +145,44 @@ public class CannonballController extends AbstactController {
                 mRotate.setAngle(-valueFactory.getValue()));
     }
 
-    @Override
-    public void afterLoad() {
-        trLine.afterLoad();
-    }
-
     private class TrajectoryLine{
+        /** Структура, хранящая координаты точек кривой траектории */
         private final List<Point> mCurveData = new LinkedList<>();
-        private final Path mPath = new Path();
+        /** Структура, хранящая передвижения кривой траектории */
+        private final ObservableList<PathElement> mPathElements;
+        /** Кол-во пикселей на 1 метр */
         final int PIXELS_PER_METER = (int)wheel.getFitHeight();
-        final double FREQUENCY = 0.05;
-        //допустим, длина пушки == 1.5 м, тогда высота колеса == 1 м
-        final double HEIGHT = 0.5; //+dHeight;
+        /** Частота обновления значений (чем меньше значение, тем более гладкая кривая)*/
+        final double FREQUENCY = 0.005;
+        /** Высота крепления ствола в метрах*/
+        final double HEIGHT = 0.5; // без учета dHeight;
         int mInitVelocity;
+        /** Разница между начальной позиции и текущей */
         double mInitHeight;
 
         public TrajectoryLine(){
-            mPath.setStroke(Color.RED);
-            mPath.setStrokeWidth(3);
-            borderPane.getChildren().add(mPath);
-            mPath.getStrokeDashArray().addAll(10d, 10d);
+            final Path path = new Path();
+            path.setStroke(Color.RED);
+            path.setStrokeWidth(3);
+            borderPane.getChildren().add(path);
+            path.getStrokeDashArray().addAll(10d, 10d);
+            mPathElements = path.getElements();
             Platform.runLater(()->{
-//                final Bounds bounds = trackingPoint.localToScene(trackingPoint.getBoundsInLocal());
-//                mInitHeight = bounds.getCenterY();
-//                final Bounds bounds2 = pivotPoint.localToScene(pivotPoint.getBoundsInLocal());
-                Logger.log("mRotate.getPivotY():", borderPane.getHeight() - wheel.getFitHeight()/2);
-                Logger.log(borderPane.getHeight());
-                Logger.log(floor.getFitHeight());
-                Logger.log(wheel.getFitHeight()/2);
-                Logger.log(trackingPoint.getFitHeight()/2);
-//                Logger.log("mInitHeight:", mInitHeight);
+                mInitHeight = pivotPoint.localToScene(pivotPoint.getBoundsInLocal()).getCenterY();
+
+                Stage stage = (Stage)borderPane.getScene().getWindow();
+//Т.к. значения GUI обновляются уже после максимизации сцены, а не во время нее, надо использовать метод ниже
+                stage.maximizedProperty().addListener((obs)->{
+                    Platform.runLater(()-> {
+                        //эту переменную надо обновлять каждый раз при изменении размера окна
+                        mInitHeight = pivotPoint.localToScene(pivotPoint.getBoundsInLocal()).getCenterY();
+                        trLine.calculateTrajectory();
+                    });
+                });
             });
-
         }
 
-        public void afterLoad() {
-//            mStage.maximizedProperty().addListener((obs, oldVal, newVal)->{
-//                Logger.log(newVal);
-//                final Bounds bounds2 = pivotPoint.localToScene(pivotPoint.getBoundsInLocal());
-//                Logger.log(bounds2.getCenterY());
-//                mInitHeight = bounds.getCenterY();
-//            });
-        }
-
+        //TODO внести это в файл с данными
         //https://www.omnicalculator.com/physics/projectile-motion
         //Горизонтальная составляющая скорости: V_x = V * cos a
         //Вертикальная составляющая скорости:   V_y = V * sin a
@@ -212,69 +197,42 @@ public class CannonballController extends AbstactController {
         //Дальность полета: R = V_x*t, где t берется из пред. формулы
         //Максимальная высота: h_max = h + (V^2 * sin^2 a) / (2g)
         public void calculateTrajectory() {
+            mPathElements.clear();
             mCurveData.clear();
-            mPath.getElements().clear();
 
             final double angle = -mRotate.getAngle();
+            //Местонахождение точки начала траектории в пространстве сцены
             final Bounds bounds = trackingPoint.localToScene(trackingPoint.getBoundsInLocal());
-//            final Bounds bounds2 = trackingPoint.localToScreen(trackingPoint.getBoundsInParent());
-//            Logger.log(bounds, bounds.getCenterY());
-//            Logger.log(bounds2);
-//            final double dHeight = (mInitHeight - bounds.getCenterY()) / PIXELS_PER_METER;
-            final double dHeight = 0; //эту переменную надо обновлять каждый раз при изменении окна
-
+            //Разница по оси Y между точкой крепления ствола и концом ствола
+            final double dHeight = (mInitHeight - bounds.getCenterY()) / PIXELS_PER_METER;
+            // Итоговая высота с учетом наклона ствола
+            final double totalHeight = HEIGHT+dHeight;
+            //Вертикальная составляющая скорости
             final double V_y = (double) mInitVelocity * Math.sin(Math.toRadians(angle));
-            // 1 м = PIXELS_PER_METER пикселей
+            //Горизонтальная составляющая скорости
             final double V_x = (double) mInitVelocity * Math.cos(Math.toRadians(angle));
-            final double timeFlight = (V_y + Math.sqrt(Math.pow(V_y, 2) + 2*Constants.g*(HEIGHT+dHeight)))/Constants.g;
-            //px/s + sqrt( (px/s)^2 + px ) = px/s + px/s + px^0.5
-
+            //Время полета
+            final double timeFlight = (V_y + Math.sqrt(Math.pow(V_y, 2) + 2*Constants.g*totalHeight))/Constants.g;
+            //Дальность полета
             final double distance = V_x * timeFlight;
-            double h_max = (HEIGHT+dHeight) + Math.pow(V_y, 2)/(2*Constants.g); //надо ли добавлять PIXELS_PER_METER?
+            //Максимальная высота
+            double h_max = totalHeight + Math.pow(V_y, 2)/(2*Constants.g);
 
+            //Смещение точки начала полета по оси X
             final double deltaX = bounds.getCenterX();
+            //Смещение точки начала полета по оси Y
             final double deltaY = bounds.getCenterY() - barrel.getFitHeight()/2 + dHeight*PIXELS_PER_METER;
-            final double neededHeight = borderPane.getHeight() - floor.getFitHeight(); // == 488
+            //Координата по оси Y, при которой траектория будет кончатся при соприкосновении с полом
+            final double neededHeight = borderPane.getHeight() - floor.getFitHeight();
+            //Множитель для значения X, чтобы не считать его в цикле
+            final double xCoeff = distance / timeFlight * PIXELS_PER_METER;
 
-//            Logger.log("neededHeight:", neededHeight);
-
-            double time = 0;
-            double x;
-            double y = 0;
-//            double highestY = y;
-            //цикл для нахождения highestY
-//            while (y < neededHeight){
-//                y = -((HEIGHT+dHeight) + V_y * time -
-//                        Constants.g*Math.pow(time, 2)/2) * PIXELS_PER_METER/* + deltaY*/;
-//                if (y > highestY) highestY = y;
-//                time += FREQUENCY;
-//            }
-//            time = y = 0;
-//            final double yCoeff = h_max / highestY;
-            while (y < neededHeight){
-                x = V_x * time * PIXELS_PER_METER/* + deltaX*/;
-                y = -((HEIGHT+dHeight) + V_y * time -
+            for (double time = 0, x, y = 0; y < neededHeight; time += FREQUENCY){
+                x = time * xCoeff + deltaX;
+                y = -(totalHeight + V_y * time -
                         Constants.g*Math.pow(time, 2)/2) * PIXELS_PER_METER + deltaY;
-//                if (y > highestY) highestY = y;
                 mCurveData.add(new Point(x, y));
-                time += FREQUENCY;
-            }
-            //Нормализация: X_norm = (X - X_min)/(X_max - X_min)
-            final double lastX = V_x * time * PIXELS_PER_METER;
-            final double xCoeff = distance / lastX;
-
-            for (var point: mCurveData){
-                point.x = point.x * xCoeff * PIXELS_PER_METER + deltaX; //[deltaX; lastX] --- [0; distance] + [deltaX]
-//                point.x = (point.x - 0)/(distance - 0)*PIXELS_PER_METER + deltaX;
-//                point.y = point.y * yCoeff * PIXELS_PER_METER + deltaY*(0.88); //deltaY изм. в пикселах
-            }
-
-            int index = 0;
-            for (final var point: mCurveData){
-                final double dX = point.x;
-                final double dY = point.y;
-                PathElement el = (index++ == 0)? new MoveTo(dX, dY): new LineTo(dX, dY);
-                mPath.getElements().add(el);
+                mPathElements.add((time == 0)? new MoveTo(x, y): new LineTo(x, y));
             }
         }
 
@@ -282,12 +240,20 @@ public class CannonballController extends AbstactController {
             mInitVelocity = Integer.parseInt(velocity);
         }
 
-        private class Point{
-            public double x, y;
-            public Point(double x1, double y1){
-                x = x1;
-                y = y1;
-            }
+
+    }
+
+    private class Point{
+        public double x, y;
+        public Point() {}
+        public Point(double x1, double y1){
+            x = x1;
+            y = y1;
+        }
+
+        public void setCoord(MouseEvent e) {
+            x = e.getSceneX();
+            y = e.getSceneY();
         }
     }
 }

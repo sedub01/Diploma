@@ -37,10 +37,4 @@ abstract public class AbstactController implements Initializable {
     final public Map<Label, Control> getSettings(){
         return mModelSettings;
     }
-
-    final public void setStage(Stage stage){
-        mStage = stage;
-    }
-
-    public void afterLoad(){}
 }

@@ -24,7 +24,7 @@
                               <Image url="@../img/cannon/projectile.png" />
                            </image>
                         </ImageView>
-                        <ImageView fx:id="pivotPoint" fitHeight="23.0" fitWidth="23.0" layoutX="8.0" layoutY="29.0" pickOnBounds="true">
+                        <ImageView fx:id="pivotPoint" fitHeight="24.0" fitWidth="24.0" layoutX="8.0" layoutY="28.0" pickOnBounds="true">
                            <image>
                               <Image url="@../img/cannon/projectile.png" />
                            </image>
