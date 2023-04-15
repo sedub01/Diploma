@@ -2,6 +2,8 @@ package root.controllers;
 
 import javafx.animation.*;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
 import javafx.geometry.Bounds;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -13,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.util.converter.NumberStringConverter;
 import root.utils.Constants;
 import root.utils.Logger;
 import javafx.fxml.FXML;
@@ -21,6 +24,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import root.utils.Point;
+
+//Подключая зависимость таким образом, можно не обращаться к названию класса
+import static root.utils.Global.convertToStringWithAccuracy;
 
 public class CannonballController extends AbstactController {
     @FXML
@@ -37,7 +43,6 @@ public class CannonballController extends AbstactController {
     /** Координаты зажатой ЛКМ*/
     private final Point mStartP = new Point();
     private final Rotate mRotate = new Rotate();
-    private final TextField mSpeedText = new TextField();
     private TrajectoryLine trLine;
     private final ImageView mTrackingPoint = new ImageView();
     private final ImageView mPivotPoint = new ImageView();
@@ -132,24 +137,44 @@ public class CannonballController extends AbstactController {
 
     @Override
     protected void createSettings() {
-        final var angleLabel = new Label("Угол наклона ствола");
-        final var speedLabel = new Label("Начальная скорость снаряда (в м/с)");
+        //TODO создать Property для каждого объекта, который нужно изменять более 1 раза
         final var angleSpinner = new Spinner<Double>();
+        final var speedText = new TextField();
+        final var durationField = new TextField();
+        final var distanceField = new TextField();
+        final var heightField = new TextField();
+        final var maxHeightField = new TextField();
 
-        mModelSettings.put(angleLabel, angleSpinner);
-        mModelSettings.put(speedLabel, mSpeedText);
+        mModelSettings.put(new Label("Угол наклона ствола"), angleSpinner);
+        mModelSettings.put(new Label("Начальная скорость снаряда [м/с]"), speedText);
+        mModelSettings.put(new Label("Время полёта [с]"), durationField);
+        mModelSettings.put(new Label("Дистанция [м]"), distanceField);
+        mModelSettings.put(new Label("Изначальная высота [м]"), heightField);
+        mModelSettings.put(new Label("Максимальная высота [м]"), maxHeightField);
 
-        mSpeedText.setText("5");
-        trLine.setVelocity(mSpeedText.getText());
-        mSpeedText.focusedProperty().addListener((obs, oldV, newV)->{
+        //TODO сделать так, чтобы при изменении initVelocity пересчитывались остальные значения
+        bidiBinding(speedText, trLine.initVelocityProperty());
+
+        speedText.setText("5");
+        //TODO убрать ниже, добавив property для distance
+        trLine.setVelocity(speedText.getText());
+        //Нужно сделать так, чтобы initVelocity зависило от speedText, а не наоборот!
+//        Bindings.bindBidirectional(textProp, velProp, new NumberStringConverter());
+        speedText.focusedProperty().addListener((obs, oldV, newV)->{
             if (oldV){ //если фокус убран, меняем значение
-                trLine.setVelocity(mSpeedText.getText());
+                durationField.setText(convertToStringWithAccuracy(trLine.getDuration(), 3));
+                distanceField.setText(convertToStringWithAccuracy(trLine.getDistance(), 3));
+                heightField.setText(convertToStringWithAccuracy(trLine.getHeight(), 3));
+                maxHeightField.setText(convertToStringWithAccuracy(trLine.getMaxHeight(), 3));
                 trLine.calculateTrajectory();
             }
         });
-        mSpeedText.setOnKeyPressed(e->{
+        speedText.setOnKeyPressed(e->{
             if (e.getCode().equals(KeyCode.ENTER)){
-                trLine.setVelocity(mSpeedText.getText());
+                durationField.setText(convertToStringWithAccuracy(trLine.getDuration(), 3));
+                distanceField.setText(convertToStringWithAccuracy(trLine.getDistance(), 3));
+                heightField.setText(convertToStringWithAccuracy(trLine.getHeight(), 3));
+                maxHeightField.setText(convertToStringWithAccuracy(trLine.getMaxHeight(), 3));
                 trLine.calculateTrajectory();
             }
         });
@@ -160,12 +185,34 @@ public class CannonballController extends AbstactController {
         angleSpinner.setEditable(true);
         mRotate.setOnTransformChanged(e-> {
             valueFactory.setValue(-mRotate.getAngle());
+            durationField.setText(convertToStringWithAccuracy(trLine.getDuration(), 3));
+            distanceField.setText(convertToStringWithAccuracy(trLine.getDistance(), 3));
+            heightField.setText(convertToStringWithAccuracy(trLine.getHeight(), 3));
+            maxHeightField.setText(convertToStringWithAccuracy(trLine.getMaxHeight(), 3));
             trLine.calculateTrajectory();
         });
         angleSpinner.valueProperty().addListener(e->
                 mRotate.setAngle(-valueFactory.getValue()));
+
+        durationField.setDisable(true);
+        durationField.setText(convertToStringWithAccuracy(trLine.getDuration(), 3));
+        distanceField.setDisable(true);
+        distanceField.setText(convertToStringWithAccuracy(trLine.getDistance(), 3));
+        heightField.setDisable(true);
+        heightField.setText(convertToStringWithAccuracy(trLine.getHeight(), 3));
+        maxHeightField.setDisable(true);
+        maxHeightField.setText(convertToStringWithAccuracy(trLine.getMaxHeight(), 3));
     }
 
+    /**
+     * field - то, от чего зависит
+     * property - то, что зависит
+     * */
+    private void bidiBinding(TextField field, Property<Number> property) {
+        Bindings.bindBidirectional(field.textProperty(), property, new NumberStringConverter());
+    }
+
+    //TODO добавить функцию reset или типа того
     private void execute() {
         mIsTransitionStarted = true;
         final var path = trLine.getPath();
@@ -191,18 +238,28 @@ public class CannonballController extends AbstactController {
         private final double FREQUENCY = 0.005;
         /** Высота крепления ствола в метрах*/
         private final double HEIGHT = 0.5; // без учета dHeight;
+
         /** Изначальная скорость снаряда */
-        private int mInitVelocity;
-        /** Разница между начальной позиции и текущей */
+        private final IntegerProperty mInitVelocity;
+        /** Разница между начальной позиции и текущей по оси Y*/
         private double mInitHeight;
         /** Время полета снаряда */
-        private double mTimeFlight = 0;
+        private double mTimeFlight;
+        private double mDistance;
+        private double mdHeight = 0;
+        private double mMaxHeight = HEIGHT;
 
         public TrajectoryLine(){
             mPath.setStroke(Color.RED);
             mPath.setStrokeWidth(3);
             borderPane.getChildren().add(mPath);
             mPath.getStrokeDashArray().addAll(10d, 10d);
+
+            mInitVelocity = new SimpleIntegerProperty(this, "initVelocity");
+            mTimeFlight = (Math.sqrt(2*Constants.g*HEIGHT))/Constants.g;
+//            mTimeFlight = new SimpleDoubleProperty(this, "duration",
+//                    (Math.sqrt(2*Constants.g*HEIGHT))/Constants.g);
+
             Platform.runLater(()->{
                 mInitHeight = mPivotPoint.localToScene(mPivotPoint.getBoundsInLocal()).getCenterY();
 
@@ -240,28 +297,29 @@ public class CannonballController extends AbstactController {
             //Местонахождение точки начала траектории в пространстве сцены
             final Bounds bounds = mTrackingPoint.localToScene(mTrackingPoint.getBoundsInLocal());
             //Разница по оси Y между точкой крепления ствола и концом ствола
-            final double dHeight = (mInitHeight - bounds.getCenterY()) / PIXELS_PER_METER;
+            mdHeight = (mInitHeight - bounds.getCenterY()) / PIXELS_PER_METER;
             // Итоговая высота с учетом наклона ствола
-            final double totalHeight = HEIGHT+dHeight;
+            final double totalHeight = HEIGHT+mdHeight;
             //Вертикальная составляющая скорости
-            final double V_y = (double) mInitVelocity * Math.sin(Math.toRadians(angle));
+            final double V_y = (double) mInitVelocity.get() * Math.sin(Math.toRadians(angle));
             //Горизонтальная составляющая скорости
-            final double V_x = (double) mInitVelocity * Math.cos(Math.toRadians(angle));
+            // != 0, т.к. cos(0) == 1
+            final double V_x = (double) mInitVelocity.get() * Math.cos(Math.toRadians(angle));
             //Время полета
             mTimeFlight = (V_y + Math.sqrt(Math.pow(V_y, 2) + 2*Constants.g*totalHeight))/Constants.g;
             //Дальность полета
-            final double distance = V_x * mTimeFlight;
+            mDistance = V_x * mTimeFlight;
             //Максимальная высота
-            double h_max = totalHeight + Math.pow(V_y, 2)/(2*Constants.g);
+            mMaxHeight = totalHeight + Math.pow(V_y, 2)/(2*Constants.g);
 
             //Смещение точки начала полета по оси X
             final double deltaX = bounds.getCenterX();
             //Смещение точки начала полета по оси Y
-            final double deltaY = bounds.getCenterY() - barrel.getFitHeight()/2 + dHeight*PIXELS_PER_METER;
+            final double deltaY = bounds.getCenterY() - barrel.getFitHeight()/2 + mdHeight*PIXELS_PER_METER;
             //Координата по оси Y, при которой траектория будет кончатся при соприкосновении с полом
             final double neededHeight = borderPane.getHeight() - floor.getFitHeight();
             //Множитель для значения X, чтобы не считать его в цикле
-            final double xCoeff = distance / mTimeFlight * PIXELS_PER_METER;
+            final double xCoeff = mDistance / mTimeFlight * PIXELS_PER_METER;
 
             for (double time = 0, x, y = 0; y < neededHeight; time += FREQUENCY){
                 x = time * xCoeff + deltaX;
@@ -272,15 +330,32 @@ public class CannonballController extends AbstactController {
         }
 
         public void setVelocity(String velocity){
-            mInitVelocity = Integer.parseInt(velocity);
+            mInitVelocity.set(Integer.parseInt(velocity));
+            mDistance = mInitVelocity.get() * mTimeFlight;
+        }
+
+        public IntegerProperty initVelocityProperty(){
+            return mInitVelocity;
         }
 
         public double getDuration() {
             return mTimeFlight;
         }
 
+        public double getDistance() {
+            return mDistance;
+        }
+
         public Shape getPath() {
             return mPath;
+        }
+
+        public double getHeight() {
+            return HEIGHT + mdHeight;
+        }
+
+        public double getMaxHeight() {
+            return mMaxHeight;
         }
     }
 }
