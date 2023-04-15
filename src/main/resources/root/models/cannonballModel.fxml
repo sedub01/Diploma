@@ -19,16 +19,6 @@
                               <Image url="@../img/cannon/barrel.png" />
                            </image>
                         </ImageView>
-                        <ImageView fx:id="trackingPoint" fitHeight="24.0" fitWidth="24.0" layoutX="155.0" layoutY="28.0" pickOnBounds="true">
-                           <image>
-                              <Image url="@../img/cannon/projectile.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="pivotPoint" fitHeight="24.0" fitWidth="24.0" layoutX="8.0" layoutY="28.0" pickOnBounds="true">
-                           <image>
-                              <Image url="@../img/cannon/projectile.png" />
-                           </image>
-                        </ImageView>
                      </children>
                   </AnchorPane>
                   <ImageView fx:id="wheel" fitHeight="135.0" fitWidth="135.0" pickOnBounds="true">
