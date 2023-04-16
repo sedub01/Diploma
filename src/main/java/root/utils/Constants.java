@@ -23,4 +23,5 @@ public class Constants {
         mainIconImage = tempImage;
     }
     public static final int HIDE_DELAY = 3000;
+    public static final int PIXELS_PER_UNIT = 100;
 }

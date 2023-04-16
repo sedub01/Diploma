@@ -17,6 +17,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -125,7 +126,7 @@
                         <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
                      </padding>
                      <tooltip>
-                        <Tooltip text="Включить сетку" />
+                        <Tooltip text="Включить/выключить сетку" />
                      </tooltip>
                   </Button>
                   <Button fx:id="executeButton" disable="true" focusTraversable="false" graphicTextGap="0.0" mnemonicParsing="false">
@@ -195,6 +196,7 @@
                         <Font size="18.0" />
                      </font>
                   </Label>
+                  <Pane fx:id="markingGrid" mouseTransparent="true" prefHeight="200.0" prefWidth="200.0" />
                   <ScrollPane fx:id="settingsToolBar" maxHeight="250.0" maxWidth="300.0" opacity="0.9" translateX="300.0" StackPane.alignment="BOTTOM_RIGHT">
                      <StackPane.margin>
                         <Insets bottom="30.0" />

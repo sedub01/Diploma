@@ -3,13 +3,12 @@ package root;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-import root.gui.AppHeader;
-import root.gui.InfoDialog;
-import root.gui.SettingsToolbar;
+import root.gui.*;
 import root.models.Model;
 import root.models.ModuleFactory;
 import root.gui.InfoDialog.DialogType;
@@ -19,7 +18,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
 import root.utils.DescriptionFileParser;
 import root.utils.Global;
-import root.gui.StatusBarController;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -69,11 +67,14 @@ public class MainController implements Initializable {
     private Button expandButton;
     @FXML
     private Button closeButton;
+    @FXML
+    private Pane markingGrid;
 
     private final List<ModuleFactory> mFactories = new ArrayList<>();
     private InfoDialog mInfoDialog;
     private SettingsToolbar mSToolbar;
     private AppHeader mAppHeader;
+    private MarkingGrid mMarkingGrid;
     private static StatusBarController mSBController;
 
     @Override
@@ -123,6 +124,7 @@ public class MainController implements Initializable {
         mSBController = new StatusBarController(statusBar);
         mSToolbar = new SettingsToolbar(settingsToolButton, settingsToolBar);
         mAppHeader = new AppHeader(header, collapseButton, expandButton, closeButton);
+        mMarkingGrid = new MarkingGrid(markingGrid);
 
         StatusBarController.connectToStatusBar(infoButton);
         StatusBarController.connectToStatusBar(gridButton);
@@ -130,8 +132,7 @@ public class MainController implements Initializable {
     }
 
     private void onGridButtonClicked(ActionEvent actionEvent) {
-        //TODO включить сетку и расположить ее по центру
-        //наверно, надо будет создать объект сетки
+        mMarkingGrid.setVisible(!mMarkingGrid.isVisible());
     }
 
     private void getModule(ActionEvent actionEvent) {
@@ -175,6 +176,7 @@ public class MainController implements Initializable {
         gridButton.setDisable(!model.isGridNeeded());
         gridMenuItem.setDisable(!model.isGridNeeded());
         mSToolbar.setVisible(false);
+        mMarkingGrid.setVisible(false);
         mSToolbar.setSettings(model.getSettings());
     }
 
