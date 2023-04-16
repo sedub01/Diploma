@@ -25,9 +25,6 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import root.utils.Point;
 
-//Подключая зависимость таким образом, можно не обращаться к названию класса
-import static root.utils.Global.convertToStringWithAccuracy;
-
 public class CannonballController extends AbstactController {
     @FXML
     private ImageView barrel;
@@ -80,9 +77,9 @@ public class CannonballController extends AbstactController {
         if (event.getX() >= barrelPane.getWidth() / 3  && !mIsTransitionStarted){
             /*
              Используется для получения положения крайнего угла объекта на сцене
-             Афинное преобразование - это линейное, которое переводит объект из двумерного(трех-)
+             Аффинное преобразование - это линейное, которое переводит объект из двумерного(трех-)
              пространство в другое двумерное пространство, сохраняя неизменной прямолинейность
-             и параллельность линий.Одна точка А с координатой (x, y, z) в трехмерном пространстве
+             и параллельность линий. Одна точка А с координатой (x, y, z) в трехмерном пространстве
              переместится в позицию A' с координатой (x', y', z') путем матричного умножения
              https://docs.oracle.com/javase/8/javafx/api/javafx/scene/Node.html#localToSceneTransformProperty
              https://o7planning.org/11157/javafx-transformation
@@ -93,10 +90,10 @@ public class CannonballController extends AbstactController {
             //координаты берутся относительно берущегося предмета
             final double endX = event.getSceneX();
             final double endY = event.getSceneY();
-            //Афинные преобразования
+            //Аффинные преобразования
             //Параметры tx, ty обозначают трансформированные точки для ствола
             final double px = mRotate.getPivotX() + localToScene.getTx();
-            //Получает элемент преобразования координаты Y матрицы 3x4 + коорд. т. поворота (она постоянна)
+            //Получает элемент преобразования координаты Y матрицы 3x4 + координаты т. поворота (она постоянна)
             final double py = mRotate.getPivotY() + localToScene.getTy();
 
             // Определение углов поворота
@@ -137,7 +134,6 @@ public class CannonballController extends AbstactController {
 
     @Override
     protected void createSettings() {
-        //TODO создать Property для каждого объекта, который нужно изменять более 1 раза
         final var angleSpinner = new Spinner<Double>();
         final var speedText = new TextField();
         final var durationField = new TextField();
@@ -152,29 +148,22 @@ public class CannonballController extends AbstactController {
         mModelSettings.put(new Label("Изначальная высота [м]"), heightField);
         mModelSettings.put(new Label("Максимальная высота [м]"), maxHeightField);
 
-        //TODO сделать так, чтобы при изменении initVelocity пересчитывались остальные значения
         bidiBinding(speedText, trLine.initVelocityProperty());
-
+        speedText.setDisable(false);
         speedText.setText("5");
-        //TODO убрать ниже, добавив property для distance
-        trLine.setVelocity(speedText.getText());
-        //Нужно сделать так, чтобы initVelocity зависило от speedText, а не наоборот!
-//        Bindings.bindBidirectional(textProp, velProp, new NumberStringConverter());
+//Этот сеттер убрать не получится, поскольку в этом объекте mInitVelocity пока что не инициализирован
+        trLine.initDistance(speedText.getText());
+        bidiBinding(durationField, trLine.durationProperty());
+        bidiBinding(distanceField, trLine.distanceProperty());
+        bidiBinding(heightField, trLine.initHeightProperty());
+        bidiBinding(maxHeightField, trLine.maxHeightProperty());
         speedText.focusedProperty().addListener((obs, oldV, newV)->{
             if (oldV){ //если фокус убран, меняем значение
-                durationField.setText(convertToStringWithAccuracy(trLine.getDuration(), 3));
-                distanceField.setText(convertToStringWithAccuracy(trLine.getDistance(), 3));
-                heightField.setText(convertToStringWithAccuracy(trLine.getHeight(), 3));
-                maxHeightField.setText(convertToStringWithAccuracy(trLine.getMaxHeight(), 3));
                 trLine.calculateTrajectory();
             }
         });
         speedText.setOnKeyPressed(e->{
             if (e.getCode().equals(KeyCode.ENTER)){
-                durationField.setText(convertToStringWithAccuracy(trLine.getDuration(), 3));
-                distanceField.setText(convertToStringWithAccuracy(trLine.getDistance(), 3));
-                heightField.setText(convertToStringWithAccuracy(trLine.getHeight(), 3));
-                maxHeightField.setText(convertToStringWithAccuracy(trLine.getMaxHeight(), 3));
                 trLine.calculateTrajectory();
             }
         });
@@ -185,31 +174,16 @@ public class CannonballController extends AbstactController {
         angleSpinner.setEditable(true);
         mRotate.setOnTransformChanged(e-> {
             valueFactory.setValue(-mRotate.getAngle());
-            durationField.setText(convertToStringWithAccuracy(trLine.getDuration(), 3));
-            distanceField.setText(convertToStringWithAccuracy(trLine.getDistance(), 3));
-            heightField.setText(convertToStringWithAccuracy(trLine.getHeight(), 3));
-            maxHeightField.setText(convertToStringWithAccuracy(trLine.getMaxHeight(), 3));
             trLine.calculateTrajectory();
         });
-        angleSpinner.valueProperty().addListener(e->
+        valueFactory.valueProperty().addListener(e->
                 mRotate.setAngle(-valueFactory.getValue()));
-
-        durationField.setDisable(true);
-        durationField.setText(convertToStringWithAccuracy(trLine.getDuration(), 3));
-        distanceField.setDisable(true);
-        distanceField.setText(convertToStringWithAccuracy(trLine.getDistance(), 3));
-        heightField.setDisable(true);
-        heightField.setText(convertToStringWithAccuracy(trLine.getHeight(), 3));
-        maxHeightField.setDisable(true);
-        maxHeightField.setText(convertToStringWithAccuracy(trLine.getMaxHeight(), 3));
     }
 
-    /**
-     * field - то, от чего зависит
-     * property - то, что зависит
-     * */
+    //field - то, что зависит; property - то, от чего зависит
     private void bidiBinding(TextField field, Property<Number> property) {
         Bindings.bindBidirectional(field.textProperty(), property, new NumberStringConverter());
+        field.setDisable(true);
     }
 
     //TODO добавить функцию reset или типа того
@@ -235,19 +209,22 @@ public class CannonballController extends AbstactController {
         /** Кол-во пикселей на 1 метр */
         private final int PIXELS_PER_METER = (int)wheel.getFitHeight();
         /** Частота обновления значений (чем меньше значение, тем более гладкая кривая)*/
+        @SuppressWarnings("FieldCanBeLocal")
         private final double FREQUENCY = 0.005;
         /** Высота крепления ствола в метрах*/
         private final double HEIGHT = 0.5; // без учета dHeight;
-
         /** Изначальная скорость снаряда */
         private final IntegerProperty mInitVelocity;
-        /** Разница между начальной позиции и текущей по оси Y*/
+        /** Разница между начальной позиции и текущей по оси Y (в пикселах)*/
         private double mInitHeight;
-        /** Время полета снаряда */
-        private double mTimeFlight;
-        private double mDistance;
-        private double mdHeight = 0;
-        private double mMaxHeight = HEIGHT;
+        /** Время полета снаряда в секундах*/
+        private final DoubleProperty mTimeFlight;
+        /** Дальность полета в метрах*/
+        private final DoubleProperty mDistance;
+        /** Итоговая высота с учетом наклона ствола в метрах*/
+        private final DoubleProperty mTotalHeight;
+        /** Максимальная высота в метрах*/
+        private final DoubleProperty mMaxHeight;
 
         public TrajectoryLine(){
             mPath.setStroke(Color.RED);
@@ -256,22 +233,21 @@ public class CannonballController extends AbstactController {
             mPath.getStrokeDashArray().addAll(10d, 10d);
 
             mInitVelocity = new SimpleIntegerProperty(this, "initVelocity");
-            mTimeFlight = (Math.sqrt(2*Constants.g*HEIGHT))/Constants.g;
-//            mTimeFlight = new SimpleDoubleProperty(this, "duration",
-//                    (Math.sqrt(2*Constants.g*HEIGHT))/Constants.g);
+            mTimeFlight = new SimpleDoubleProperty(this, "duration",
+                    (Math.sqrt(2*Constants.g*HEIGHT))/Constants.g);
+            mDistance = new SimpleDoubleProperty(this, "distance");
+            mTotalHeight = new SimpleDoubleProperty(this, "totalHeight", HEIGHT);
+            mMaxHeight = new SimpleDoubleProperty(this, "maxHeight", HEIGHT);
 
             Platform.runLater(()->{
                 mInitHeight = mPivotPoint.localToScene(mPivotPoint.getBoundsInLocal()).getCenterY();
-
                 Stage stage = (Stage)borderPane.getScene().getWindow();
-//Т.к. значения GUI обновляются уже после максимизации сцены, а не во время нее, надо использовать метод ниже
-                stage.maximizedProperty().addListener((obs)->{
-                    Platform.runLater(()-> {
-                        //эту переменную надо обновлять каждый раз при изменении размера окна
-                        mInitHeight = mPivotPoint.localToScene(mPivotPoint.getBoundsInLocal()).getCenterY();
-                        trLine.calculateTrajectory();
-                    });
-                });
+//Т.к. значения GUI обновляются уже после максимизации сцены, а не во время нее, надо использовать runLater()
+                stage.maximizedProperty().addListener((obs)-> Platform.runLater(()-> {
+                    //эту переменную надо обновлять каждый раз при изменении размера окна
+                    mInitHeight = mPivotPoint.localToScene(mPivotPoint.getBoundsInLocal()).getCenterY();
+                    trLine.calculateTrajectory();
+                }));
             });
         }
 
@@ -297,41 +273,37 @@ public class CannonballController extends AbstactController {
             //Местонахождение точки начала траектории в пространстве сцены
             final Bounds bounds = mTrackingPoint.localToScene(mTrackingPoint.getBoundsInLocal());
             //Разница по оси Y между точкой крепления ствола и концом ствола
-            mdHeight = (mInitHeight - bounds.getCenterY()) / PIXELS_PER_METER;
-            // Итоговая высота с учетом наклона ствола
-            final double totalHeight = HEIGHT+mdHeight;
+            final double dHeight = (mInitHeight - bounds.getCenterY()) / PIXELS_PER_METER;
+            mTotalHeight.set(HEIGHT+dHeight);
             //Вертикальная составляющая скорости
             final double V_y = (double) mInitVelocity.get() * Math.sin(Math.toRadians(angle));
             //Горизонтальная составляющая скорости
-            // != 0, т.к. cos(0) == 1
             final double V_x = (double) mInitVelocity.get() * Math.cos(Math.toRadians(angle));
-            //Время полета
-            mTimeFlight = (V_y + Math.sqrt(Math.pow(V_y, 2) + 2*Constants.g*totalHeight))/Constants.g;
-            //Дальность полета
-            mDistance = V_x * mTimeFlight;
-            //Максимальная высота
-            mMaxHeight = totalHeight + Math.pow(V_y, 2)/(2*Constants.g);
+            mTimeFlight.set((V_y + Math.sqrt(Math.pow(V_y, 2) + 2*Constants.g*mTotalHeight.get()))/Constants.g);
+            mDistance.set(V_x * mTimeFlight.get());
+            mMaxHeight.set(mTotalHeight.get() + Math.pow(V_y, 2)/(2*Constants.g));
 
             //Смещение точки начала полета по оси X
             final double deltaX = bounds.getCenterX();
             //Смещение точки начала полета по оси Y
-            final double deltaY = bounds.getCenterY() - barrel.getFitHeight()/2 + mdHeight*PIXELS_PER_METER;
-            //Координата по оси Y, при которой траектория будет кончатся при соприкосновении с полом
+            final double deltaY = bounds.getCenterY() - barrel.getFitHeight()/2 + dHeight*PIXELS_PER_METER;
+            //Координата по оси Y, при которой траектория будет кончаться при соприкосновении с полом
             final double neededHeight = borderPane.getHeight() - floor.getFitHeight();
             //Множитель для значения X, чтобы не считать его в цикле
-            final double xCoeff = mDistance / mTimeFlight * PIXELS_PER_METER;
+            final double xCoeff = mDistance.get() / mTimeFlight.get() * PIXELS_PER_METER;
 
             for (double time = 0, x, y = 0; y < neededHeight; time += FREQUENCY){
                 x = time * xCoeff + deltaX;
-                y = -(totalHeight + V_y * time -
+                y = -(mTotalHeight.get() + V_y * time -
                         Constants.g*Math.pow(time, 2)/2) * PIXELS_PER_METER + deltaY;
                 pathElements.add((time < FREQUENCY - 0.001)? new MoveTo(x, y): new LineTo(x, y));
             }
         }
 
-        public void setVelocity(String velocity){
+        //Метод вызывается только при иниц. настройки
+        public void initDistance(String velocity){
             mInitVelocity.set(Integer.parseInt(velocity));
-            mDistance = mInitVelocity.get() * mTimeFlight;
+            mDistance.set(mInitVelocity.get() * mTimeFlight.get());
         }
 
         public IntegerProperty initVelocityProperty(){
@@ -339,10 +311,14 @@ public class CannonballController extends AbstactController {
         }
 
         public double getDuration() {
+            return mTimeFlight.get();
+        }
+
+        public DoubleProperty durationProperty(){
             return mTimeFlight;
         }
 
-        public double getDistance() {
+        public DoubleProperty distanceProperty(){
             return mDistance;
         }
 
@@ -350,11 +326,11 @@ public class CannonballController extends AbstactController {
             return mPath;
         }
 
-        public double getHeight() {
-            return HEIGHT + mdHeight;
+        public DoubleProperty initHeightProperty(){
+            return mTotalHeight;
         }
 
-        public double getMaxHeight() {
+        public DoubleProperty maxHeightProperty(){
             return mMaxHeight;
         }
     }
