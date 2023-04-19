@@ -1,5 +1,6 @@
 package root.gui;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -39,12 +40,11 @@ public class AppHeader {
             });
         });
 
-        closeButton.setOnAction(e->mStage.close());
-        collapseButton.setOnAction(e->mStage.setIconified(true));
-        expandButton.setOnAction(e->mStage.setMaximized(!mStage.isMaximized()));
-    }
-
-    public void setStage(final Stage stage){
-        mStage = stage;
+        Platform.runLater(()->{
+            mStage = (Stage) mAppHeader.getScene().getWindow();
+            closeButton.setOnAction(e->mStage.close());
+            collapseButton.setOnAction(e->mStage.setIconified(true));
+            expandButton.setOnAction(e->mStage.setMaximized(!mStage.isMaximized()));
+        });
     }
 }

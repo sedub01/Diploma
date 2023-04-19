@@ -14,33 +14,18 @@ import java.util.TimerTask;
 
 public class StatusBarController {
     private final Timer mTimer;
-    private final TimerTask mTask;
-    private String mLabelText;
     private static Label mStatusBar = null;
-    private boolean mIsStart = false;
+    private TimerTask mCurrentTask = null;
+    private static boolean mIsExecuted = false;
 
     public StatusBarController(final Label statusBar){
         mStatusBar = statusBar;
         mTimer = new Timer(true);
-        mTask = new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(()->{
-                    if (mStatusBar.getText().equals(mLabelText))
-                        mStatusBar.setText("");
-                    mIsStart = false;
-                });
-            }
-        };
     }
 
     public void execute(final String text){
-        mLabelText = text;
-        mStatusBar.setText(mLabelText);
-        if (!mIsStart){
-            mTimer.schedule(mTask, Constants.HIDE_DELAY);
-            mIsStart = true;
-        }
+        mStatusBar.setText(text);
+        mTimer.schedule(createNewTask(), Constants.HIDE_DELAY);
     }
 
     public static void connectToStatusBar(final Control control) {
@@ -57,13 +42,35 @@ public class StatusBarController {
             tooltip.setShowDelay(new Duration(500));
         }
         control.setOnMouseEntered(e->changeStatusBar(tooltip));
-        control.setOnMouseExited(e->mStatusBar.setText(""));
+        control.setOnMouseExited(e-> {
+            if (!mIsExecuted)
+                mStatusBar.setText("");
+        });
     }
 
     private static void changeStatusBar(final Tooltip tooltip) {
-        final var toolTipText = (tooltip != null)?
-                tooltip.getText():
-                "Ошибка отображения подсказки";
-        mStatusBar.setText(toolTipText);
+        if (!mIsExecuted){
+            final var toolTipText = (tooltip != null)?
+                    tooltip.getText():
+                    "Ошибка отображения подсказки";
+            mStatusBar.setText(toolTipText);
+        }
+    }
+
+    private TimerTask createNewTask(){
+        if (mCurrentTask != null)  // Оказывается, теперь нужно сохранять текущее состояние
+            mCurrentTask.cancel(); // Строка нужна для отмены предыдущей задачи
+        //Альтернативой этому является создание нового экземпляра Timer, либо наследование
+        mIsExecuted = true;
+        mCurrentTask = new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(()->{
+                    mStatusBar.setText("");
+                    mIsExecuted = false;
+                });
+            }
+        };
+        return mCurrentTask;
     }
 }
