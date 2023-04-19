@@ -26,8 +26,6 @@ public class MainApplication extends Application {
         stage.setHeight(Constants.MIN_HEIGHT);
         stage.setWidth(Constants.MIN_WIDTH);
 
-        MainController controller = loader.getController();
-        controller.setStage(stage);
         root.setStyle(Global.getCSSThemeColor(0.9));
         stage.show();
     }

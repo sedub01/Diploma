@@ -1,13 +1,12 @@
 package root.models;
 
-import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
 import root.MainController;
 import root.controllers.AbstactController;
 import root.utils.Logger;
@@ -25,9 +24,12 @@ public class Model {
     private Node mScene;
     private ImageView mIcon;
     private final boolean mIsGridNeeded;
+
     /**Была ли совершена попытка загрузки модели*/
     private boolean mTriedToLoad = false;
     private Map<Label, Control> mSettingsMap;
+    private AbstactController mController = null;
+    private Map<String, BooleanProperty> mPropertiesMap;
 
     public Model(HashMap<String, String> model){
         mModelName = model.get("modelName");
@@ -46,10 +48,6 @@ public class Model {
             mIcon.setFitHeight(20);
         }
         catch (Exception ignored){}
-    }
-
-    public String getModelFilePath() {
-        return mModelFilePath;
     }
 
     public void setScene(Node root){
@@ -72,8 +70,9 @@ public class Model {
             FXMLLoader loader = new FXMLLoader(getClass().
                     getResource(mModelFilePath));
             mScene = loader.load();
-            AbstactController controller = loader.getController();
-            mSettingsMap = controller.getSettings();
+            mController = loader.getController();
+            mSettingsMap = mController.getSettings();
+            mController.setProperties(mPropertiesMap);
         } catch (IOException e) {
             MainController.displayOnStatusBar("Не загрузилась модель");
             Logger.log("Не загрузилась модель " + mModelName + "\nПричина: " +
@@ -82,7 +81,7 @@ public class Model {
         } catch (IllegalStateException e) {
             Logger.log("Программа не смогла найти путь до модели");
         } catch (NullPointerException e) {
-            MainController.displayOnStatusBar("Не найден путь до модели");
+            MainController.displayOnStatusBar("Какой-то объект при инициализации равен null");
             Logger.log("Выброшено исключение");
             Logger.log("Модель: " + mModelName);
             Logger.log("Путь: " + mModelFilePath);
@@ -114,5 +113,16 @@ public class Model {
 
     public Map<Label, Control> getSettings(){
         return mSettingsMap;
+    }
+
+    public void setProperties(Map<String, BooleanProperty> propertiesMap){
+        mPropertiesMap = propertiesMap;
+    }
+
+    public void execute(){
+        if (mController != null){
+            mController.execute();
+        }
+        else MainController.displayOnStatusBar("Демонстрация невозможна, т.к. mController == null");
     }
 }

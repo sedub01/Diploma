@@ -44,6 +44,7 @@ public class CannonballController extends AbstactController {
     private final ImageView mTrackingPoint = new ImageView();
     private final ImageView mPivotPoint = new ImageView();
     private boolean mIsTransitionStarted = false;
+    private ImageView mProjectile;
 
     @Override
     protected void construct() {
@@ -51,6 +52,7 @@ public class CannonballController extends AbstactController {
         barrelPane.getTransforms().add(mRotate);
         //Нужно делать иниц. прямо здесь, т.к. до конструктора все @FXML ImageView == null
         trLine = new TrajectoryLine();
+        mProjectile = getProjectileObject();
 
         //Определяем точку опоры
         mRotate.setPivotX(barrel.getFitWidth()/10);
@@ -62,7 +64,7 @@ public class CannonballController extends AbstactController {
         barrelPane.addEventHandler(MouseEvent.MOUSE_PRESSED, this::setMouse);
         // Когда край пушки перетаскивается, вращаем её
         barrelPane.addEventHandler(MouseEvent.MOUSE_DRAGGED, this::barrelDragged);
-        barrel.setOnMouseClicked(e->{
+        barrelPane.setOnMouseClicked(e->{
             if (e.getButton().equals(MouseButton.PRIMARY)){
                 if (e.getClickCount() == 2 && !mIsTransitionStarted){
                     execute();
@@ -70,8 +72,6 @@ public class CannonballController extends AbstactController {
             }
         });
     }
-
-
 
     private void barrelDragged(final MouseEvent event){
         if (event.getX() >= barrelPane.getWidth() / 3  && !mIsTransitionStarted){
@@ -84,7 +84,7 @@ public class CannonballController extends AbstactController {
              https://docs.oracle.com/javase/8/javafx/api/javafx/scene/Node.html#localToSceneTransformProperty
              https://o7planning.org/11157/javafx-transformation
             */
-            final Transform localToScene = barrel.getLocalToSceneTransform();
+            final Transform localToScene = barrelPane.getLocalToSceneTransform();
 
             //конечное положение точки (на момент конца локального перемещения)
             //координаты берутся относительно берущегося предмета
@@ -148,15 +148,15 @@ public class CannonballController extends AbstactController {
         mModelSettings.put(new Label("Изначальная высота [м]"), heightField);
         mModelSettings.put(new Label("Максимальная высота [м]"), maxHeightField);
 
-        bidiBinding(speedText, trLine.initVelocityProperty());
+        bidirectBinding(speedText, trLine.initVelocityProperty());
         speedText.setDisable(false);
         speedText.setText("5");
 //Этот сеттер убрать не получится, поскольку в этом объекте mInitVelocity пока что не инициализирован
         trLine.initDistance(speedText.getText());
-        bidiBinding(durationField, trLine.durationProperty());
-        bidiBinding(distanceField, trLine.distanceProperty());
-        bidiBinding(heightField, trLine.initHeightProperty());
-        bidiBinding(maxHeightField, trLine.maxHeightProperty());
+        bidirectBinding(durationField, trLine.durationProperty());
+        bidirectBinding(distanceField, trLine.distanceProperty());
+        bidirectBinding(heightField, trLine.initHeightProperty());
+        bidirectBinding(maxHeightField, trLine.maxHeightProperty());
         speedText.focusedProperty().addListener((obs, oldV, newV)->{
             if (oldV){ //если фокус убран, меняем значение
                 trLine.calculateTrajectory();
@@ -181,38 +181,56 @@ public class CannonballController extends AbstactController {
     }
 
     //field - то, что зависит; property - то, от чего зависит
-    private void bidiBinding(TextField field, Property<Number> property) {
+    private void bidirectBinding(TextField field, Property<Number> property) {
         Bindings.bindBidirectional(field.textProperty(), property, new NumberStringConverter());
         field.setDisable(true);
     }
 
-    //TODO добавить функцию reset или типа того
-    private void execute() {
-        mIsTransitionStarted = true;
+    @Override
+    public void execute() {
+        var execProp = mPropertiesMap.get("execButtonProperty");
+        var expandProp = mPropertiesMap.get("expandButtonProperty");
         final var path = trLine.getPath();
         path.setVisible(false);
+        mProjectile.setVisible(true);
+        execProp.set(true);
+        expandProp.set(true);
+        mIsTransitionStarted = true;
+        PathTransition trans = new PathTransition(Duration.seconds(trLine.getDuration()), path, mProjectile);
+        trans.setInterpolator(Interpolator.LINEAR);
+        trans.setOnFinished(e->{
+            mIsTransitionStarted = false;
+            path.setVisible(true);
+            execProp.set(false);
+            expandProp.set(false);
+            trLine.calculateTrajectory();
+        });
+        trans.play();
+    }
+
+    private ImageView getProjectileObject() {
         final var input = getClass().getResourceAsStream("/root/img/cannon/projectile.png");
-        final ImageView projectile = input != null? new ImageView(new Image(input)): null;
+        var projectile = input != null? new ImageView(new Image(input)): null;
         if (projectile != null) {
             projectile.setFitWidth(50);
             projectile.setFitHeight(50);
+            projectile.setVisible(false);
             borderPane.getChildren().add(projectile);
         }
-        PathTransition trans = new PathTransition(Duration.seconds(trLine.getDuration()), path, projectile);
-        trans.setInterpolator(Interpolator.LINEAR);
-        trans.play();
+        return projectile;
     }
 
     private class TrajectoryLine{
         /** Структура, хранящая передвижения кривой траектории */
         private final Path mPath = new Path();
         /** Кол-во пикселей на 1 метр */
-        private final int PIXELS_PER_METER = (int)wheel.getFitHeight();
+        @SuppressWarnings("FieldCanBeLocal")
+        private final int PIXELS_PER_METER = Constants.PIXELS_PER_UNIT;
         /** Частота обновления значений (чем меньше значение, тем более гладкая кривая)*/
         @SuppressWarnings("FieldCanBeLocal")
         private final double FREQUENCY = 0.005;
         /** Высота крепления ствола в метрах*/
-        private final double HEIGHT = 0.5; // без учета dHeight;
+        private final double HEIGHT = wheel.getFitHeight() / 2 / PIXELS_PER_METER;
         /** Изначальная скорость снаряда */
         private final IntegerProperty mInitVelocity;
         /** Разница между начальной позиции и текущей по оси Y (в пикселах)*/
@@ -244,27 +262,18 @@ public class CannonballController extends AbstactController {
                 Stage stage = (Stage)borderPane.getScene().getWindow();
 //Т.к. значения GUI обновляются уже после максимизации сцены, а не во время нее, надо использовать runLater()
                 stage.maximizedProperty().addListener((obs)-> Platform.runLater(()-> {
+                    mProjectile.setVisible(false);
                     //эту переменную надо обновлять каждый раз при изменении размера окна
                     mInitHeight = mPivotPoint.localToScene(mPivotPoint.getBoundsInLocal()).getCenterY();
-                    trLine.calculateTrajectory();
+                    calculateTrajectory();
                 }));
             });
         }
 
-        //TODO внести это в файл с данными
         //https://www.omnicalculator.com/physics/projectile-motion
-        //Горизонтальная составляющая скорости: V_x = V * cos a
-        //Вертикальная составляющая скорости:   V_y = V * sin a
-        //Дистанция по горизонтали: x = V_x * t, где t - время
-        //Дистанция по вертикали:   y = h + V_y * t - gt^2 / 2
-        //Горизонтальная скорость: V = V_x
-        //Вертикальная скорость:   V = V_y - gt
-        //Ускорение по горизонтали: a = 0
-        //Ускорение по вертикали: a = -g
-        //Время полета (выводится из "Дистанции по вертикали"):
-        //      t = (V_y + sqrt(V_y^2 + 2gh))/g
-        //Дальность полета: R = V_x*t, где t берется из пред. формулы
-        //Максимальная высота: h_max = h + (V^2 * sin^2 a) / (2g)
+        /** Метод для расчёта координат кривой траектории и ее дальнейшей прорисовки.
+         *  Описание логики см. в конфиг. файле
+         */
         public void calculateTrajectory() {
             final var pathElements = mPath.getElements();
             pathElements.clear();
@@ -304,6 +313,7 @@ public class CannonballController extends AbstactController {
         public void initDistance(String velocity){
             mInitVelocity.set(Integer.parseInt(velocity));
             mDistance.set(mInitVelocity.get() * mTimeFlight.get());
+            Platform.runLater(this::calculateTrajectory);
         }
 
         public IntegerProperty initVelocityProperty(){
@@ -322,7 +332,7 @@ public class CannonballController extends AbstactController {
             return mDistance;
         }
 
-        public Shape getPath() {
+        public Path getPath() {
             return mPath;
         }
 

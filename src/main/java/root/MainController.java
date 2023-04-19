@@ -1,15 +1,14 @@
 package root;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
-import javafx.stage.Stage;
 import javafx.util.StringConverter;
-import root.gui.AppHeader;
-import root.gui.InfoDialog;
-import root.gui.SettingsToolbar;
+import root.gui.*;
 import root.models.Model;
 import root.models.ModuleFactory;
 import root.gui.InfoDialog.DialogType;
@@ -19,12 +18,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
 import root.utils.DescriptionFileParser;
 import root.utils.Global;
-import root.gui.StatusBarController;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MainController implements Initializable {
     @FXML
@@ -69,11 +65,14 @@ public class MainController implements Initializable {
     private Button expandButton;
     @FXML
     private Button closeButton;
+    @FXML
+    private Pane markingGrid;
 
     private final List<ModuleFactory> mFactories = new ArrayList<>();
     private InfoDialog mInfoDialog;
     private SettingsToolbar mSToolbar;
     private AppHeader mAppHeader;
+    private MarkingGrid mMarkingGrid;
     private static StatusBarController mSBController;
 
     @Override
@@ -83,6 +82,7 @@ public class MainController implements Initializable {
         moduleTitlesComboBox.getItems().addAll(mFactories);
     }
 
+    /** Инициализация GUI-компонентов */
     private void initGUI() {
         final var buttonStyle = Global.getCSSThemeColor()+
                 "-fx-border-radius: 5px;" +
@@ -105,6 +105,7 @@ public class MainController implements Initializable {
         programInfoMenuItem.setOnAction(e->onInfoButtonClicked(DialogType.programInfo));
         gridButton.setOnAction(this::onGridButtonClicked);
         gridMenuItem.setOnAction(this::onGridButtonClicked);
+        executeButton.setOnAction(this::onExecuteClicked);
 
         moduleTitlesComboBox.setOnAction(this::getModule);
         moduleTitlesComboBox.setConverter(new StringConverter<>() {
@@ -123,6 +124,7 @@ public class MainController implements Initializable {
         mSBController = new StatusBarController(statusBar);
         mSToolbar = new SettingsToolbar(settingsToolButton, settingsToolBar);
         mAppHeader = new AppHeader(header, collapseButton, expandButton, closeButton);
+        mMarkingGrid = new MarkingGrid(markingGrid);
 
         StatusBarController.connectToStatusBar(infoButton);
         StatusBarController.connectToStatusBar(gridButton);
@@ -130,8 +132,13 @@ public class MainController implements Initializable {
     }
 
     private void onGridButtonClicked(ActionEvent actionEvent) {
-        //TODO включить сетку и расположить ее по центру
-        //наверно, надо будет создать объект сетки
+        mMarkingGrid.setVisible(!mMarkingGrid.isVisible());
+    }
+
+    private void onExecuteClicked(ActionEvent actionEvent) {
+        final ModuleFactory moduleFactory = moduleTitlesComboBox.getValue();
+        final Model model = moduleFactory.getCurrentModel();
+        model.execute();
     }
 
     private void getModule(ActionEvent actionEvent) {
@@ -158,11 +165,7 @@ public class MainController implements Initializable {
                 boolean isSelected = (boolean)((ObservableValue<?>)choose).getValue();
                 if (isSelected) { //если таб выбран, загрузить сцену (контент)
                     moduleFactory.setCurrentModelIndex(modelsTabPane.getTabs().indexOf(tab));
-                    //общий шаблон
                     modelChanged(tab, model);
-                    //TODO РЕАЛИЗОВАТЬ ШАБЛОН Observer (или использовать системный класс)
-                    // Я задолбался танцевать с бубном, ища текущую модель!
-                    // привязывать действия к "объектам действия (action)", а не к самим объектам
                 }
             });
         }
@@ -175,15 +178,30 @@ public class MainController implements Initializable {
         gridButton.setDisable(!model.isGridNeeded());
         gridMenuItem.setDisable(!model.isGridNeeded());
         mSToolbar.setVisible(false);
+        mMarkingGrid.setVisible(false);
         mSToolbar.setSettings(model.getSettings());
     }
 
+    /** Инициализация модулей */
     private void initFactories(){
         //инициализация парсера
         DescriptionFileParser fileParser = DescriptionFileParser.getInstance();
+        var propertiesMap = getPropertiesMap();
+        for (final var moduleHashMap: fileParser.getModulesMap()) {
+            var module = new ModuleFactory(moduleHashMap);
+            module.setProperties(propertiesMap);
+            mFactories.add(module);
+        }
+    }
 
-        for (final var moduleHashMap: fileParser.getModulesMap())
-            mFactories.add(new ModuleFactory(moduleHashMap));
+    private Map<String, BooleanProperty> getPropertiesMap() {
+        BooleanProperty execButtonProperty = executeButton.disableProperty();
+        BooleanProperty expandButtonProperty = expandButton.disableProperty();
+
+        Map<String, BooleanProperty> propertiesMap = new HashMap<>();
+        propertiesMap.put("execButtonProperty", execButtonProperty);
+        propertiesMap.put("expandButtonProperty", expandButtonProperty);
+        return propertiesMap;
     }
 
     private void onInfoButtonClicked(final DialogType type){
@@ -206,9 +224,5 @@ public class MainController implements Initializable {
 
     public static void displayOnStatusBar(final String text){
         mSBController.execute(text);
-    }
-
-    public void setStage(final Stage stage) {
-        mAppHeader.setStage(stage);
     }
 }
