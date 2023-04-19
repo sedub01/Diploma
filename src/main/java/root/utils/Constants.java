@@ -24,4 +24,5 @@ public class Constants {
     }
     public static final int HIDE_DELAY = 3000;
     public static final int PIXELS_PER_UNIT = 100;
+    public static final double g = 9.8;
 }

@@ -1,11 +1,12 @@
 package root.models;
 
+import javafx.beans.property.BooleanProperty;
 import root.utils.DescriptionFileParser;
 import root.utils.Logger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ModuleFactory{
     private final String mModuleName;
@@ -14,7 +15,7 @@ public class ModuleFactory{
     private int mCurrentModelIndex = 0;
     private final List<Model> mModels = new ArrayList<>();
 
-    public ModuleFactory(final HashMap<String, String> factory) {
+    public ModuleFactory(final Map<String, String> factory) {
         mModuleName = factory.get("moduleName");
         mModuleDescription = factory.get("moduleDescription");
         addModelsByFactory(factory.get("moduleNaming"));
@@ -29,10 +30,10 @@ public class ModuleFactory{
         final var fileParser = DescriptionFileParser.getInstance();
         //взятие приставки до первой заглавной буквы названия фабрики
         final String prefix = factory.split("(?=\\p{Lu})")[0];
-        for (var model: fileParser.getModelsMap()) {
-            final var modelName = model.get("modelNaming");
+        for (var modelMap: fileParser.getModelsMap()) {
+            final var modelName = modelMap.get("modelNaming");
             if (!prefix.isEmpty() && modelName.startsWith(prefix)){
-                mModels.add(new Model(model));
+                mModels.add(new Model(modelMap));
             }
         }
     }
@@ -66,5 +67,9 @@ public class ModuleFactory{
 
     public Model getCurrentModel(){
         return modelAt(mCurrentModelIndex);
+    }
+
+    public void setProperties(Map<String, BooleanProperty> propertiesMap) {
+        mModels.forEach(m->m.setProperties(propertiesMap));
     }
 }

@@ -1,9 +1,14 @@
 package root.controllers;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.Property;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.util.converter.NumberStringConverter;
 import root.gui.StatusBarController;
 
 import java.net.URL;
@@ -13,6 +18,8 @@ import java.util.ResourceBundle;
 
 abstract public class AbstactController implements Initializable {
     protected Map<Label, Control> mModelSettings = new LinkedHashMap<>();
+    protected Map<String, BooleanProperty> mPropertiesMap;
+
     /**Инициализирует HashMap с ключом названием настройки
     и значением - кастомным виджетом настройки*/
     abstract protected void createSettings();
@@ -34,5 +41,18 @@ abstract public class AbstactController implements Initializable {
 
     final public Map<Label, Control> getSettings(){
         return mModelSettings;
+    }
+
+    /** Функция активации - подразумевается, что каждый контроллер её имеет, но может и не иметь  */
+    public void execute() {}
+
+    public void setProperties(Map<String, BooleanProperty> propertiesMap) {
+        mPropertiesMap = propertiesMap;
+    }
+
+    //field - то, что зависит; property - то, от чего зависит
+    final public void bidirectBinding(TextField field, Property<Number> property) {
+        Bindings.bindBidirectional(field.textProperty(), property, new NumberStringConverter());
+        field.setDisable(true);
     }
 }
