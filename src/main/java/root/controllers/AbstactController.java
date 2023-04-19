@@ -1,10 +1,14 @@
 package root.controllers;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.Property;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.util.converter.NumberStringConverter;
 import root.gui.StatusBarController;
 
 import java.net.URL;
@@ -44,5 +48,11 @@ abstract public class AbstactController implements Initializable {
 
     public void setProperties(Map<String, BooleanProperty> propertiesMap) {
         mPropertiesMap = propertiesMap;
+    }
+
+    //field - то, что зависит; property - то, от чего зависит
+    final public void bidirectBinding(TextField field, Property<Number> property) {
+        Bindings.bindBidirectional(field.textProperty(), property, new NumberStringConverter());
+        field.setDisable(true);
     }
 }

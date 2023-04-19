@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public final class DescriptionFileParser {
     private static DescriptionFileParser mInstance;
@@ -17,16 +18,16 @@ public final class DescriptionFileParser {
             "moduleDescription"};
     private final List<HashMap<String, String>> mModulesMapList = new LinkedList<>();
     private final List<HashMap<String, String>> mModelsMapList = new LinkedList<>();
+    private final Map<String, String> mTemplateMap = new HashMap<>();
     private String mProgramDescription;
     private final Properties mProperties = new Properties();
-    @SuppressWarnings("FieldCanBeLocal")
-    private final String formulaTemplate = "<font face = \"Comic sans MS\">%s</font>";
-    static final String imageTemplate = "<img src=\"file:///" + System.getProperty("user.dir") + "/%s\">";
 
     private DescriptionFileParser(){
         try {
             final var fis = new FileInputStream("src/main/resources/root/mainschema.properties");
             mProperties.load(new InputStreamReader(fis, StandardCharsets.UTF_8));
+            mTemplateMap.put("`", "<font face = \"Comic sans MS\">%s</font>");
+            mTemplateMap.put("$", "<img src=\"file:///" + System.getProperty("user.dir") + "/%s\">");
             initModules();
             initModels();
             initProgramDescription();
@@ -81,17 +82,18 @@ public final class DescriptionFileParser {
                                                     String objectInfo, String[] keyWords) {
         HashMap<String, String> objectMap = new HashMap<>();
         if (objectInfo != null){
-            objectInfo = parseStringWithFormula(objectInfo);
-            objectInfo = parseStringWithImage(objectInfo);
+            objectInfo = parseWithSeparator(objectInfo, "`");
+            objectInfo = parseWithSeparator(objectInfo, "$");
             //список строк с информацией о модуле/модели
             var objectInfoList = Arrays.asList(objectInfo.substring(1, objectInfo.length()-1).
                     split("\n"));
             objectInfoList.replaceAll(String::trim);
             for (var objectInfoItem: objectInfoList){
                 for (var key: keyWords){
-                    final var fileKey = objectInfoItem.split(":")[0].trim();
+                    final var fileParts = objectInfoItem.split(":", 2);
+                    final var fileKey = fileParts[0].trim();
                     if (fileKey.equals(key)){
-                        objectMap.put(key, objectInfoItem.split(":", 2)[1].trim());
+                        objectMap.put(fileKey, fileParts[1].trim());
                     }
                     else fileKeyWordsSet.add(fileKey);
                 }
@@ -102,25 +104,14 @@ public final class DescriptionFileParser {
         return objectMap;
     }
 
-    private String parseStringWithFormula(String objectInfo) {
+    private String parseWithSeparator(String objectInfo, String separator) {
         StringBuilder objectInfoParsed = new StringBuilder(objectInfo);
-        if (objectInfo.contains("`")){
+        if (objectInfo.contains(separator)){
             objectInfoParsed.setLength(0);
-            String[] splitted = objectInfo.split("`");
+            String[] splitted = objectInfo.split(Pattern.quote(separator));
+            String template = mTemplateMap.get(separator);
             for (int i = 0; i < splitted.length; i++){
-                objectInfoParsed.append(i % 2 == 0? splitted[i]: String.format(formulaTemplate, splitted[i]));
-            }
-        }
-        return objectInfoParsed.toString();
-    }
-
-    private String parseStringWithImage(String objectInfo) {
-        StringBuilder objectInfoParsed = new StringBuilder(objectInfo);
-        if (objectInfo.contains("$")){
-            objectInfoParsed.setLength(0);
-            String[] splitted = objectInfo.split("\\$");
-            for (int i = 0; i < splitted.length; i++){
-                objectInfoParsed.append(i % 2 == 0? splitted[i]: String.format(imageTemplate, splitted[i]));
+                objectInfoParsed.append(i % 2 == 0? splitted[i]: String.format(template, splitted[i]));
             }
         }
         return objectInfoParsed.toString();

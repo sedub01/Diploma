@@ -2,7 +2,6 @@ package root.controllers;
 
 import javafx.animation.*;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Bounds;
 import javafx.scene.control.*;
@@ -15,7 +14,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.util.converter.NumberStringConverter;
 import root.utils.Constants;
 import root.utils.Logger;
 import javafx.fxml.FXML;
@@ -178,12 +176,6 @@ public class CannonballController extends AbstactController {
         });
         valueFactory.valueProperty().addListener(e->
                 mRotate.setAngle(-valueFactory.getValue()));
-    }
-
-    //field - то, что зависит; property - то, от чего зависит
-    private void bidirectBinding(TextField field, Property<Number> property) {
-        Bindings.bindBidirectional(field.textProperty(), property, new NumberStringConverter());
-        field.setDisable(true);
     }
 
     @Override

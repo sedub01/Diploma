@@ -85,7 +85,6 @@ public class Model {
             Logger.log("Выброшено исключение");
             Logger.log("Модель: " + mModelName);
             Logger.log("Путь: " + mModelFilePath);
-            Logger.log(e);
         } catch (ClassCastException e) {
             Logger.log("Ошибка кастинга в " + e.toString().split(":")[1].trim().split(" ")[1]);
         } catch (Exception e) {

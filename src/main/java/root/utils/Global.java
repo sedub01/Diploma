@@ -30,9 +30,4 @@ public class Global {
     public static String getCSSThemeColor(){
         return getCSSThemeColor(0);
     }
-
-    public static String convertToStringWithAccuracy(double val, int acc){
-        int coeff = (int)Math.pow(10, acc);
-        return Double.toString((double) Math.round(val*coeff)/coeff);
-    }
 }
