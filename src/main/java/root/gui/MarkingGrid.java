@@ -6,6 +6,7 @@ import javafx.scene.shape.Line;
 
 import static root.utils.Constants.PIXELS_PER_UNIT;
 
+/** Класс, отвечающий за прорисовку разметочной сетки*/
 public class MarkingGrid{
     /** Количество столбцов сетки*/
     @SuppressWarnings("FieldCanBeLocal")
@@ -16,6 +17,7 @@ public class MarkingGrid{
     /** Примерная высота вкладки таб панели*/
     @SuppressWarnings("FieldCanBeLocal")
     private final int tabOffset = 30;
+    /** Панель, на которой рисуется сетка*/
     private final Pane mGridPane;
     public MarkingGrid(Pane gridPane){
         mGridPane = gridPane;
@@ -38,10 +40,12 @@ public class MarkingGrid{
         }
     }
 
+    /** Видима ли сетка*/
     public boolean isVisible() {
         return mGridPane.isVisible();
     }
 
+    /** Управление видимостью сетки*/
     public void setVisible(boolean visible) {
         mGridPane.setVisible(visible);
     }

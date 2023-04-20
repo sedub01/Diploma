@@ -22,6 +22,7 @@ import root.utils.Global;
 import java.net.URL;
 import java.util.*;
 
+/** Главный контроллер, отвечающий за управление приложением*/
 public class MainController implements Initializable {
     @FXML
     private ComboBox<ModuleFactory> moduleTitlesComboBox;
@@ -68,11 +69,15 @@ public class MainController implements Initializable {
     @FXML
     private Pane markingGrid;
 
+    /** Список фабрик (модулей)*/
     private final List<ModuleFactory> mFactories = new ArrayList<>();
+    /** Информационное диалоговое окно*/
     private InfoDialog mInfoDialog;
+    /** Панель управления моделью на текущей сцене*/
     private SettingsToolbar mSToolbar;
-    private AppHeader mAppHeader;
+    /** Разметочная сетка*/
     private MarkingGrid mMarkingGrid;
+    /** Строка состояния*/
     private static StatusBarController mSBController;
 
     @Override
@@ -123,7 +128,7 @@ public class MainController implements Initializable {
         mInfoDialog = new InfoDialog("Информация");
         mSBController = new StatusBarController(statusBar);
         mSToolbar = new SettingsToolbar(settingsToolButton, settingsToolBar);
-        mAppHeader = new AppHeader(header, collapseButton, expandButton, closeButton);
+        new AppHeader(header, collapseButton, expandButton, closeButton);
         mMarkingGrid = new MarkingGrid(markingGrid);
 
         StatusBarController.connectToStatusBar(infoButton);
@@ -131,16 +136,19 @@ public class MainController implements Initializable {
         StatusBarController.connectToStatusBar(executeButton);
     }
 
+    /** Обработка нажатия на gridButton*/
     private void onGridButtonClicked(ActionEvent actionEvent) {
         mMarkingGrid.setVisible(!mMarkingGrid.isVisible());
     }
 
+    /** Обработка нажатия на executeButton*/
     private void onExecuteClicked(ActionEvent actionEvent) {
         final ModuleFactory moduleFactory = moduleTitlesComboBox.getValue();
         final Model model = moduleFactory.getCurrentModel();
         model.execute();
     }
 
+    /** Получение модуля из ComboBox*/
     private void getModule(ActionEvent actionEvent) {
         infoButton.setDisable(false);
         executeButton.setDisable(false);
@@ -172,7 +180,7 @@ public class MainController implements Initializable {
         modelsTabPane.getSelectionModel().select(moduleFactory.getCurrentModelIndex());
     }
 
-    /**событие при смене отображения текущей модели*/
+    /** Событие при смене отображения текущей модели*/
     private void modelChanged(Tab tab, Model model) {
         tab.setContent(model.getScene());
         gridButton.setDisable(!model.isGridNeeded());
@@ -194,6 +202,7 @@ public class MainController implements Initializable {
         }
     }
 
+    /** Получение параметров главной сцены*/
     private Map<String, BooleanProperty> getPropertiesMap() {
         BooleanProperty execButtonProperty = executeButton.disableProperty();
         BooleanProperty expandButtonProperty = expandButton.disableProperty();
@@ -204,6 +213,7 @@ public class MainController implements Initializable {
         return propertiesMap;
     }
 
+    /** Обработка нажатия на infoButton*/
     private void onInfoButtonClicked(final DialogType type){
         final var module = moduleTitlesComboBox.getValue();
         final var model = module != null? module.getCurrentModel(): null;
@@ -222,6 +232,7 @@ public class MainController implements Initializable {
         mInfoDialog.showAndWait();
     }
 
+    /** Отображение текста на строке состояния*/
     public static void displayOnStatusBar(final String text){
         mSBController.execute(text);
     }

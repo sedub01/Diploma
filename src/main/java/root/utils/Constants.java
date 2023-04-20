@@ -7,8 +7,11 @@ import root.MainApplication;
 /**Хранилище глобальных констант*/
 public class Constants {
     private static final int part = 80;
+    /** Минимальная ширина*/
     public static final int MIN_WIDTH = part*11; //11:9
+    /** Минимальная высота*/
     public static final int MIN_HEIGHT = part*9;
+    /** Цветовая тема приложения*/
     public static final Color THEME_COLOR = Color.rgb(213,235,255);
     public static final String BG_THEME_COLOR_PATTERN = "-fx-background-color: rgb(%d,%d,%d);";
     public static final String BG_THEME_PATTERN = "-fx-background: rgb(%d,%d,%d);";

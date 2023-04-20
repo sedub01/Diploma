@@ -4,7 +4,7 @@ import root.utils.Logger;
 import javafx.fxml.FXML;
 import javafx.scene.control.TabPane;
 
-public class BilliardballController extends AbstactController {
+public class BilliardballController extends AbstractModelController {
     @FXML
     private TabPane tabPane;
 

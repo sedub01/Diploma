@@ -7,19 +7,28 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
 
+/** Класс, реализующий парсинг информации о приложении из конфигурационного файла*/
 public final class DescriptionFileParser {
+    /** Сущность парсера */
     private static DescriptionFileParser mInstance;
+    /** Ключевые слова для парсинга моделей*/
     private final String[] mModelKeyWords = {"modelName",
             "modelDescription",
             "modelFilePath",
             "iconPath",
             "isGridNeeded"};
+    /** Ключевые слова для парсинга модулей*/
     private final String[] mModuleKeyWords = {"moduleName",
             "moduleDescription"};
+    /** Список объектов описания модулей*/
     private final List<HashMap<String, String>> mModulesMapList = new LinkedList<>();
+    /** Список объектов описания моделей*/
     private final List<HashMap<String, String>> mModelsMapList = new LinkedList<>();
+    /** Структура с шаблонами для парсинга*/
     private final Map<String, String> mTemplateMap = new HashMap<>();
+    /** Описание программы, взятое из файла*/
     private String mProgramDescription;
+    /** Набор свойств из файла с парой ключ-значение*/
     private final Properties mProperties = new Properties();
 
     private DescriptionFileParser(){
@@ -36,6 +45,7 @@ public final class DescriptionFileParser {
         }
     }
 
+    /** Получение экземпляра парсера*/
     public static DescriptionFileParser getInstance(){
         if (mInstance == null){
             mInstance = new DescriptionFileParser();
@@ -43,6 +53,7 @@ public final class DescriptionFileParser {
         return mInstance;
     }
 
+    /** Инициализация моделей*/
     private void initModels() {
         final String models = mProperties.getProperty("models");
         //обрезаю скобки и формирую список
@@ -59,6 +70,7 @@ public final class DescriptionFileParser {
         }
     }
 
+    /** Инициализация модулей*/
     private void initModules() {
         final String modules = mProperties.getProperty("modules");
         //список значений названий модулей
@@ -74,10 +86,12 @@ public final class DescriptionFileParser {
         }
     }
 
+    /** Инициализация описания программы*/
     private void initProgramDescription() {
         mProgramDescription = mProperties.getProperty("programDescription");
     }
 
+    /** Создание объекта модели/модуля по ключевым словам*/
     private HashMap<String, String> createMapByType(Set<String> fileKeyWordsSet,
                                                     String objectInfo, String[] keyWords) {
         HashMap<String, String> objectMap = new HashMap<>();
@@ -104,6 +118,7 @@ public final class DescriptionFileParser {
         return objectMap;
     }
 
+    /** Парсинг строки для получения картинки либо формулы*/
     private String parseWithSeparator(String objectInfo, String separator) {
         StringBuilder objectInfoParsed = new StringBuilder(objectInfo);
         if (objectInfo.contains(separator)){

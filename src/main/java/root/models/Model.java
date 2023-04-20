@@ -8,27 +8,37 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import root.MainController;
-import root.controllers.AbstactController;
+import root.controllers.AbstractModelController;
 import root.utils.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-//Модели отличаются только параметрами характеристик,
-//поэтому наследование избыточно
+/** Класс, хранящий и обрабатывающий характеристики физической модели
+ *  Характеристики берутся из конфигурационного файла
+ *  Модели отличаются только параметрами характеристик, поэтому наследование избыточно*/
 public class Model {
+    /** Название модели*/
     private final String mModelName;
+    /** Описание модели*/
     private final String mModelDescription;
+    /** Путь до .fxml файле модели*/
     private final String mModelFilePath;
+    /** Объект сцены*/
     private Node mScene;
+    /** Иконка модели*/
     private ImageView mIcon;
+    /** Необходима ли для этой модели сетка*/
     private final boolean mIsGridNeeded;
 
     /**Была ли совершена попытка загрузки модели*/
     private boolean mTriedToLoad = false;
+    /** Структура, содержащая настройки модели (для передачи контроллеру)*/
     private Map<Label, Control> mSettingsMap;
-    private AbstactController mController = null;
+    /** Объект управления моделью*/
+    private AbstractModelController mController = null;
+    /** Структура, хранящая атрибуты кнопок сцены для управления ими изнутри*/
     private Map<String, BooleanProperty> mPropertiesMap;
 
     public Model(HashMap<String, String> model){
@@ -40,6 +50,7 @@ public class Model {
         initIcon(iconPath);
     }
 
+    /** Инициализация иконки*/
     private void initIcon(String iconPath) {
         try {
             var icon = new Image(getClass().getResourceAsStream(iconPath));
@@ -50,10 +61,12 @@ public class Model {
         catch (Exception ignored){}
     }
 
+    /** Установка сцены*/
     public void setScene(Node root){
         mScene = root;
     }
 
+    /** Получение сцены*/
     public Node getScene() {
         if (mScene == null && !mTriedToLoad) {
             mTriedToLoad = true;
@@ -62,6 +75,7 @@ public class Model {
         return mScene;
     }
 
+    /** Инициализация сцены*/
     private void constructScene() {
         //Для того чтобы URL != null, нужно в папке ресурсов иметь
         //такую же папочную структуру, как и в папке проекта,
@@ -114,10 +128,12 @@ public class Model {
         return mSettingsMap;
     }
 
+    /** Установка атрибутов сцены*/
     public void setProperties(Map<String, BooleanProperty> propertiesMap){
         mPropertiesMap = propertiesMap;
     }
 
+    /** Функция активации*/
     public void execute(){
         if (mController != null){
             mController.execute();

@@ -23,25 +23,27 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import root.utils.Point;
 
-public class CannonballController extends AbstactController {
-    @FXML
-    private ImageView barrel;
-    @FXML
-    private ImageView wheel;
-    @FXML
-    private ImageView floor;
-    @FXML
-    private BorderPane borderPane;
-    @FXML
-    private AnchorPane barrelPane;
+/** Модель, анализирующая параболическое движение снаряда*/
+public class CannonballController extends AbstractModelController {
+    @FXML private ImageView barrel;
+    @FXML private ImageView wheel;
+    @FXML private ImageView floor;
+    @FXML private BorderPane borderPane;
+    @FXML private AnchorPane barrelPane;
 
     /** Координаты зажатой ЛКМ*/
     private final Point mStartP = new Point();
+    /** Сущность для управления поворотом ствола*/
     private final Rotate mRotate = new Rotate();
+    /** Объект, отвечающий за прорисовку кривой траектории снаряда*/
     private TrajectoryLine trLine;
+    /** Точка, от которой начинается отсчет кривой траектории*/
     private final ImageView mTrackingPoint = new ImageView();
+    /** Точка, совпадающая с точкой вращения*/
     private final ImageView mPivotPoint = new ImageView();
+    /** Начался ли процесс бросания снаряда*/
     private boolean mIsTransitionStarted = false;
+    /** Изображение снаряда*/
     private ImageView mProjectile;
 
     @Override
@@ -71,6 +73,7 @@ public class CannonballController extends AbstactController {
         });
     }
 
+    /** Обработчик перетаскивания ствола*/
     private void barrelDragged(final MouseEvent event){
         if (event.getX() >= barrelPane.getWidth() / 3  && !mIsTransitionStarted){
             /*
@@ -111,6 +114,7 @@ public class CannonballController extends AbstactController {
         mStartP.setCoord(e);
     }
 
+    /** Определение угла поворота по двум точкам */
     public double clockAngle(double dx, double dy) {
         double angle = Math.abs(Math.toDegrees(Math.atan2(dy, dx)));
 
@@ -120,6 +124,7 @@ public class CannonballController extends AbstactController {
         return angle;
     }
 
+    /** Установка отслеживающих точек для расчета высоты*/
     private void setTrackingPoint(ImageView point, boolean isTracking) {
         final int SIZE = 1;
         final int w = (int)barrel.getFitWidth();
@@ -146,15 +151,15 @@ public class CannonballController extends AbstactController {
         mModelSettings.put(new Label("Изначальная высота [м]"), heightField);
         mModelSettings.put(new Label("Максимальная высота [м]"), maxHeightField);
 
-        bidirectBinding(speedText, trLine.initVelocityProperty());
+        bidirectionalBinding(speedText, trLine.initVelocityProperty());
         speedText.setDisable(false);
         speedText.setText("5");
 //Этот сеттер убрать не получится, поскольку в этом объекте mInitVelocity пока что не инициализирован
-        trLine.initDistance(speedText.getText());
-        bidirectBinding(durationField, trLine.durationProperty());
-        bidirectBinding(distanceField, trLine.distanceProperty());
-        bidirectBinding(heightField, trLine.initHeightProperty());
-        bidirectBinding(maxHeightField, trLine.maxHeightProperty());
+        trLine.initCurve(speedText.getText());
+        bidirectionalBinding(durationField, trLine.durationProperty());
+        bidirectionalBinding(distanceField, trLine.distanceProperty());
+        bidirectionalBinding(heightField, trLine.initHeightProperty());
+        bidirectionalBinding(maxHeightField, trLine.maxHeightProperty());
         speedText.focusedProperty().addListener((obs, oldV, newV)->{
             if (oldV){ //если фокус убран, меняем значение
                 trLine.calculateTrajectory();
@@ -200,6 +205,7 @@ public class CannonballController extends AbstactController {
         trans.play();
     }
 
+    /** Получение объекта снаряда*/
     private ImageView getProjectileObject() {
         final var input = getClass().getResourceAsStream("/root/img/cannon/projectile.png");
         var projectile = input != null? new ImageView(new Image(input)): null;
@@ -212,6 +218,7 @@ public class CannonballController extends AbstactController {
         return projectile;
     }
 
+    /** Класс, отвечающий за прорисовку кривой траектории*/
     private class TrajectoryLine{
         /** Структура, хранящая передвижения кривой траектории */
         private final Path mPath = new Path();
@@ -301,8 +308,11 @@ public class CannonballController extends AbstactController {
             }
         }
 
-        //Метод вызывается только при иниц. настройки
-        public void initDistance(String velocity){
+        /** Первичный метод прорисовки кривой траектории
+         *  Нужен, т.к. без начальной скорости и дистанции невозможно нарисовать траекторию
+         *  Метод вызывается только при иниц. настройки
+         * */
+        public void initCurve(String velocity){
             mInitVelocity.set(Integer.parseInt(velocity));
             mDistance.set(mInitVelocity.get() * mTimeFlight.get());
             Platform.runLater(this::calculateTrajectory);

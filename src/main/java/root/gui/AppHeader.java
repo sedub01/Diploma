@@ -8,8 +8,11 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import root.utils.Global;
 
+/** Класс, определяющий поведение хэдера*/
 public class AppHeader {
+    /** Объект сцены, необходимый для связи с ее атрибутами*/
     private Stage mStage;
+    /** Объект хэдера*/
     private final Node mAppHeader;
 
     public AppHeader(final Node appHeader, final Button collapseButton,

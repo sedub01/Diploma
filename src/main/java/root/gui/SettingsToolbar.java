@@ -10,11 +10,17 @@ import root.utils.Global;
 
 import java.util.Map;
 
+/** Класс, определяющий поведение панели настроек модели*/
 public class SettingsToolbar {
+    /** Кнопка сворачивания/разворачивания модели*/
     private final Button mSettingsToolButton;
+    /** Панель настроек*/
     private final ScrollPane mSettingsToolBar;
+    /** Объект, создающий анимацию перемещения панели*/
     private final TranslateTransition mTranslate;
+    /** Видима ли панель настроек*/
     private boolean mIsVisible = false;
+    /** Контейнер, упорядочивающий вложенные элементы в виде таблицы*/
     private final GridPane mSettingsLayout = new GridPane();
     public SettingsToolbar(final Button button, final ScrollPane toolbar){
         mSettingsToolButton = button;
@@ -39,12 +45,14 @@ public class SettingsToolbar {
         mSettingsLayout.setPadding(new Insets(5, 5, 5, 5));
     }
 
+    /** Обработка нажатия на mSettingsToolButton*/
     private void onSettingsToolButtonClicked(final ActionEvent actionEvent) {
         final double width = mSettingsToolBar.getMaxWidth();
         final boolean bf = Math.abs(mSettingsToolBar.getTranslateX() - width)<0.001;
         setVisible(bf);
     }
 
+    /** Управление видимостью панели*/
     public void setVisible(boolean b) {
         if (mIsVisible != b){
             mIsVisible = b;
@@ -56,6 +64,7 @@ public class SettingsToolbar {
         }
     }
 
+    /** Установка настроек модели на панель*/
     public void setSettings(final Map<Label, Control> settingsMap) {
         mSettingsLayout.getChildren().clear();
         int count = 0;

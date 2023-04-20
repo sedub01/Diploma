@@ -16,13 +16,17 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-abstract public class AbstactController implements Initializable {
+/** Абстрактный класс контроллера модели*/
+abstract public class AbstractModelController implements Initializable {
+    /** Структура, содержащая настройки модели*/
     protected Map<Label, Control> mModelSettings = new LinkedHashMap<>();
+    /** Структура, хранящая атрибуты кнопок сцены для управления ими изнутри*/
     protected Map<String, BooleanProperty> mPropertiesMap;
 
     /**Инициализирует HashMap с ключом названием настройки
     и значением - кастомным виджетом настройки*/
     abstract protected void createSettings();
+    /** Инициализация модели */
     abstract protected void construct();
 
     @Override
@@ -32,6 +36,7 @@ abstract public class AbstactController implements Initializable {
         __setToolTips__();
     }
 
+    /** Установка всплывающих подсказок для панели настроек*/
     private void __setToolTips__() {
         for (final var labelSetting: mModelSettings.keySet()){
             labelSetting.setTooltip(new Tooltip(labelSetting.getText()));
@@ -39,6 +44,7 @@ abstract public class AbstactController implements Initializable {
         }
     }
 
+    /** Получение настроек*/
     final public Map<Label, Control> getSettings(){
         return mModelSettings;
     }
@@ -46,12 +52,14 @@ abstract public class AbstactController implements Initializable {
     /** Функция активации - подразумевается, что каждый контроллер её имеет, но может и не иметь  */
     public void execute() {}
 
+    /** Установка атрибутов сцены*/
     public void setProperties(Map<String, BooleanProperty> propertiesMap) {
         mPropertiesMap = propertiesMap;
     }
 
+    /** Связывание текстового поля настройки с изменяемыми атрибутами модели property*/
     //field - то, что зависит; property - то, от чего зависит
-    final public void bidirectBinding(TextField field, Property<Number> property) {
+    final public void bidirectionalBinding(TextField field, Property<Number> property) {
         Bindings.bindBidirectional(field.textProperty(), property, new NumberStringConverter());
         field.setDisable(true);
     }

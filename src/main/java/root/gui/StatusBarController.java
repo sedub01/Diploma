@@ -12,10 +12,15 @@ import root.utils.Global;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/** Класс, определяющий поведение строки состояния*/
 public class StatusBarController {
+    /** Объект, позволяющий планировать запуск задания*/
     private final Timer mTimer;
+    /** Объект строки состояния*/
     private static Label mStatusBar = null;
+    /** Текущее задание*/
     private TimerTask mCurrentTask = null;
+    /** Запущен ли таймер*/
     private static boolean mIsExecuted = false;
 
     public StatusBarController(final Label statusBar){
@@ -23,11 +28,13 @@ public class StatusBarController {
         mTimer = new Timer(true);
     }
 
+    /** Приведение таймера в исполнение*/
     public void execute(final String text){
         mStatusBar.setText(text);
         mTimer.schedule(createNewTask(), Constants.HIDE_DELAY);
     }
 
+    /** Связывание контроллера со строкой состояния*/
     public static void connectToStatusBar(final Control control) {
         final var tooltip = control.getTooltip();
         if (tooltip != null){
@@ -48,6 +55,7 @@ public class StatusBarController {
         });
     }
 
+    /** Отображение подсказки контроллера на строке состояния*/
     private static void changeStatusBar(final Tooltip tooltip) {
         if (!mIsExecuted){
             final var toolTipText = (tooltip != null)?
@@ -57,6 +65,7 @@ public class StatusBarController {
         }
     }
 
+    /** Создание нового задания*/
     private TimerTask createNewTask(){
         if (mCurrentTask != null)  // Оказывается, теперь нужно сохранять текущее состояние
             mCurrentTask.cancel(); // Строка нужна для отмены предыдущей задачи
