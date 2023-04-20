@@ -1,8 +1,9 @@
 package root.utils;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import javafx.scene.control.Alert.AlertType;
+import root.MainController;
+
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -33,7 +34,11 @@ public final class DescriptionFileParser {
 
     private DescriptionFileParser(){
         try {
-            final var fis = new FileInputStream("src/main/resources/root/mainschema.properties");
+            File file = new File("src/main/resources/root/mainschema.properties");
+            if (!file.exists()){
+                file = new File("mainschema.properties");
+            }
+            final var fis = new FileInputStream(file);
             mProperties.load(new InputStreamReader(fis, StandardCharsets.UTF_8));
             mTemplateMap.put("`", "<font face = \"Comic sans MS\">%s</font>");
             mTemplateMap.put("$", "<img src=\"file:///" + System.getProperty("user.dir") + "/%s\">");
@@ -41,7 +46,9 @@ public final class DescriptionFileParser {
             initModels();
             initProgramDescription();
         } catch (IOException e) {
-            Logger.log("ОШИБКА! Файл свойств отсутствует");
+            String message = "ОШИБКА! Файл свойств отсутствует";
+            Logger.log(message);
+            Logger.displayOnAlertWindow(message, AlertType.ERROR);
         }
     }
 

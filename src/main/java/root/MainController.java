@@ -18,6 +18,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
 import root.utils.DescriptionFileParser;
 import root.utils.Global;
+import root.utils.Logger;
 
 import java.net.URL;
 import java.util.*;
@@ -77,8 +78,6 @@ public class MainController implements Initializable {
     private SettingsToolbar mSToolbar;
     /** Разметочная сетка*/
     private MarkingGrid mMarkingGrid;
-    /** Строка состояния*/
-    private static StatusBarController mSBController;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -126,10 +125,11 @@ public class MainController implements Initializable {
         });
 
         mInfoDialog = new InfoDialog("Информация");
-        mSBController = new StatusBarController(statusBar);
         mSToolbar = new SettingsToolbar(settingsToolButton, settingsToolBar);
-        new AppHeader(header, collapseButton, expandButton, closeButton);
         mMarkingGrid = new MarkingGrid(markingGrid);
+        Logger.setSBController(statusBar);
+        new AppHeader(header, collapseButton, expandButton, closeButton);
+
 
         StatusBarController.connectToStatusBar(infoButton);
         StatusBarController.connectToStatusBar(gridButton);
@@ -230,10 +230,5 @@ public class MainController implements Initializable {
         }
 
         mInfoDialog.showAndWait();
-    }
-
-    /** Отображение текста на строке состояния*/
-    public static void displayOnStatusBar(final String text){
-        mSBController.execute(text);
     }
 }

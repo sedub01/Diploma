@@ -7,7 +7,6 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import root.MainController;
 import root.controllers.AbstractModelController;
 import root.utils.Logger;
 
@@ -88,22 +87,24 @@ public class Model {
             mSettingsMap = mController.getSettings();
             mController.setProperties(mPropertiesMap);
         } catch (IOException e) {
-            MainController.displayOnStatusBar("Не загрузилась модель");
+            Logger.displayOnStatusBar("Не загрузилась модель");
             Logger.log("Не загрузилась модель " + mModelName + "\nПричина: " +
                     Logger.formatStringWithLF(e.getCause().toString(), 3) +
                     "\nВместо сцены возвращается null");
         } catch (IllegalStateException e) {
             Logger.log("Программа не смогла найти путь до модели");
         } catch (NullPointerException e) {
-            MainController.displayOnStatusBar("Какой-то объект при инициализации равен null");
-            Logger.log("Выброшено исключение");
+            String message = "Какой-то объект при инициализации равен null";
+            Logger.displayOnStatusBar(message);
+            Logger.log(message);
             Logger.log("Модель: " + mModelName);
             Logger.log("Путь: " + mModelFilePath);
         } catch (ClassCastException e) {
             Logger.log("Ошибка кастинга в " + e.toString().split(":")[1].trim().split(" ")[1]);
         } catch (Exception e) {
-            MainController.displayOnStatusBar("Необработанное исключение :(");
-            Logger.log("Необработанное исключение :(");
+            String message = "Необработанное исключение :(";
+            Logger.displayOnStatusBar(message);
+            Logger.log(message);
             Logger.log(Logger.formatStringWithLF(e.toString(), 3));
         }
     }
@@ -138,6 +139,6 @@ public class Model {
         if (mController != null){
             mController.execute();
         }
-        else MainController.displayOnStatusBar("Демонстрация невозможна, т.к. mController == null");
+        else Logger.displayOnAlertWindow("Демонстрация невозможна, т.к. mController == null");
     }
 }
