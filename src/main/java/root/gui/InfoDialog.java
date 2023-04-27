@@ -17,14 +17,13 @@ public class InfoDialog {
     private final Dialog<ButtonType> mDialog;
     /** Описание внутри диалогового окна*/
     private String mDescription;
-    /** Идентификатор модели, чье описание представлено*/
-    private int mHash = -1;
     /** Объект сцены, необходимый для связи с ее атрибутами*/
     private final Stage mStage;
     /** Объект, управляющий web-движком и отображающий его содержимое*/
     private final WebView mWebView;
     /** Информация о Java*/
     private String mJavaInfoStr;
+
     public enum DialogType{
         modelInfo,
         programInfo
@@ -104,13 +103,11 @@ public class InfoDialog {
         mDialog.showAndWait();
     }
 
-    /** Изменилась ли модели с момента последнего клика на infoButton (нужен
+    /** Изменилось ли описание с момента последнего клика на infoButton (нужен
      * для уменьшения обращений к web-движку)*/
-    public boolean hasChanged(final int hashCode){
-        if (mHash != hashCode){
-            mHash = hashCode;
-            return true;
-        }
-        return false;
+    public boolean hasChanged(final String modelDesc){
+        int start = modelDesc.length() - 15;
+        String descPostfix = modelDesc.substring(start);
+        return mDescription == null || !mDescription.endsWith(descPostfix);
     }
 }

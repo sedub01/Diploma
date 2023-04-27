@@ -218,12 +218,14 @@ public class MainController implements Initializable {
         final var module = moduleTitlesComboBox.getValue();
         final var model = module != null? module.getCurrentModel(): null;
         //экономим ресурсы для снижения частоты запросов к движку html
-        if (type == DialogType.modelInfo && model != null && mInfoDialog.hasChanged(model.hashCode())){
-            //Использование шаблона Builder
-            mInfoDialog.
-                setDescription(module.getModuleDescription()+"<hr>"+model.getModelDescription()).
-                setIcon(model.getIcon()).
-                updateContent();
+        if (type == DialogType.modelInfo && model != null){
+            if (mInfoDialog.hasChanged(model.getModelDescription())){
+                //Использование шаблона Builder
+                mInfoDialog.
+                        setDescription(module.getModuleDescription()+"<hr>"+model.getModelDescription()).
+                        setIcon(model.getIcon()).
+                        updateContent();
+            }
         }
         else if (type == DialogType.programInfo){
             mInfoDialog.setDescription(type).setIcon(null).updateContent();
