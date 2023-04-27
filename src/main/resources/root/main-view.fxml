@@ -38,24 +38,9 @@
                   </ImageView>
                   <MenuBar fx:id="menuBar" prefHeight="26.0">
                      <menus>
-                        <Menu mnemonicParsing="false" text="Файл">
-                           <items>
-                              <MenuItem mnemonicParsing="false" text="Close" />
-                           </items>
-                        </Menu>
-                        <Menu mnemonicParsing="false" text="Правка">
-                           <items>
-                              <MenuItem mnemonicParsing="false" text="Delete" />
-                           </items>
-                        </Menu>
                         <Menu mnemonicParsing="false" text="Вид">
                            <items>
                               <MenuItem fx:id="gridMenuItem" disable="true" mnemonicParsing="false" text="Включить сетку" />
-                           </items>
-                        </Menu>
-                        <Menu mnemonicParsing="false" text="Настройки">
-                           <items>
-                              <MenuItem mnemonicParsing="false" text="Action 1" />
                            </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Справка">
@@ -67,15 +52,15 @@
                         </Menu>
                      </menus>
                   </MenuBar>
-                  <Label opacity="0.6" prefHeight="25.0" text="PhysicalModelsEditor">
+                  <HBox alignment="CENTER" HBox.hgrow="ALWAYS">
                      <HBox.margin>
-                        <Insets left="5.0" />
+                        <Insets />
                      </HBox.margin>
-                     <padding>
-                        <Insets left="30.0" />
-                     </padding>
-                  </Label>
-                  <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label alignment="CENTER" opacity="0.6" prefHeight="25.0" text="PhysicalModelsEditor" textAlignment="CENTER" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="200.0">
                      <children>
                         <Button fx:id="collapseButton" focusTraversable="false" maxHeight="25.0" maxWidth="45.0" minHeight="25.0" minWidth="45.0" mnemonicParsing="false">
 
