@@ -269,7 +269,6 @@ public class CannonballController extends AbstractModelController {
             });
         }
 
-        //https://www.omnicalculator.com/physics/projectile-motion
         /** Метод для расчёта координат кривой траектории и ее дальнейшей прорисовки.
          *  Описание логики см. в конфиг. файле
          */

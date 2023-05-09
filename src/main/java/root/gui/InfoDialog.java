@@ -7,10 +7,6 @@ import javafx.stage.Stage;
 import root.utils.Constants;
 import root.utils.DescriptionFileParser;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 /** Класс диалогового окна с информацией о модели/программе*/
 public class InfoDialog {
     /** Объект диалогового окна */
@@ -21,8 +17,6 @@ public class InfoDialog {
     private final Stage mStage;
     /** Объект, управляющий web-движком и отображающий его содержимое*/
     private final WebView mWebView;
-    /** Информация о Java*/
-    private String mJavaInfoStr;
 
     public enum DialogType{
         modelInfo,
@@ -41,37 +35,13 @@ public class InfoDialog {
         mWebView = new WebView();
         mWebView.setPrefSize(400, Constants.MIN_HEIGHT/2);
         mDialog.getDialogPane().setContent(mWebView);
-
-        mJavaInfoStr = """
-                  <style>
-                   p {
-                    font-family: Verdana, Arial, Helvetica, sans-serif;\s
-                    font-size: 10pt; /* Размер шрифта в пунктах */\s
-                margin-top: 0.5em;\s
-                margin-bottom: 0.5em;\s
-                   }
-                  </style>""";
-        try {
-            mJavaInfoStr += generateJavaInfo();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /** Генерация информации о Java, берущейся из командной строки*/
-    private String generateJavaInfo() throws IOException {
-        final var builder = new ProcessBuilder("cmd.exe", "/c", "java", "--version");
-        builder.redirectErrorStream(true);
-        final Process p = builder.start();
-        final var r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        return String.format("<p>%s</p>", r.readLine());
     }
 
     /** Установка описание программы*/
     public InfoDialog setDescription(final DialogType type){
         if (type == DialogType.programInfo){
             final var fileParser = DescriptionFileParser.getInstance();
-            mDescription = String.format(fileParser.getProgramDescription(), mJavaInfoStr);
+            mDescription = fileParser.getProgramDescription();
         }
         return this;
     }

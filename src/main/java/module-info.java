@@ -1,5 +1,6 @@
 module java.diploma {
-    requires javafx.controls;
+    requires transitive javafx.graphics;
+    requires transitive javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
 

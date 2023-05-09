@@ -1,7 +1,6 @@
 package root.utils;
 
 import javafx.scene.control.Alert.AlertType;
-import root.MainController;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
