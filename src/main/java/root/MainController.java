@@ -1,5 +1,6 @@
 package root;
 
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
@@ -130,7 +131,6 @@ public class MainController implements Initializable {
         Logger.setSBController(statusBar);
         new AppHeader(header, collapseButton, expandButton, closeButton);
 
-
         StatusBarController.connectToStatusBar(infoButton);
         StatusBarController.connectToStatusBar(gridButton);
         StatusBarController.connectToStatusBar(executeButton);
@@ -187,7 +187,9 @@ public class MainController implements Initializable {
         gridMenuItem.setDisable(!model.isGridNeeded());
         mSToolbar.setVisible(false);
         mMarkingGrid.setVisible(false);
-        mSToolbar.setSettings(model.getSettings());
+        Platform.runLater(()->{ //Вызывается уже после установки сцены
+            mSToolbar.setSettings(model.getSettings());
+        });
     }
 
     /** Инициализация модулей */
