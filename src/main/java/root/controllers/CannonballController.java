@@ -8,8 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.stage.Stage;
@@ -25,11 +24,10 @@ import root.utils.Point;
 
 /** Модель, анализирующая параболическое движение снаряда*/
 public class CannonballController extends AbstractModelController {
-    @FXML private ImageView barrel;
     @FXML private ImageView wheel;
     @FXML private ImageView floor;
-    @FXML private BorderPane borderPane;
-    @FXML private AnchorPane barrelPane;
+    @FXML private Pane borderPane;
+    @FXML private Pane barrelPane;
 
     /** Координаты зажатой ЛКМ*/
     private final Point mStartP = new Point();
@@ -50,16 +48,15 @@ public class CannonballController extends AbstractModelController {
     protected void construct() {
         Logger.log("Загрузилась модель пушечного ядра");
         barrelPane.getTransforms().add(mRotate);
-        //Нужно делать иниц. прямо здесь, т.к. до конструктора все @FXML ImageView == null
-        trLine = new TrajectoryLine();
         mProjectile = getProjectileObject();
 
         //Определяем точку опоры
-        mRotate.setPivotX(barrel.getFitWidth()/10);
-        mRotate.setPivotY(barrel.getFitHeight()/2);
+        mRotate.setPivotX(barrelPane.getWidth()/10);
+        mRotate.setPivotY(barrelPane.getHeight()/2);
 
         setTrackingPoint(mTrackingPoint, true);
         setTrackingPoint(mPivotPoint, false);
+        trLine = new TrajectoryLine();
 
         barrelPane.addEventHandler(MouseEvent.MOUSE_PRESSED, this::setMouse);
         // Когда край пушки перетаскивается, вращаем её
@@ -75,7 +72,7 @@ public class CannonballController extends AbstractModelController {
 
     /** Обработчик перетаскивания ствола*/
     private void barrelDragged(final MouseEvent event){
-        if (event.getX() >= barrelPane.getWidth() / 3  && !mIsTransitionStarted){
+        if (!mIsTransitionStarted){
             /*
              Используется для получения положения крайнего угла объекта на сцене
              Аффинное преобразование - это линейное, которое переводит объект из двумерного(трех-)
@@ -115,7 +112,7 @@ public class CannonballController extends AbstractModelController {
     }
 
     /** Определение угла поворота по двум точкам */
-    public double clockAngle(double dx, double dy) {
+    private double clockAngle(double dx, double dy) {
         double angle = Math.abs(Math.toDegrees(Math.atan2(dy, dx)));
 
         if (dy < 0) {
@@ -127,10 +124,10 @@ public class CannonballController extends AbstractModelController {
     /** Установка отслеживающих точек для расчета высоты*/
     private void setTrackingPoint(ImageView point, boolean isTracking) {
         final int SIZE = 1;
-        final int w = (int)barrel.getFitWidth();
+        final int w = (int) barrelPane.getWidth();
         point.setFitWidth(SIZE);
         point.setFitHeight(SIZE);
-        point.setLayoutX(isTracking? w*0.9: mRotate.getPivotX());
+        point.setLayoutX(isTracking ? w * 0.9 : mRotate.getPivotX());
         point.setLayoutY(mRotate.getPivotY());
         barrelPane.getChildren().add(point);
     }
@@ -151,11 +148,7 @@ public class CannonballController extends AbstractModelController {
         mModelSettings.put(new Label("Изначальная высота [м]"), heightField);
         mModelSettings.put(new Label("Максимальная высота [м]"), maxHeightField);
 
-        bidirectionalBinding(speedText, trLine.initVelocityProperty());
-        speedText.setDisable(false);
-        speedText.setText("5");
-//Этот сеттер убрать не получится, поскольку в этом объекте mInitVelocity пока что не инициализирован
-        trLine.initCurve(speedText.getText());
+        bidirectionalBinding(speedText, trLine.initVelocityProperty(), false);
         bidirectionalBinding(durationField, trLine.durationProperty());
         bidirectionalBinding(distanceField, trLine.distanceProperty());
         bidirectionalBinding(heightField, trLine.initHeightProperty());
@@ -193,7 +186,7 @@ public class CannonballController extends AbstractModelController {
         execProp.set(true);
         expandProp.set(true);
         mIsTransitionStarted = true;
-        PathTransition trans = new PathTransition(Duration.seconds(trLine.getDuration()), path, mProjectile);
+        PathTransition trans = new PathTransition(Duration.seconds(trLine.durationProperty().get()), path, mProjectile);
         trans.setInterpolator(Interpolator.LINEAR);
         trans.setOnFinished(e->{
             mIsTransitionStarted = false;
@@ -249,24 +242,24 @@ public class CannonballController extends AbstractModelController {
             borderPane.getChildren().add(mPath);
             mPath.getStrokeDashArray().addAll(10d, 10d);
 
-            mInitVelocity = new SimpleIntegerProperty(this, "initVelocity");
+            mInitVelocity = new SimpleIntegerProperty(this, "initVelocity", 6);
             mTimeFlight = new SimpleDoubleProperty(this, "duration",
                     (Math.sqrt(2*Constants.g*HEIGHT))/Constants.g);
-            mDistance = new SimpleDoubleProperty(this, "distance");
+            mDistance = new SimpleDoubleProperty(this, "distance", mInitVelocity.get() * mTimeFlight.get());
             mTotalHeight = new SimpleDoubleProperty(this, "totalHeight", HEIGHT);
             mMaxHeight = new SimpleDoubleProperty(this, "maxHeight", HEIGHT);
 
-            Platform.runLater(()->{
+            mInitHeight = mPivotPoint.localToScene(mPivotPoint.getBoundsInLocal()).getCenterY();
+            Stage stage = (Stage) borderPane.getScene().getWindow();
+            // Т.к. значения GUI обновляются уже после максимизации сцены, а не во время
+            // нее, надо использовать runLater()
+            stage.maximizedProperty().addListener((obs) -> Platform.runLater(()->{
+                mProjectile.setVisible(false);
+                // эту переменную надо обновлять каждый раз при изменении размера окна
                 mInitHeight = mPivotPoint.localToScene(mPivotPoint.getBoundsInLocal()).getCenterY();
-                Stage stage = (Stage)borderPane.getScene().getWindow();
-//Т.к. значения GUI обновляются уже после максимизации сцены, а не во время нее, надо использовать runLater()
-                stage.maximizedProperty().addListener((obs)-> Platform.runLater(()-> {
-                    mProjectile.setVisible(false);
-                    //эту переменную надо обновлять каждый раз при изменении размера окна
-                    mInitHeight = mPivotPoint.localToScene(mPivotPoint.getBoundsInLocal()).getCenterY();
-                    calculateTrajectory();
-                }));
-            });
+                calculateTrajectory();
+            }));
+            calculateTrajectory();
         }
 
         /** Метод для расчёта координат кривой траектории и ее дальнейшей прорисовки.
@@ -278,6 +271,10 @@ public class CannonballController extends AbstractModelController {
 
             final double angle = -mRotate.getAngle();
             //Местонахождение точки начала траектории в пространстве сцены
+            //TODO попытаться убрать mTrackingPoint и засунуть в bounds саму пушку
+            //т.е. сначала найти границы пушки относительно ее Pane, затем
+            //по x взять max-смещение, по y взять height/2
+            //Для mPivotPoint можно взять коорд. точки крепления
             final Bounds bounds = mTrackingPoint.localToScene(mTrackingPoint.getBoundsInLocal());
             //Разница по оси Y между точкой крепления ствола и концом ствола
             final double dHeight = (mInitHeight - bounds.getCenterY()) / PIXELS_PER_METER;
@@ -293,7 +290,7 @@ public class CannonballController extends AbstractModelController {
             //Смещение точки начала полета по оси X
             final double deltaX = bounds.getCenterX();
             //Смещение точки начала полета по оси Y
-            final double deltaY = bounds.getCenterY() - barrel.getFitHeight()/2 + dHeight*PIXELS_PER_METER;
+            final double deltaY = bounds.getCenterY() - barrelPane.getHeight()/2 + dHeight*PIXELS_PER_METER;
             //Координата по оси Y, при которой траектория будет кончаться при соприкосновении с полом
             final double neededHeight = borderPane.getHeight() - floor.getFitHeight();
             //Множитель для значения X, чтобы не считать его в цикле
@@ -307,22 +304,8 @@ public class CannonballController extends AbstractModelController {
             }
         }
 
-        /** Первичный метод прорисовки кривой траектории
-         *  Нужен, т.к. без начальной скорости и дистанции невозможно нарисовать траекторию
-         *  Метод вызывается только при иниц. настройки
-         * */
-        public void initCurve(String velocity){
-            mInitVelocity.set(Integer.parseInt(velocity));
-            mDistance.set(mInitVelocity.get() * mTimeFlight.get());
-            Platform.runLater(this::calculateTrajectory);
-        }
-
         public IntegerProperty initVelocityProperty(){
             return mInitVelocity;
-        }
-
-        public double getDuration() {
-            return mTimeFlight.get();
         }
 
         public DoubleProperty durationProperty(){

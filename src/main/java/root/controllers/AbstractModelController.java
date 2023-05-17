@@ -1,5 +1,6 @@
 package root.controllers;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -31,9 +32,11 @@ abstract public class AbstractModelController implements Initializable {
 
     @Override
     final public void initialize(URL url, ResourceBundle resourceBundle) {
-        construct();
-        createSettings();
-        __setToolTips__();
+        Platform.runLater(()->{ //Вызывается уже после установки сцены
+            construct();
+            createSettings();
+            __setToolTips__();
+        });
     }
 
     /** Установка всплывающих подсказок для панели настроек*/
@@ -58,9 +61,17 @@ abstract public class AbstractModelController implements Initializable {
     }
 
     /** Связывание текстового поля настройки с изменяемыми атрибутами модели property*/
-    //field - то, что зависит; property - то, от чего зависит
     final public void bidirectionalBinding(TextField field, Property<Number> property) {
+        //field - то, что зависит; property - то, от чего зависит
+        bidirectionalBinding(field, property, true);
+    }
+
+    /**
+     * {@code disable} по умолчанию true.
+     * @see AbstractModelController#bidirectionalBinding(TextField, Property<Number>)
+     */
+    final public void bidirectionalBinding(TextField field, Property<Number> property, boolean disable) {
         Bindings.bindBidirectional(field.textProperty(), property, new NumberStringConverter());
-        field.setDisable(true);
+        field.setDisable(disable);
     }
 }
