@@ -271,6 +271,10 @@ public class CannonballController extends AbstractModelController {
 
             final double angle = -mRotate.getAngle();
             //Местонахождение точки начала траектории в пространстве сцены
+            //TODO попытаться убрать mTrackingPoint и засунуть в bounds саму пушку
+            //т.е. сначала найти границы пушки относительно ее Pane, затем
+            //по x взять max-смещение, по y взять height/2
+            //Для mPivotPoint можно взять коорд. точки крепления
             final Bounds bounds = mTrackingPoint.localToScene(mTrackingPoint.getBoundsInLocal());
             //Разница по оси Y между точкой крепления ствола и концом ствола
             final double dHeight = (mInitHeight - bounds.getCenterY()) / PIXELS_PER_METER;
