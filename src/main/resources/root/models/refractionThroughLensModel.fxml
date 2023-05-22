@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="root.controllers.RefractionThroughLensModel"
-            prefHeight="400.0" prefWidth="600.0">
-
+<AnchorPane fx:id="anchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/1" fx:controller="root.controllers.RefractionThroughLensController">
+   <children>
+      <Line fx:id="OXline" endX="100.0" layoutY="370.0" strokeWidth="3.0" />
+      <Line fx:id="lensLine" endY="200.0" stroke="#0015ff" strokeWidth="4.0" />
+   </children>
 </AnchorPane>
