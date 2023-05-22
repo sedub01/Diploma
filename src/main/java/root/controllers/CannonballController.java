@@ -243,11 +243,10 @@ public class CannonballController extends AbstractModelController {
             mPath.getStrokeDashArray().addAll(10d, 10d);
 
             mInitVelocity = new SimpleIntegerProperty(this, "initVelocity", 6);
-            mTimeFlight = new SimpleDoubleProperty(this, "duration",
-                    (Math.sqrt(2*Constants.g*HEIGHT))/Constants.g);
-            mDistance = new SimpleDoubleProperty(this, "distance", mInitVelocity.get() * mTimeFlight.get());
-            mTotalHeight = new SimpleDoubleProperty(this, "totalHeight", HEIGHT);
-            mMaxHeight = new SimpleDoubleProperty(this, "maxHeight", HEIGHT);
+            mTimeFlight = new SimpleDoubleProperty(this, "duration");
+            mDistance = new SimpleDoubleProperty(this, "distance");
+            mTotalHeight = new SimpleDoubleProperty(this, "totalHeight");
+            mMaxHeight = new SimpleDoubleProperty(this, "maxHeight");
 
             mInitHeight = mPivotPoint.localToScene(mPivotPoint.getBoundsInLocal()).getCenterY();
             Stage stage = (Stage) borderPane.getScene().getWindow();
