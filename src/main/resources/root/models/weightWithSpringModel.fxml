@@ -1,10 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.shape.Polygon?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="root.controllers.WeightWithSpringModel"
-            prefHeight="400.0" prefWidth="600.0">
-
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/1" fx:controller="root.controllers.WeightWithSpringController">
+   <children>
+      <HBox fx:id="hbox" alignment="TOP_CENTER" prefHeight="260.0" prefWidth="546.0">
+         <children>
+            <AnchorPane fx:id="topPane">
+               <children>
+                  <ImageView fx:id="spring" fitHeight="175.0" fitWidth="69.0" layoutX="26.0" pickOnBounds="true">
+                     <image>
+                        <Image url="@../img/weightWithSpring/spring-icon.png" />
+                     </image>
+                  </ImageView>
+                  <Polygon fx:id="trapezoid" fill="#4883b7" layoutX="58.0" layoutY="220.0" points="-54.0, 40.0, 51, 40, 30.0, -48, -28, -48" stroke="BLACK" strokeType="INSIDE" />
+               </children>
+            </AnchorPane>
+         </children>
+      </HBox>
+   </children>
 </AnchorPane>
