@@ -20,7 +20,7 @@ import root.utils.Point;
 
 public class BilliardBallPane{
     /** Полигональная линия, формирующая стрелку */
-    private Polygon mPolygon = new Polygon();
+    private final Polygon mPolygonArrow;
     /** Координаты зажатой ЛКМ */
     private final Point mStartP = new Point();
     /** Сущность для управления поворотом ствола */
@@ -49,22 +49,11 @@ public class BilliardBallPane{
     private Pane mBallPane;
 
     public BilliardBallPane(Circle ball, double angle, int velocity, double weight) {
-        mPolygon.setFill((Color) ball.getFill());
-        mPolygon.setStrokeWidth(2);
-        mPolygon.setStroke(Color.BLACK);
-        mPath.setStroke(Color.GREEN);
-        mPath.setStrokeWidth(1);
+        mPolygonArrow = new PolygonArrow((Color) ball.getFill());
+        mPolygonArrow.setRotate(90);
+        mPath.setStroke((Color) ball.getFill());
+        mPath.setStrokeWidth(2);
         mPath.getStrokeDashArray().addAll(10d, 10d);
-        
-        var list = mPolygon.getPoints();
-        // 7 точек - 14 добавлений (сначала x, потом y)
-        list.addAll(80.0, 30.0); // коорд. наконечника стрелки
-        list.addAll(50.0, 60.0);
-        list.addAll(50.0, 40.0);
-        list.addAll(0.0, 40.0);
-        list.addAll(0.0, 20.0);
-        list.addAll(50.0, 20.0);
-        list.addAll(50.0, 0.0);
 
         mInitVelocity = new SimpleDoubleProperty(this, "initVelocity", velocity);
         mBallWeight = new SimpleDoubleProperty(this, "ballWeight", weight);
@@ -72,11 +61,11 @@ public class BilliardBallPane{
         mMomentum = new SimpleDoubleProperty(this, "momentum", weight*velocity);
         
         translateToBall(ball);
-        mBallPane.getChildren().add(mPolygon);
+        mBallPane.getChildren().add(mPolygonArrow);
         mBallPane.getChildren().add(mPath);
         mBallPane.getTransforms().add(mRotate);
 
-        final Bounds bounds = mBallPane.sceneToLocal(mPolygon.localToScene(mPolygon.getBoundsInLocal()));
+        final Bounds bounds = mBallPane.sceneToLocal(mPolygonArrow.localToScene(mPolygonArrow.getBoundsInLocal()));
         mPath.setStartX(bounds.getMaxX());
         mPath.setStartY(bounds.getCenterY());
         mPath.setEndX(bounds.getMaxX()+2000); // Максимальное разрешение экрана
@@ -104,8 +93,8 @@ public class BilliardBallPane{
         // Вопрос: надо ли в objectDragged передавать условие вращаемости как второй
         // параметр?
         // - условие вращаемости (мб какой-нибудь коллбек)
-        mPolygon.addEventHandler(MouseEvent.MOUSE_PRESSED, this::setMouse);
-        mPolygon.addEventHandler(MouseEvent.MOUSE_DRAGGED, this::arrowDragged);
+        mPolygonArrow.addEventHandler(MouseEvent.MOUSE_PRESSED, this::setMouse);
+        mPolygonArrow.addEventHandler(MouseEvent.MOUSE_DRAGGED, this::arrowDragged);
     }
 
     private void setMouse(final MouseEvent e) {
@@ -120,11 +109,6 @@ public class BilliardBallPane{
             final double endY = event.getSceneY();
             final double px = mRotate.getPivotX() + localToScene.getTx();
             final double py = mRotate.getPivotY() + localToScene.getTy();
-
-            //Tx, Ty - координаты "конца объекта" для подсчета угла; pivotX, pivotY - смещения
-            Logger.log(localToScene.getTx(), localToScene.getTy());
-            Logger.log(localToScene);
-            Logger.log(mPolygon.getLocalToSceneTransform());
 
             final double th1 = clockAngle(mStartP.x - px, mStartP.y - py);
             final double th2 = clockAngle(endX - px, endY - py);
@@ -151,8 +135,8 @@ public class BilliardBallPane{
         mRotate.setPivotY(mBallPane.getPrefHeight() / 2);
 
         final double r = mBallPane.getPrefWidth() / 2;
-        mPolygon.setLayoutX(1.5 * r); // сделано с небольшим отступом
-        mPolygon.setLayoutY(r / 2);
+        mPolygonArrow.setLayoutX(2 * r); // сделано с небольшим отступом
+        mPolygonArrow.setLayoutY(r / 2 - 10);
     }
 
     public void setAngleSpinnerSettings(Spinner<Double> angleSpinner) {
