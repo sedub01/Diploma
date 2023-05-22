@@ -16,14 +16,14 @@ public class Constants {
     public static final String BG_THEME_COLOR_PATTERN = "-fx-background-color: rgb(%d,%d,%d);";
     public static final String BG_THEME_PATTERN = "-fx-background: rgb(%d,%d,%d);";
     public static final boolean DEBUG = true;
-    public static final Image mainIconImage;
+    public static final Image MAIN_ICON_IMAGE;
     static {
         Image tempImage = null;
         try{
             tempImage = new Image(MainApplication.class.getResourceAsStream("img/icons/icon.png"));
         }
         catch (Exception e){Logger.log("Заглавная иконка не найдена");}
-        mainIconImage = tempImage;
+        MAIN_ICON_IMAGE = tempImage;
     }
     public static final int HIDE_DELAY = 3000;
     public static final int PIXELS_PER_UNIT = 100;

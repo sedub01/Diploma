@@ -14,7 +14,7 @@ public class Logger {
     private static final Alert mAlert;
     static {
         mAlert = new Alert(AlertType.INFORMATION);
-        final var mainIcon = Constants.mainIconImage;
+        final var mainIcon = Constants.MAIN_ICON_IMAGE;
         final var stage = (Stage) mAlert.getDialogPane().getScene().getWindow();
         if (mainIcon != null)
             stage.getIcons().add(mainIcon);

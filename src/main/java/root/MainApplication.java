@@ -19,8 +19,8 @@ public class MainApplication extends Application {
         Pane root = loader.load();
         Scene scene = new Scene(root);
         stage.setTitle("PhysicalModelsEditor");
-        if (Constants.mainIconImage != null)
-            stage.getIcons().add(Constants.mainIconImage);
+        if (Constants.MAIN_ICON_IMAGE != null)
+            stage.getIcons().add(Constants.MAIN_ICON_IMAGE);
         stage.setScene(scene);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setHeight(Constants.MIN_HEIGHT);

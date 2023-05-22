@@ -35,7 +35,8 @@ public class ModuleFactory{
         final var fileParser = DescriptionFileParser.getInstance();
         //взятие приставки до первой заглавной буквы названия фабрики
         final String prefix = factory.split("(?=\\p{Lu})")[0];
-        for (var modelMap: fileParser.getModelsMap()) {
+        final var modelsMap = fileParser.getModelsMap();
+        for (var modelMap: modelsMap) {
             final var modelName = modelMap.get("modelNaming");
             if (!prefix.isEmpty() && modelName.startsWith(prefix)){
                 mModels.add(new Model(modelMap));

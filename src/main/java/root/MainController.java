@@ -16,7 +16,6 @@ import root.gui.InfoDialog.DialogType;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.layout.BorderPane;
 import root.utils.DescriptionFileParser;
 import root.utils.Global;
 import root.utils.Logger;
@@ -30,8 +29,6 @@ public class MainController implements Initializable {
     private ComboBox<ModuleFactory> moduleTitlesComboBox;
     @FXML
     private Label moduleLabel;
-    @FXML
-    private BorderPane borderPane;
     @FXML
     private ToolBar toolBar;
     @FXML
@@ -97,13 +94,13 @@ public class MainController implements Initializable {
         infoButton.setShape(new Circle());
         gridButton.setStyle(buttonStyle);
         executeButton.setStyle(buttonStyle);
-        borderPane.setStyle(Global.getCSSThemeColor(0.75));
         toolBar.setStyle(Global.getCSSThemeColor(0.4));
         menuBar.setStyle(Global.getCSSThemeColor(-0.25));
         statusBarBox.setStyle(Global.getCSSThemeColor(0.2)+
                 "-fx-border-color:black;-fx-border-width:1;");
         moduleTitlesComboBox.setStyle(Global.getCSSThemeColor());
-        modelsTabPane.setStyle(Global.getCSSThemeColor(0.1, "back"));
+        modelsTabPane.setStyle(Global.getCSSThemeColor(0.1, "back") +
+                Global.getCSSThemeColor(0.75));
 
         infoButton.setOnAction(e->onInfoButtonClicked(DialogType.modelInfo));
         curModelInfoMenuItem.setOnAction(e->onInfoButtonClicked(DialogType.modelInfo));
@@ -196,8 +193,9 @@ public class MainController implements Initializable {
     private void initFactories(){
         //инициализация парсера
         DescriptionFileParser fileParser = DescriptionFileParser.getInstance();
-        var propertiesMap = getPropertiesMap();
-        for (final var moduleHashMap: fileParser.getModulesMap()) {
+        final var propertiesMap = getPropertiesMap();
+        final var modulesMap = fileParser.getModulesMap();
+        for (final var moduleHashMap: modulesMap) {
             var module = new ModuleFactory(moduleHashMap);
             module.setProperties(propertiesMap);
             mFactories.add(module);

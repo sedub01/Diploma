@@ -21,9 +21,9 @@ public final class DescriptionFileParser {
     private final String[] mModuleKeyWords = {"moduleName",
             "moduleDescription"};
     /** Список объектов описания модулей*/
-    private final List<HashMap<String, String>> mModulesMapList = new LinkedList<>();
+    private final List<Map<String, String>> mModulesMapList = new LinkedList<>();
     /** Список объектов описания моделей*/
-    private final List<HashMap<String, String>> mModelsMapList = new LinkedList<>();
+    private final List<Map<String, String>> mModelsMapList = new LinkedList<>();
     /** Структура с шаблонами для парсинга*/
     private final Map<String, String> mTemplateMap = new HashMap<>();
     /** Описание программы, взятое из файла*/
@@ -60,7 +60,7 @@ public final class DescriptionFileParser {
     }
 
     /** Инициализация моделей*/
-    private void initModels() {
+    private void initModels() { 
         final String models = mProperties.getProperty("models");
         //обрезаю скобки и формирую список
         List<String> modelsList = Arrays.asList(models.substring(1, models.length() - 1).split(","));
@@ -138,11 +138,11 @@ public final class DescriptionFileParser {
         return objectInfoParsed.toString();
     }
 
-    public List<HashMap<String, String>> getModulesMap(){
+    public List<Map<String, String>> getModulesMap(){
         return mModulesMapList;
     }
 
-    public List<HashMap<String, String>> getModelsMap(){
+    public List<Map<String, String>> getModelsMap(){
         return mModelsMapList;
     }
 

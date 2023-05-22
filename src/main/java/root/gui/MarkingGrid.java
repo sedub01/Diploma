@@ -16,7 +16,7 @@ public class MarkingGrid{
     private final int mCellSize = PIXELS_PER_UNIT;
     /** Примерная высота вкладки таб панели*/
     @SuppressWarnings("FieldCanBeLocal")
-    private final int tabOffset = 30;
+    private final int tabOffset = 29;
     /** Панель, на которой рисуется сетка*/
     private final Pane mGridPane;
     public MarkingGrid(Pane gridPane){

@@ -40,7 +40,7 @@ public class Model {
     /** Структура, хранящая атрибуты кнопок сцены для управления ими изнутри*/
     private Map<String, BooleanProperty> mPropertiesMap;
 
-    public Model(HashMap<String, String> model){
+    public Model(Map<String, String> model){
         mModelName = model.get("modelName");
         mModelDescription = model.get("modelDescription");
         mModelFilePath = model.get("modelFilePath");
@@ -99,6 +99,7 @@ public class Model {
             Logger.log(message);
             Logger.log("Модель: " + mModelName);
             Logger.log("Путь: " + mModelFilePath);
+            e.printStackTrace();
         } catch (ClassCastException e) {
             Logger.log("Ошибка кастинга в " + e.toString().split(":")[1].trim().split(" ")[1]);
         } catch (Exception e) {

@@ -8,9 +8,7 @@ import root.utils.Constants;
 import root.utils.DescriptionFileParser;
 
 /** Класс диалогового окна с информацией о модели/программе*/
-public class InfoDialog {
-    /** Объект диалогового окна */
-    private final Dialog<ButtonType> mDialog;
+public class InfoDialog extends Dialog<ButtonType>{
     /** Описание внутри диалогового окна*/
     private String mDescription;
     /** Объект сцены, необходимый для связи с ее атрибутами*/
@@ -24,17 +22,16 @@ public class InfoDialog {
     }
 
     public InfoDialog(final String title){
-        mDialog = new Dialog<>();
-        mDialog.setTitle(title);
+        setTitle(title);
         final var type = new ButtonType("Ок", ButtonBar.ButtonData.OK_DONE);
-        mDialog.getDialogPane().getButtonTypes().add(type);
+        this.getDialogPane().getButtonTypes().add(type);
 
-        mDialog.getDialogPane().setStyle("-fx-background-color: white;");
-        mStage = (Stage) mDialog.getDialogPane().getScene().getWindow();
+        this.getDialogPane().setStyle("-fx-background-color: white;");
+        mStage = (Stage) this.getDialogPane().getScene().getWindow();
 
         mWebView = new WebView();
         mWebView.setPrefSize(400, Constants.MIN_HEIGHT/2);
-        mDialog.getDialogPane().setContent(mWebView);
+        this.getDialogPane().setContent(mWebView);
     }
 
     /** Установка описание программы*/
@@ -55,7 +52,7 @@ public class InfoDialog {
     /** Установка иконки модели на диалоговое окно*/
     public InfoDialog setIcon(final ImageView icon){
         mStage.getIcons().clear();
-        final var mainIcon = Constants.mainIconImage;
+        final var mainIcon = Constants.MAIN_ICON_IMAGE;
         if (icon != null)
             mStage.getIcons().add(icon.getImage());
         else if (mainIcon != null)
@@ -68,15 +65,10 @@ public class InfoDialog {
         mWebView.getEngine().loadContent(mDescription);
     }
 
-    /** Отображение диалогового окна*/
-    public void showAndWait(){
-        mDialog.showAndWait();
-    }
-
     /** Изменилось ли описание с момента последнего клика на infoButton (нужен
      * для уменьшения обращений к web-движку)*/
     public boolean hasChanged(final String modelDesc){
-        int start = modelDesc.length() - 15;
+        int start = modelDesc.length() - 15; //последние 15 символов
         String descPostfix = modelDesc.substring(start);
         return mDescription == null || !mDescription.endsWith(descPostfix);
     }
