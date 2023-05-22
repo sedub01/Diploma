@@ -11,8 +11,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Polygon;
-import javafx.stage.Stage;
-import root.utils.Logger;
 import root.utils.Point;
 import root.utils.Constants;
 

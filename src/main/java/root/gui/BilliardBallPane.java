@@ -6,7 +6,6 @@ import javafx.beans.value.WritableDoubleValue;
 import javafx.geometry.Bounds;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -15,7 +14,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
-import root.utils.Logger;
 import root.utils.Point;
 
 public class BilliardBallPane{
@@ -25,10 +23,6 @@ public class BilliardBallPane{
     private final Point mStartP = new Point();
     /** Сущность для управления поворотом ствола */
     private final Rotate mRotate = new Rotate();
-    /** Точка, от которой начинается отсчет кривой траектории */
-    private final ImageView mTrackingPoint = new ImageView();
-    /** Точка, совпадающая с точкой вращения */
-    private final ImageView mPivotPoint = new ImageView();
     /** Изначальная скорость шара */
     private final DoubleProperty mInitVelocity;
     /** Изначальная скорость шара */

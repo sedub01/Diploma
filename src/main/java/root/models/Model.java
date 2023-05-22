@@ -11,7 +11,6 @@ import root.controllers.AbstractModelController;
 import root.utils.Logger;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 /** Класс, хранящий и обрабатывающий характеристики физической модели

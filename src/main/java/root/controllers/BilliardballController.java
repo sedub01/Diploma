@@ -129,10 +129,4 @@ public class BilliardballController extends AbstractModelController {
         expandProp.set(true);
         //TODO сделать перемещение двух шаров
     }
-
-    private double f(double i, double startX, double startY, double endX, double endY){
-        double k = (endY - startY)/(endX - startX);
-        double b = (startY - endY)*startX/(endX - startX) + startY;
-        return k*i + b;
-    }
 }
