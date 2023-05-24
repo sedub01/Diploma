@@ -24,7 +24,7 @@ abstract public class AbstractModelController implements Initializable {
     /** Структура, хранящая атрибуты кнопок сцены для управления ими изнутри*/
     protected Map<String, BooleanProperty> mPropertiesMap;
 
-    /**Инициализирует HashMap с ключом названием настройки
+    /**Инициализирует LinkedHashMap с ключом названием настройки
     и значением - кастомным виджетом настройки*/
     abstract protected void createSettings();
     /** Инициализация модели */

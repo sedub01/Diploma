@@ -17,7 +17,7 @@
                         <Image url="@../img/weightWithSpring/spring-icon.png" />
                      </image>
                   </ImageView>
-                  <Polygon fx:id="trapezoid" fill="#4883b7" layoutX="58.0" layoutY="220.0" points="-54.0, 40.0, 51, 40, 30.0, -48, -28, -48" stroke="BLACK" strokeType="INSIDE" />
+                  <Polygon fx:id="trapezoid" fill="#4883b7" layoutX="4.0" layoutY="171.0" points="0, 88.0, 105, 88, 84, 0, 26, 0" stroke="BLACK" strokeType="INSIDE" />
                </children>
             </AnchorPane>
          </children>
