@@ -14,6 +14,13 @@ import javafx.scene.shape.Polygon;
 import root.utils.Point;
 import root.utils.Constants;
 
+//Есть два вида растяжения: растяжение от груза и растяжение от приложенной силы
+//Второе можно применять только при перетягивании груза зажатой мышью
+//Растяжение от груза задается через ввод настроек,
+//ручное растяжение - при перетаскивании предмета
+//А итоговое растяжение получается из суммы двух растяжений
+//Ручное удлинение считается как разница между положением груза при перемещении
+//и при расположении без перетягивания, деленная на количество пикселей на один метр
 /** Модель, описывающая зависимость растяжения пружины от силы упругости */
 public class WeightWithSpringController extends AbstractModelController {
     @FXML
@@ -28,19 +35,18 @@ public class WeightWithSpringController extends AbstractModelController {
     /** Координаты зажатой ЛКМ*/
     private final Point mStartP = new Point();
     /**Начальная высота груза */
-    private double initY;
+    private int mInitY;
     /** Величина в пикселах, на которую изображение груза
-     * может накладываться на изображение пружины
-     */
-    private int springLambda;
-    /** */
-    private double weightY;
+     * может накладываться на изображение пружины */
+    private int mSpringLambda;
+    /** Положение по оси Y только при удлинении весом груза*/
+    private int mWeightY;
 
     /** Вес груза в килограммах */
     private DoubleProperty mCargoWeight;
     /** Жёсткость пружины */
     private IntegerProperty mStiffness;
-    /** Прилагаемая сила */
+    /** Прилагаемая сила в Ньютонах*/
     private DoubleProperty mManualPower;
     /** Удлинение пружины от груза в метрах */
     private DoubleProperty mWeightExtension;
@@ -49,43 +55,41 @@ public class WeightWithSpringController extends AbstractModelController {
     /** Итоговое удлинение пружины в метрах */
     private DoubleProperty mTotalSpringExtension;
     /** Количество пикселей на один метр (1 у.е. = 5 см = 0.05 м)*/
-    private final double pixelsPerMeter = Constants.PIXELS_PER_UNIT/0.05;
+    private final int pixelsPerMeter = (int)(Constants.PIXELS_PER_UNIT/0.05);
 
     @Override
     protected void construct() {
         hbox.minWidthProperty().bind(hbox.getScene().widthProperty());
 
-        trapezoid.addEventHandler(MouseEvent.MOUSE_PRESSED, this::setMouse);
-        trapezoid.addEventHandler(MouseEvent.MOUSE_DRAGGED, this::objectDragged);
+        mInitY = (int)trapezoid.getLayoutY();
+        mSpringLambda = (int)(spring.getFitHeight() - mInitY);
 
-        initY = trapezoid.getLayoutY();
-        springLambda = (int)(spring.getFitHeight() - initY);
-
-        mCargoWeight = new SimpleDoubleProperty(this, "cargoWeight", 0.76);
+        mCargoWeight = new SimpleDoubleProperty(this, "cargoWeight", 1.52);
         mStiffness = new SimpleIntegerProperty(this, "stiffness", 300);
         mManualPower = new SimpleDoubleProperty(this, "manualPower");
         mManualExtension = new SimpleDoubleProperty(this, "manualExtension");
-        final double weightExtension = mCargoWeight.get() * Constants.g / mStiffness.get();
-        mWeightExtension = new SimpleDoubleProperty(this, "weightExtension", weightExtension);
-        mTotalSpringExtension = new SimpleDoubleProperty(this, "springExtension", weightExtension);
-        weightY = initY + weightExtension*pixelsPerMeter;
+        mWeightExtension = new SimpleDoubleProperty(this, "weightExtension");
+        mTotalSpringExtension = new SimpleDoubleProperty(this, "springExtension");
         
         calculate();
+
+        trapezoid.addEventHandler(MouseEvent.MOUSE_PRESSED, this::setMouse);
+        trapezoid.addEventHandler(MouseEvent.MOUSE_DRAGGED, this::objectDragged);
+        trapezoid.addEventHandler(MouseEvent.MOUSE_RELEASED, this::objectReleased);
     }
 
-    //Есть два вида растяжения: растяжение от груза и растяжение от приложенной силы
-    //Вторую можно применять только в objectDragged, а в остальных случаях она будет равна 0
-    //В текущей версии программы растяжение считается за этим методом
-    //TODO посмотреть, можно ли два вида растяжений считать в одном методе
+    //Ручное удлинение задается до вызова этого метода
+    /* Метод для расчета координат объектов модели и их параметров */
     private void calculate() {
-        //Это - расширение в метрах
-        // final double extensionInPX = (mSpringExtension.get())*Constants.PIXELS_PER_UNIT*20;
-        // trapezoid.setLayoutY(initY + extensionInPX);
-
+        final double weightExtension = mCargoWeight.get() * Constants.g / mStiffness.get();
+        mWeightExtension.set(weightExtension);
+        mWeightY = (int)(mInitY + mWeightExtension.get()*pixelsPerMeter);
+        final double manualPower = mManualExtension.get() * mStiffness.get();
+        mManualPower.set(manualPower);
         mTotalSpringExtension.set(mManualExtension.get() + mWeightExtension.get());
-        final double weightExtensionInPX = mTotalSpringExtension.get()*pixelsPerMeter;
-        trapezoid.setLayoutY(initY + weightExtensionInPX);
-        spring.setFitHeight(springLambda + trapezoid.getLayoutY());
+        final double totalExtensionInPX = mTotalSpringExtension.get()*pixelsPerMeter;
+        trapezoid.setLayoutY(mInitY + totalExtensionInPX);
+        spring.setFitHeight(mSpringLambda + trapezoid.getLayoutY());
     }
 
     @Override
@@ -107,12 +111,7 @@ public class WeightWithSpringController extends AbstractModelController {
 
         weightText.focusedProperty().addListener((obs, oldV, newV)->{
             if (oldV){ //если фокус убран, меняем значение
-                final double weightExtension = mCargoWeight.get() * Constants.g / mStiffness.get();
-                mWeightExtension.set(weightExtension);
-                weightY = initY + weightExtension*pixelsPerMeter;
-                mManualPower.set(0);
                 mManualExtension.set(0);
-
                 calculate();
             }
         });
@@ -122,21 +121,70 @@ public class WeightWithSpringController extends AbstractModelController {
         mStartP.setCoord(event);
     }
 
+    /** Обработчик перетаскивания груза */
     private void objectDragged(MouseEvent event) {
         final double endY = event.getSceneY();
         final double dy = trapezoid.getLayoutY() - mStartP.y;
-        if (endY + dy > initY){
-            trapezoid.setLayoutY(endY + dy);
-            //Есть два способа, как может растягиваться пружина: либо через ввод настроек (то же самое при иниц.),
-            //либо при перетаскивании предмета
-            //А итоговое растяжение получается из суммы двух растяжений (и, получается, две проперти)
-            final double manualExtension = (trapezoid.getLayoutY() - weightY)/ pixelsPerMeter;
-            mManualExtension.set(manualExtension);
+        final double finalY = endY + dy;
+        if (finalY > mInitY){
+            mManualExtension.set((finalY - mWeightY)/ pixelsPerMeter);
             calculate();
-            final double F = mManualExtension.get() * mStiffness.get();
-            mManualPower.set(F);
         }
         
         setMouse(event);
+    }
+
+    //afterInvest: устранить баг, связанный с экстренным выбросом исключения,
+    //а также корректное отклонение пружины (не для диплома)
+    /** Обработчик перемещения груза после разжатия мыши*/
+    // Алгоритм следующий: после разжатия мыши груз начинает двигаться в
+    // противоположном направлении до рассчитаной величины, затем двигается в
+    // противоположную сторону, и так до тех пор, пока
+    // расстояние перемещения не становится слишком маленьким
+    private void objectReleased(MouseEvent event) {
+        final double manualExtensionInPX = mManualExtension.get()*pixelsPerMeter*0.5;
+        final double tempDeltaY = manualExtensionInPX > mWeightY-mInitY? mWeightY-mInitY: manualExtensionInPX;
+        //Итоговое растяжение в пикселах за одну итерацию (которое будет меняться в другом потоке)
+        final double pxPath = mManualExtension.get()*pixelsPerMeter + tempDeltaY;
+        //Текущая скорость - 150 px/сек
+        final double timeForT = 150; //В милисекундах
+
+        Thread motionThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //Дистанция в пискелах, которую надо пройти
+                double pixelPath = Math.abs(pxPath);
+                //Если <0, груз движется вверх, иначе вниз
+                int deltaP = pxPath < 0? 1: -1;
+                final int pixelLambda = 2;
+                while (pixelPath > pixelLambda){
+                    //Груз должен идти вверх в два раза быстрее, чем вниз
+                    int speedTime = (int)(deltaP<0? timeForT/2: timeForT);
+                    //Время, на которое должен прерываться поток
+                    double deltaT = speedTime/pixelPath;
+                    //Координата Y, по которой груз перестает двигаться и начинает двигаться в другую сторону
+                    double cancelY = deltaP<0? trapezoid.getLayoutY() - pixelPath: trapezoid.getLayoutY() + pixelPath;
+                    for (int i = 0; Math.abs(trapezoid.getLayoutY() - cancelY) > 1; i++){
+                        //Координата Y на след. итерации
+                        double deltaY = trapezoid.getLayoutY() + deltaP;
+                        trapezoid.setLayoutY(deltaY);
+                        spring.setFitHeight(deltaY + mSpringLambda);
+                        try {
+                            int intDeltaT = (int)deltaT == 0? i%2: (int)deltaT;
+                            Thread.sleep(intDeltaT);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    pixelPath = Math.abs(mWeightY - trapezoid.getLayoutY())*1.5;
+                    deltaP *= -1;
+                }
+                trapezoid.setLayoutY(mWeightY);
+                spring.setFitHeight(mWeightY + mSpringLambda);
+                mManualPower.set(0);
+                mTotalSpringExtension.set(mWeightExtension.get());
+            }
+        });
+        motionThread.start();
     }
 }
