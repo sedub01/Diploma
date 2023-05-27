@@ -42,7 +42,6 @@ public class WeightWithSpringController extends AbstractModelController {
     private int mSpringLambda;
     /** Положение по оси Y только при удлинении весом груза*/
     private int mWeightY;
-
     /** Вес груза в килограммах */
     private DoubleProperty mCargoWeight;
     /** Жёсткость пружины */
@@ -168,41 +167,38 @@ public class WeightWithSpringController extends AbstractModelController {
         //Текущая скорость - 150 px/сек
         final double timeForT = 150; //В милисекундах
 
-        Thread motionThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                //Дистанция в пискелах, которую надо пройти
-                double pixelPath = Math.abs(pxPath);
-                //Если <0, груз движется вверх, иначе вниз
-                int deltaP = pxPath < 0? 1: -1;
-                final int pixelLambda = 2;
-                while (pixelPath > pixelLambda){
-                    //Груз должен идти вверх в два раза быстрее, чем вниз
-                    int speedTime = (int)(deltaP<0? timeForT/2: timeForT);
-                    //Время, на которое должен прерываться поток
-                    double deltaT = speedTime/pixelPath;
-                    //Координата Y, по которой груз перестает двигаться и начинает двигаться в другую сторону
-                    double cancelY = deltaP<0? trapezoid.getLayoutY() - pixelPath: trapezoid.getLayoutY() + pixelPath;
-                    for (int i = 0; Math.abs(trapezoid.getLayoutY() - cancelY) > 1; i++){
-                        //Координата Y на след. итерации
-                        double deltaY = trapezoid.getLayoutY() + deltaP;
-                        trapezoid.setLayoutY(deltaY);
-                        spring.setFitHeight(deltaY + mSpringLambda);
-                        try {
-                            int intDeltaT = (int)deltaT == 0? i%2: (int)deltaT;
-                            Thread.sleep(intDeltaT);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+        Thread motionThread = new Thread(() -> {
+            // Дистанция в пискелах, которую надо пройти
+            double pixelPath = Math.abs(pxPath);
+            // Если <0, груз движется вверх, иначе вниз
+            int deltaP = pxPath < 0 ? 1 : -1;
+            final int pixelLambda = 2;
+            while (pixelPath > pixelLambda) {
+                // Груз должен идти вверх в два раза быстрее, чем вниз
+                int speedTime = (int) (deltaP < 0 ? timeForT / 2 : timeForT);
+                // Время, на которое должен прерываться поток
+                final int deltaT = (int)(speedTime / pixelPath);
+                // Координата Y, по которой груз перестает двигаться и начинает двигаться в
+                // другую сторону
+                final double cancelY = trapezoid.getLayoutY() + pixelPath * deltaP;
+                for (int i = 0; Math.abs(trapezoid.getLayoutY() - cancelY) > 1; i++) {
+                    // Координата Y на след. итерации
+                    final double deltaY = trapezoid.getLayoutY() + deltaP;
+                    trapezoid.setLayoutY(deltaY);
+                    spring.setFitHeight(deltaY + mSpringLambda);
+                    try {
+                        Thread.sleep(deltaT == 0 ? i % 2 :deltaT);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    pixelPath = Math.abs(mWeightY - trapezoid.getLayoutY())*1.5;
-                    deltaP *= -1;
                 }
-                trapezoid.setLayoutY(mWeightY);
-                spring.setFitHeight(mWeightY + mSpringLambda);
-                mManualPower.set(0);
-                mTotalSpringExtension.set(mWeightExtension.get());
+                pixelPath = Math.abs(mWeightY - trapezoid.getLayoutY()) * 1.5;
+                deltaP *= -1;
             }
+            trapezoid.setLayoutY(mWeightY);
+            spring.setFitHeight(mWeightY + mSpringLambda);
+            mManualPower.set(0);
+            mTotalSpringExtension.set(mWeightExtension.get());
         });
         motionThread.start();
     }
