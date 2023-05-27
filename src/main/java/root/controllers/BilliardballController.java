@@ -1,16 +1,24 @@
 package root.controllers;
 
-import root.gui.BilliardBallPane;
-import root.utils.Logger;
-import root.utils.Point;
+import javafx.animation.Interpolator;
+import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
+import javafx.scene.transform.Transform;
+import root.gui.BilliardBallPane;
+import root.utils.Logger;
+import root.utils.Point;
 
+//TODO переделать модель, значительно упростив ее
+//Демонстрация следующая: есть шар слева, он может удариться о шар справа
+//Если шары не пересекаются, выводится предупреждение, иначе шар начинается двигаться
+//После соударения рисуется отрезок, соединяющий центры шаров, и от этой линии считаются углы отклонения
 public class BilliardballController extends AbstractModelController {
     @FXML
     private Circle firstBall;
@@ -42,8 +50,9 @@ public class BilliardballController extends AbstractModelController {
         secondBall.addEventHandler(MouseEvent.MOUSE_DRAGGED, this::ballDragged);
 
         mFirstBallPane = new BilliardBallPane(firstBall, 45, 7, 1.2);
-        mSecondBallPane = new BilliardBallPane(secondBall, 135, 5, 1.8);
+        mSecondBallPane = new BilliardBallPane(secondBall, 1.8);
 
+        //TODO оставить только массу второго шара
         mFirstBallPane.setAnotherBallProperties(mSecondBallPane.initVelocityProperty(),
                 mSecondBallPane.ballWeightProperty(),
                 mSecondBallPane.angleProperty());
@@ -82,51 +91,83 @@ public class BilliardballController extends AbstractModelController {
     @Override
     protected void createSettings() {
         final var firstAngleSpinner = new Spinner<Double>();
-        final var secondAngleSpinner = new Spinner<Double>();
         final var firstInitSpeedText = new TextField();
-        final var secondInitSpeedText = new TextField();
         final var firstBallMassText = new TextField();
         final var secondBallMassText = new TextField();
         final var firstClashSpeedText = new TextField();
         final var secondClashSpeedText = new TextField();
-        final var firstMomentumText = new TextField();
-        final var secondMomentumText = new TextField();
 
         mModelSettings.put(new Label("Угол наклона 1 шара"), firstAngleSpinner);
-        mModelSettings.put(new Label("Угол наклона 2 шара"), secondAngleSpinner);
         mModelSettings.put(new Label("Начальная скорость 1 шара [м/с]"), firstInitSpeedText);
-        mModelSettings.put(new Label("Начальная скорость 2 шара [м/с]"), secondInitSpeedText);
         mModelSettings.put(new Label("Масса 1 шара [кг]"), firstBallMassText);
         mModelSettings.put(new Label("Масса 2 шара [кг]"), secondBallMassText);
         mModelSettings.put(new Label("Скорость 1 шара после столкновения [м/с]"), firstClashSpeedText);
         mModelSettings.put(new Label("Скорость 2 шара после столкновения [м/с]"), secondClashSpeedText);
-        mModelSettings.put(new Label("Импульс 1 шара [кг*м/с]"), firstMomentumText);
-        mModelSettings.put(new Label("Импульс 2 шара [кг*м/с]"), secondMomentumText);
 
         mFirstBallPane.setAngleSpinnerSettings(firstAngleSpinner);
-        mSecondBallPane.setAngleSpinnerSettings(secondAngleSpinner);
 
         bidirectionalBinding(firstInitSpeedText, mFirstBallPane.initVelocityProperty(), false);
-        bidirectionalBinding(secondInitSpeedText, mSecondBallPane.initVelocityProperty(), false);
         bidirectionalBinding(firstBallMassText, mFirstBallPane.ballWeightProperty(), false);
         bidirectionalBinding(secondBallMassText, mSecondBallPane.ballWeightProperty(), false);
         bidirectionalBinding(firstClashSpeedText, mFirstBallPane.clashVelocityProperty());
         bidirectionalBinding(secondClashSpeedText, mSecondBallPane.clashVelocityProperty());
-        bidirectionalBinding(firstMomentumText, mFirstBallPane.momentumProperty());
-        bidirectionalBinding(secondMomentumText, mSecondBallPane.momentumProperty());
+
+        firstInitSpeedText.focusedProperty().addListener((obs, oldV, newV)->{
+            if (oldV){ //если фокус убран, меняем значение
+                mFirstBallPane.calculateSpeed();
+                mSecondBallPane.calculateSpeed();
+            }
+        });
     }
 
     @Override
     public void execute() {
         Logger.log("Началось...");
+        //TODO мб надо передавать не путь, а сам объект, а 
+        //потом в нем использовать bounds, и по ним вычислить линию?
+        // if (!hasRoots(mFirstBallPane, secondBall)){
+        //     Logger.displayOnAlertWindow("Шар не сможет столкнуться с целью");
+        //     return;
+        // }
+
         var execProp = mPropertiesMap.get("execButtonProperty");
         var expandProp = mPropertiesMap.get("expandButtonProperty");
-        final var firstPath = mFirstBallPane.getPath();
-        final var secondPath = mSecondBallPane.getPath();
-        firstPath.setVisible(false);
-        secondPath.setVisible(false);
+        mFirstBallPane.executionStarted();
+        mSecondBallPane.executionStarted();
         execProp.set(true);
         expandProp.set(true);
-        //TODO сделать перемещение двух шаров
+        // //TODO сделать перемещение двух шаров
+        // final Bounds firstBallBounds = firstBallPane.localToScene(firstBallPane.getBoundsInLocal());
+        // Logger.log(firstBallBounds.getCenterX(), firstBallBounds.getCenterY());
+        TranslateTransition trans = new TranslateTransition();
+        trans.setNode(firstBall);
+        trans.setByX(100);
+        trans.setByY(100*mFirstBallPane.getPath().getK() + mFirstBallPane.getPath().getB());
+        trans.setInterpolator(Interpolator.LINEAR);
+
+        trans.play();
     }
+
+    //Проблема в том, что т.к. линия находится внутри Pane, k == 0, а 
+    //вместо линии вращается Pane
+    //TODO посмотреть, можно ли пересечь круг линией по абсолютным координатам 
+    // (переместить линию "выше")
+    // private boolean hasRoots(BilliardBallPane mFirstBallPane2, Circle ball) {
+    //     //3231
+    //     final var lineBounds = firstBallPane.localToScene(firstBallPane.getBoundsInLocal());
+    //     final var sbBounds = secondBallPane.localToScene(secondBallPane.getBoundsInLocal());
+    //     Logger.log(lineBounds);
+    //     Logger.log(sbBounds);
+    //     Logger.log("intersects:", lineBounds.intersects(sbBounds));
+    //     Logger.log("secondMetric:", firstBallPane.getBoundsInParent().intersects(secondBallPane.getBoundsInParent()));
+
+    //     final Bounds ballBounds = ball.localToScene(ball.getBoundsInLocal());
+    //     final double k = mFirstBallPane2.getPath().getK();
+    //     final double b = mFirstBallPane2.getPath().getB();
+    //     final double x0 = ballBounds.getCenterX();
+    //     final double y0 = ballBounds.getCenterY();
+    //     final double r = ball.getRadius();
+    //     final double D = Math.pow(2*k*(b-y0) - 2*x0, 2) - 4*(k*k+1)*(x0*x0 + Math.pow(b-y0, 2) - r*r);
+    //     return D >= 0;
+    // }
 }

@@ -12,13 +12,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
+import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
+import root.utils.LineWithOdds;
 import root.utils.Point;
 
 public class BilliardBallPane{
     /** Полигональная линия, формирующая стрелку */
-    private final Polygon mPolygonArrow;
+    private Polygon mPolygonArrow = null;
     /** Координаты зажатой ЛКМ */
     private final Point mStartP = new Point();
     /** Сущность для управления поворотом ствола */
@@ -32,40 +34,47 @@ public class BilliardBallPane{
     /** Импульс шара */
     private final DoubleProperty mMomentum;
     /** Траектория пути бильярдного шара */
-    private Line mPath = new Line();
+    private LineWithOdds mPath;
 
     private WritableDoubleValue mAnotherInitVelocity;
     private WritableDoubleValue mAnotherBallWeight;
-    private WritableDoubleValue mAnotherAngle;
     /** Начался ли процесс бросания снаряда */
     private boolean mIsTransitionStarted = false;
 
     private Pane mBallPane;
 
     public BilliardBallPane(Circle ball, double angle, int velocity, double weight) {
-        mPolygonArrow = new PolygonArrow((Color) ball.getFill());
-        mPolygonArrow.setRotate(90);
-        mPath.setStroke((Color) ball.getFill());
-        mPath.setStrokeWidth(2);
-        mPath.getStrokeDashArray().addAll(10d, 10d);
-
         mInitVelocity = new SimpleDoubleProperty(this, "initVelocity", velocity);
         mBallWeight = new SimpleDoubleProperty(this, "ballWeight", weight);
         mClashVelocity = new SimpleDoubleProperty(this, "clashVelocity");
         mMomentum = new SimpleDoubleProperty(this, "momentum", weight*velocity);
         
+        if (velocity == 0)
+            return;
+
+        mPath = new LineWithOdds();
+        mPath.setStroke((Color) ball.getFill());
+        mPath.setStrokeWidth(2);
+        mPath.getStrokeDashArray().addAll(10d, 10d);
+        mPolygonArrow = new PolygonArrow((Color) ball.getFill());
+        mPolygonArrow.setRotate(90);
         translateToBall(ball);
         mBallPane.getChildren().add(mPolygonArrow);
         mBallPane.getChildren().add(mPath);
         mBallPane.getTransforms().add(mRotate);
 
+        //Границы mPolygonArrow внутри mBallPane
         final Bounds bounds = mBallPane.sceneToLocal(mPolygonArrow.localToScene(mPolygonArrow.getBoundsInLocal()));
         mPath.setStartX(bounds.getMaxX());
         mPath.setStartY(bounds.getCenterY());
-        mPath.setEndX(bounds.getMaxX()+2000); // Максимальное разрешение экрана
+        mPath.setEndX(bounds.getMaxX() + 2000); // Максимальное разрешение экрана
         mPath.setEndY(bounds.getCenterY());
-        
+        mPath.updateOdds();
         mRotate.setAngle(-angle);
+        mPolygonArrow.addEventHandler(MouseEvent.MOUSE_PRESSED, this::setMouse);
+        mPolygonArrow.addEventHandler(MouseEvent.MOUSE_DRAGGED, this::arrowDragged);
+        
+        
         // TODO выделить вращающийся виджет в отдельный класс
         // Необходимые элементы:
         // -? точка, остлеживающая последнее нажатие мыши (объект Point); можно создать
@@ -87,8 +96,11 @@ public class BilliardBallPane{
         // Вопрос: надо ли в objectDragged передавать условие вращаемости как второй
         // параметр?
         // - условие вращаемости (мб какой-нибудь коллбек)
-        mPolygonArrow.addEventHandler(MouseEvent.MOUSE_PRESSED, this::setMouse);
-        mPolygonArrow.addEventHandler(MouseEvent.MOUSE_DRAGGED, this::arrowDragged);
+        
+    }
+
+    public BilliardBallPane(Circle ball, double weight){
+        this(ball, 0., 0, weight);
     }
 
     private void setMouse(final MouseEvent e) {
@@ -152,7 +164,6 @@ public class BilliardBallPane{
             DoubleProperty angleProperty) {
         mAnotherInitVelocity = initVelocity;
         mAnotherBallWeight = ballWeight;
-        mAnotherAngle = angleProperty;
     }
 
     public void calculateSpeed() {
@@ -160,23 +171,8 @@ public class BilliardBallPane{
         final double m2 = mAnotherBallWeight.get();
         double u1 = mInitVelocity.get();
         double u2 = mAnotherInitVelocity.get();
-        //Один из исключительных случаев
-        boolean isExceptiveForAnother = isExceptiveAngle(Math.abs(mAnotherAngle.get()));
-        boolean isExceptiveForThis = isExceptiveAngle(Math.abs(mRotate.angleProperty().get()));
-        if (isExceptiveForThis){
-            u1 = -u1;
-        }
-        if (isExceptiveForAnother){
-            u2 = -u2;            
-        }
-
         double speedAfter = ((m1 - m2)*u1 + 2*m2*u2) / (m1 + m2);
         mClashVelocity.set(Math.abs(speedAfter));
-    }
-
-    //Если возвращается true, скорость должна быть отрицательной, т.е. противоположной оси Х
-    private boolean isExceptiveAngle(double angle){
-        return angle > 90 && angle < 270; // || ...
     }
 
     public DoubleProperty initVelocityProperty() {
@@ -199,7 +195,14 @@ public class BilliardBallPane{
         return mMomentum;
     }
 
-    public Line getPath(){
+    public LineWithOdds getPath(){
         return mPath;
+    }
+
+    public void executionStarted() {
+        if (mInitVelocity.get() != 0){
+            mPath.setVisible(false);
+            mPolygonArrow.setVisible(false);
+        }
     }
 }

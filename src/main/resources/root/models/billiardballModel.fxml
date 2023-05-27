@@ -5,12 +5,12 @@
 
 <AnchorPane fx:id="anchorPane" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/1" fx:controller="root.controllers.BilliardballController">
    <children>
-      <AnchorPane fx:id="firstBallPane" layoutX="68.0" layoutY="264.0" prefHeight="122.0" prefWidth="122.0">
+      <AnchorPane fx:id="firstBallPane" layoutX="68.0" layoutY="264.0" prefHeight="122.0" prefWidth="122.0" style="-fx-background-color: lightgray;">
          <children>
             <Circle fx:id="firstBall" fill="DODGERBLUE" layoutX="61.0" layoutY="61.0" radius="61.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="3.0" />
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="secondBallPane" layoutX="523.0" layoutY="132.0" prefHeight="122.0" prefWidth="122.0">
+      <AnchorPane fx:id="secondBallPane" layoutX="523.0" layoutY="132.0" prefHeight="122.0" prefWidth="122.0" style="-fx-background-color: lightgreen;">
          <children>
             <Circle fx:id="secondBall" fill="RED" layoutX="61.0" layoutY="61.0" radius="61.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="3.0" />
          </children>
