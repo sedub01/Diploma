@@ -83,8 +83,10 @@ public class Model {
                     getResource(mModelFilePath));
             mScene = loader.load();
             mController = loader.getController();
-            mSettingsMap = mController.getSettings();
-            mController.setProperties(mPropertiesMap);
+            if (mController != null){
+                mSettingsMap = mController.getSettings();
+                mController.setProperties(mPropertiesMap);
+            }
         } catch (IOException e) {
             Logger.displayOnStatusBar("Не загрузилась модель");
             Logger.log("Не загрузилась модель " + mModelName + "\nПричина: " +

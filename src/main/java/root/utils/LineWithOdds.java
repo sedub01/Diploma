@@ -5,6 +5,9 @@ import javafx.scene.shape.Line;
 public class LineWithOdds extends Line {
     private double k;
     private double b;
+    public LineWithOdds(){
+        super();
+    }
     public LineWithOdds(double startX, double startY, double endX, double endY){
         super(startX, startY, endX, endY);
     }
