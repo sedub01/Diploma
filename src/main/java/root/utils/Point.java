@@ -2,6 +2,7 @@ package root.utils;
 
 import javafx.scene.input.MouseEvent;
 
+/** Представление точки */
 public class Point {
     public double x, y;
     public Point() {}

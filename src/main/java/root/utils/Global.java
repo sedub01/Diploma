@@ -4,7 +4,6 @@ import javafx.scene.paint.Color;
 
 /**Хранилище глобальных функций*/
 public class Global {
-
     public static String getCSSThemeColor(double colorness, String key){
         Color tColor = Constants.THEME_COLOR;
         if (colorness < 0) {

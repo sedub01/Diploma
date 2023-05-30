@@ -3,19 +3,17 @@ package root.controllers;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
-import javafx.geometry.Bounds;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
-import javafx.scene.transform.Transform;
 import root.gui.BilliardBallPane;
 import root.utils.Logger;
 import root.utils.Point;
 
-//TODO переделать модель, значительно упростив ее
+//afterInvest переделать модель, значительно упростив ее
 //Демонстрация следующая: есть шар слева, он может удариться о шар справа
 //Если шары не пересекаются, выводится предупреждение, иначе шар начинается двигаться
 //После соударения рисуется отрезок, соединяющий центры шаров, и от этой линии считаются углы отклонения

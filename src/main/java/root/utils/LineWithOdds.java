@@ -2,6 +2,8 @@ package root.utils;
 
 import javafx.scene.shape.Line;
 
+/** Класс, расширяющий функционал класса Line.
+ * Хранит в себе коэффициенты прямой */
 public class LineWithOdds extends Line {
     private double k;
     private double b;

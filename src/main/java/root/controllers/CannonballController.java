@@ -22,7 +22,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import root.utils.Point;
 
-/** Модель, анализирующая параболическое движение снаряда*/
+/** Контроллер модели, анализирующей параболическое движение снаряда*/
 public class CannonballController extends AbstractModelController {
     @FXML private ImageView wheel;
     @FXML private ImageView floor;
@@ -270,7 +270,7 @@ public class CannonballController extends AbstractModelController {
 
             final double angle = -mRotate.getAngle();
             //Местонахождение точки начала траектории в пространстве сцены
-            //TODO попытаться убрать mTrackingPoint и засунуть в bounds саму пушку
+            //afterInvest попытаться убрать mTrackingPoint и засунуть в bounds саму пушку
             //т.е. сначала найти границы пушки относительно ее Pane, затем
             //по x взять max-смещение, по y взять height/2
             //Для mPivotPoint можно взять коорд. точки крепления
