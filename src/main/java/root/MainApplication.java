@@ -11,8 +11,8 @@ import root.utils.Global;
 
 import java.io.IOException;
 
+/** Точка входа в приложение для фреймворка JavaFX */
 public class MainApplication extends Application {
-
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("main-view.fxml"));

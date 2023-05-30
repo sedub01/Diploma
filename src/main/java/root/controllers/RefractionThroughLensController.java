@@ -19,6 +19,9 @@ import root.utils.LineWithOdds;
 import root.utils.Logger;
 import root.utils.Point;
 
+/** Контроллер модели, позволяющей исследовать закономерность между расстоянием до
+ * линзы и размером отображающегося изображения
+ */
 public class RefractionThroughLensController extends AbstractModelController {
     @FXML
     private Pane anchorPane;
