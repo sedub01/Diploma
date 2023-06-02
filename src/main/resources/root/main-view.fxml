@@ -189,7 +189,7 @@
             </ScrollPane>
             <Label fx:id="moduleLabel" text="Выберите модуль из списка модулей">
                <font>
-                  <Font size="18.0" />
+                  <Font size="24.0" />
                </font>
             </Label>
             <Button fx:id="settingsToolButton" alignment="CENTER" focusTraversable="false" maxHeight="250.0" maxWidth="25.0" mnemonicParsing="false" style="-fx-background-radius: 30px 10px 10px 30px;" visible="false" StackPane.alignment="BOTTOM_RIGHT">

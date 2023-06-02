@@ -1,6 +1,9 @@
 *.iml
+*.drawio
+*.jar
 /target
 /target/*
 /.idea
 /.idea/*
-*.drawio
+/.vscode
+/.vscode/*
